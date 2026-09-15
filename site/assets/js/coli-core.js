@@ -308,7 +308,7 @@ function renderHeader(){
   var page=document.body.getAttribute("data-page")||"";
   var jogoAtual=document.body.getAttribute("data-jogo")||"";
   var dd=COLI.JOGOS.map(function(j){
-    return '<a href="estatisticas-'+j.id+'.html"'+(j.id===jogoAtual?' style="color:#fff"':'')+'><span class="dot" style="background:'+j.c1+'"></span>'+j.emo+' '+COLI.esc(j.nome)+'</a>';
+    return '<a href="estatisticas-'+j.id+'.html"'+(j.id===jogoAtual?' style="color:var(--azul);background:var(--azul-claro)"':'')+'><span class="dot" style="background:'+j.c1+'"></span>'+j.emo+' '+COLI.esc(j.nome)+'</a>';
   }).join("");
   el.className="hdr";
   el.innerHTML='<div class="wrap">'
