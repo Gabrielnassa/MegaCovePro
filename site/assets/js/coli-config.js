@@ -10,6 +10,8 @@ window.COLI_CONFIG = {
 
   /* Dados da lotérica */
   nome:      "Coli Loterias",
+  razaoSocial: "Coli Loterias Ltda",
+  cnpj:      "55.311.112/0001-55",
   slogan:    "Com a sorte na palma da mão",
   endereco:  "Rua Agostinho Gomes, 1770 – Ipiranga, São Paulo/SP – CEP 04206-000",
   telefones: ["(11) 2061-8868", "(11) 2271-2828"],

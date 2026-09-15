@@ -15,6 +15,8 @@ Loterias CAIXA. Tudo se atualiza sozinho a partir da **API oficial da CAIXA**.
 | `PASSO-A-PASSO-WORDPRESS.html` | Guia de publicação no WordPress (abra no navegador) |
 | `index.html` | Página inicial (hero, próximos concursos, surpresinha, sobre a Coli, serviços, contato) |
 | `resultados.html` | Últimos resultados de todas as loterias, com rateio de prêmios |
+| `quem-somos.html` | Página institucional (história, prêmios, IA, contato) |
+| `termos.html` | Termos de uso, privacidade e jogo responsável (linkados no rodapé) |
 | `estatisticas-*.html` | Estatísticas de cada loteria (10 páginas) |
 | `assets/js/coli-config.js` | **Único arquivo que você precisa editar** (WhatsApp, endereço, horário) |
 | `assets/css/coli.css` | Visual do site |

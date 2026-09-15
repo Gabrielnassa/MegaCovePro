@@ -292,6 +292,9 @@ COLI.api = {
 var SVG_WA='<svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.2-.6-.3zM12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.4c1.4.8 3.1 1.2 4.8 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3C4.1 15 3.7 13.5 3.7 12c0-4.6 3.7-8.3 8.3-8.3s8.3 3.7 8.3 8.3-3.7 8.2-8.3 8.2z"/></svg>';
 COLI.SVG = {
   wa: SVG_WA,
+  ig:'<svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.5.2-1.9.3-.5.2-.8.4-1.1.7-.3.3-.6.6-.7 1.1-.1.4-.3.9-.3 1.9C3.2 9.3 3.2 9.7 3.2 12s0 3.5.1 4.7c.1 1.1.2 1.5.3 1.9.2.5.4.8.7 1.1.3.3.6.6 1.1.7.4.1.9.3 1.9.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.5-.2 1.9-.3.5-.2.8-.4 1.1-.7.3-.3.6-.6.7-1.1.1-.4.3-.9.3-1.9.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.5-.3-1.9-.2-.5-.4-.8-.7-1.1-.3-.3-.6-.6-1.1-.7-.4-.1-.9-.3-1.9-.3-1.2-.1-1.6-.1-4.7-.1zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4zm5.2-2.1a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>',
+  yt:'<svg viewBox="0 0 24 24"><path d="M23 7.2c-.3-1-1-1.8-2-2.1C19.2 4.6 12 4.6 12 4.6s-7.2 0-9 .5c-1 .3-1.8 1.1-2 2.1C.5 9 .5 12 .5 12s0 3 .5 4.8c.3 1 1 1.8 2 2.1 1.8.5 9 .5 9 .5s7.2 0 9-.5c1-.3 1.8-1.1 2-2.1.5-1.8.5-4.8.5-4.8s0-3-.5-4.8zM9.7 15.1V8.9l6 3.1-6 3.1z"/></svg>',
+  fb:'<svg viewBox="0 0 24 24"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.4 0-4.1 1.5-4.1 4.2v2.3H7.5V14h2.7v8h3.3z"/></svg>',
   chart:'<svg viewBox="0 0 24 24"><path d="M4 20h3v-9H4v9zm6.5 0h3V4h-3v16zm6.5 0h3v-6h-3v6z"/></svg>',
   trophy:'<svg viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3"/><path d="M7 5H4v2a3 3 0 0 0 3 3"/></svg>',
   calendar:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
@@ -303,6 +306,14 @@ COLI.SVG = {
   dice:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.4" fill="currentColor"/><circle cx="16" cy="8" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="8" cy="16" r="1.4" fill="currentColor"/><circle cx="16" cy="16" r="1.4" fill="currentColor"/></svg>'
 };
 
+COLI.socialIcons = function(extra){
+  var out='';
+  if(CFG.whatsapp) out+='<a class="soc wa" href="'+COLI.waURL()+'" target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp">'+SVG_WA+'</a>';
+  if(CFG.instagram) out+='<a class="soc ig" href="'+COLI.esc(CFG.instagram)+'" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">'+COLI.SVG.ig+'</a>';
+  if(CFG.youtube) out+='<a class="soc yt" href="'+COLI.esc(CFG.youtube)+'" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube">'+COLI.SVG.yt+'</a>';
+  if(CFG.facebook) out+='<a class="soc fb" href="'+COLI.esc(CFG.facebook)+'" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook">'+COLI.SVG.fb+'</a>';
+  return '<div class="social'+(extra?' '+extra:'')+'">'+out+'</div>';
+};
 function renderHeader(){
   var el=document.getElementById("coli-header"); if(!el) return;
   var page=document.body.getAttribute("data-page")||"";
@@ -322,7 +333,7 @@ function renderHeader(){
       +'<div><a class="top" href="'+COLI.esc(CFG.bolaoUrl||"#")+'" target="_blank" rel="noopener">Bolões</a></div>'
     +'</nav>'
     +'<div style="display:flex;align-items:center;gap:8px">'
-      +'<a class="btn-wa-hd" href="'+COLI.waURL()+'" target="_blank" rel="noopener">'+SVG_WA+' Fale conosco</a>'
+      +'<a class="btn-cta-hd" href="index.html#surpresinha">Aposte aqui</a>'
       +'<button class="hbg" id="hbg" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>'
     +'</div></div>';
   var hb=document.getElementById("hbg"), nav=document.getElementById("nav");
@@ -332,27 +343,30 @@ function renderHeader(){
 function renderFooter(){
   var el=document.getElementById("coli-footer"); if(!el) return;
   var ano=new Date().getFullYear();
-  var links=COLI.JOGOS.map(function(j){ return '<li><a href="estatisticas-'+j.id+'.html">'+j.emo+' '+COLI.esc(j.nome)+'</a></li>'; });
-  var metade=Math.ceil(links.length/2);
+  var lot=COLI.JOGOS.map(function(j){ return '<li><a href="estatisticas-'+j.id+'.html"><span class="dot" style="background:'+j.c1+'"></span>'+COLI.esc(j.nome)+'</a></li>'; }).join("");
+  var tel=(CFG.telefones&&CFG.telefones.length)?CFG.telefones.map(function(t){return '<a href="tel:+55'+String(t).replace(/\D/g,"")+'">'+COLI.esc(t)+'</a>';}).join(" · "):"";
   el.className="foot";
   el.innerHTML='<div class="wrap">'
     +'<div class="foot-grid">'
-      +'<div><img src="assets/img/logo.png" alt="'+COLI.esc(CFG.nome||"")+'">'
-        +(CFG.slogan?'<p style="color:var(--txt);font-weight:800;margin-bottom:6px">'+COLI.esc(CFG.slogan)+'</p>':'')
-        +'<p>📍 <a href="'+COLI.esc(CFG.mapsUrl||"#")+'" target="_blank" rel="noopener" style="color:var(--txt2)">'+COLI.esc(CFG.endereco||"")+'</a></p>'
-        +(CFG.telefones&&CFG.telefones.length?'<p>📞 '+CFG.telefones.map(function(t){return '<a href="tel:+55'+String(t).replace(/\D/g,"")+'" style="color:var(--azul)">'+COLI.esc(t)+'</a>';}).join(" · ")+'</p>':'')
-        +(CFG.horario?'<p>🕒 '+COLI.esc(CFG.horario)+'</p>':'')
-        +'<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-wa" href="'+COLI.waURL()+'" target="_blank" rel="noopener">'+SVG_WA+' WhatsApp</a>'
-        +(CFG.instagram?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.instagram)+'" target="_blank" rel="noopener">Instagram</a>':'')
-        +(CFG.facebook?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.facebook)+'" target="_blank" rel="noopener">Facebook</a>':'')
-        +(CFG.youtube?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.youtube)+'" target="_blank" rel="noopener">YouTube</a>':'')+'</p></div>'
-      +'<div><h4>Estatísticas</h4><ul>'+links.slice(0,metade).join("")+'</ul></div>'
-      +'<div><h4>&nbsp;</h4><ul>'+links.slice(metade).join("")+'</ul></div>'
-      +'<div><h4>Navegação</h4><ul><li><a href="index.html">Início</a></li><li><a href="resultados.html">Últimos resultados</a></li><li><a href="index.html#surpresinha">Monte seu jogo</a></li><li><a href="quem-somos.html">Quem somos</a></li><li><a href="index.html#contato">Contato</a></li>'
-        +'<li><a href="'+COLI.esc(CFG.bolaoUrl||"#")+'" target="_blank" rel="noopener">Bolões da CAIXA</a></li><li><a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">Site oficial das Loterias</a></li></ul></div>'
+      +'<div class="foot-brand"><img src="assets/img/logo.png" alt="'+COLI.esc(CFG.nome||"")+'">'
+        +'<p class="slogan">'+COLI.esc(CFG.slogan||"")+'</p>'
+        +'<p>Casa lotérica credenciada pela CAIXA'+(CFG.fundacao?', no Ipiranga desde '+CFG.fundacao:'')+'. Resultados, estatísticas e bolões das Loterias CAIXA.</p>'
+        +COLI.socialIcons()+'</div>'
+      +'<div><h4>Links rápidos</h4><ul>'
+        +'<li><a href="index.html">Início</a></li><li><a href="resultados.html">Últimos resultados</a></li><li><a href="index.html#surpresinha">Monte seu jogo</a></li>'
+        +'<li><a href="quem-somos.html">Quem somos</a></li><li><a href="'+COLI.esc(CFG.bolaoUrl||"#")+'" target="_blank" rel="noopener">Bolões da CAIXA</a></li>'
+        +'<li><a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">Loterias CAIXA (site oficial)</a></li>'
+        +'<li><a href="termos.html#termos">Termos de uso</a></li><li><a href="termos.html#privacidade">Política de privacidade</a></li><li><a href="termos.html#responsavel">Jogo responsável</a></li></ul></div>'
+      +'<div><h4>Estatísticas</h4><ul class="foot-lot">'+lot+'</ul></div>'
+      +'<div><h4>Onde estamos</h4><p class="ft-end">'+COLI.esc(CFG.endereco||"")+'</p>'
+        +(tel?'<p>'+tel+'</p>':'')+(CFG.horario?'<p>'+COLI.esc(CFG.horario)+'</p>':'')
+        +(CFG.mapsUrl?'<a class="btn btn-line sm" style="margin-top:8px" href="'+COLI.esc(CFG.mapsUrl)+'" target="_blank" rel="noopener">Ver no mapa</a>':'')+'</div>'
     +'</div>'
-    +'<div class="foot-bt"><span>© '+ano+' '+COLI.esc(CFG.nome||"Coli Loterias")+(CFG.fundacao?' · desde '+CFG.fundacao:'')+'. Todos os direitos reservados.</span>'
-    +'<span>Resultados oficiais divulgados pela <a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">CAIXA</a>. Em caso de divergência, vale o resultado oficial. Jogue com responsabilidade · proibido para menores de 18 anos.</span></div>'
+    +'<div class="foot-legal">'
+      +'<p><b>© '+ano+' '+COLI.esc(CFG.nome||"Coli Loterias")+'</b> · Todos os direitos reservados. '+COLI.esc(CFG.razaoSocial||"")+(CFG.cnpj?' · CNPJ '+COLI.esc(CFG.cnpj):'')+' · '+COLI.esc(CFG.endereco||"")+'</p>'
+      +'<p>Casa lotérica credenciada pela Caixa Econômica Federal. "Loterias CAIXA" e os nomes das modalidades são marcas da Caixa Econômica Federal. Este site é independente e não é o site oficial da CAIXA. Os resultados oficiais são divulgados em <a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">loterias.caixa.gov.br</a>; em caso de divergência, prevalece o resultado oficial.</p>'
+      +'<p><span class="l18">18+</span> Jogue com responsabilidade. Venda proibida para menores de 18 anos (Lei nº 13.756/2018). Os palpites gerados por estatística e inteligência artificial são apenas sugestões e não garantem premiação.</p>'
+    +'</div>'
     +'</div>';
   if(!document.getElementById("wa-float")){
     var f=document.createElement("a"); f.id="wa-float"; f.className="wa-float"; f.href=COLI.waURL(); f.target="_blank"; f.rel="noopener"; f.setAttribute("aria-label","Falar no WhatsApp"); f.innerHTML=SVG_WA;

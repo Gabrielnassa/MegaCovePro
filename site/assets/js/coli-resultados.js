@@ -24,7 +24,7 @@ function cardHTML(j){
       +'<div class="rc-nd">Sorteio em '+(proxData?COLI.fmtData(proxData)+" ("+COLI.DSN[proxData.getDay()]+")":"—")+'</div>'
       +'<div class="rc-links"><a class="rc-bt" style="border-color:'+j.c1+';color:'+j.c1+'" href="estatisticas-'+j.id+'.html">📊 Estatísticas</a>'
       +'<a class="rc-bt" style="border-color:'+j.c1+';background:'+j.c1+';color:#fff" href="'+COLI.esc(CFG.bolaoUrl||"#")+'" target="_blank" rel="noopener">🎟️ Bolões</a>'
-      +'<a class="rc-bt" style="border-color:#25d366;background:#25d366;color:#04270f" href="'+COLI.waURL("Olá! Quero jogar na "+j.nome+" (concurso "+(n.proxNum||n.numero+1)+").")+'" target="_blank" rel="noopener">💬 Jogar</a></div></div>';
+      +'</div></div>';
   }
   return '<article class="rcard" id="card-'+j.id+'">'+hd+bd+ft+'</article>';
 }
