@@ -501,9 +501,11 @@ table.hist-tbl{width:100%;border-collapse:collapse;font-size:.8rem;min-width:620
 .rv-total{font-size:.86rem;font-weight:700;color:var(--txt2)}
 .rv-side .btn{align-self:flex-start;margin-top:8px}
 .rv-track-wrap{position:relative;min-width:0;display:flex;align-items:center;gap:10px}
-.rv-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:6px 2px;flex:1;min-width:0}
-.rv-track::-webkit-scrollbar{display:none}
-.rv-card{flex:0 0 260px;scroll-snap-align:start;background:#f7f9fc;border:1px solid var(--linha);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px;min-height:170px}
+.rv-track{overflow:hidden;padding:6px 0;flex:1;min-width:0;-webkit-mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.rv-marquee{display:flex;gap:14px;width:max-content;animation:rvmove var(--dur,60s) linear infinite}
+.rv-track:hover .rv-marquee{animation-play-state:paused}
+@keyframes rvmove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.rv-card{flex:0 0 260px;background:#f7f9fc;border:1px solid var(--linha);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px;min-height:170px}
 .rv-hd{display:flex;align-items:center;gap:10px}
 .rv-hd>div{flex:1;min-width:0}
 .rv-hd>div b{display:block;font-weight:900;font-size:.9rem;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -512,7 +514,8 @@ table.hist-tbl{width:100%;border-collapse:collapse;font-size:.8rem;min-width:620
 .rv-card p{font-size:.9rem;font-weight:600;color:var(--txt);line-height:1.5}
 .rv-nav{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--linha);box-shadow:var(--sombra);font-size:1.4rem;color:var(--txt2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
 .rv-nav:hover{color:var(--azul);border-color:var(--azul)}
-@media(max-width:900px){.reviews{grid-template-columns:1fr;padding:22px 18px}.rv-nav{display:none}}
+@media(max-width:900px){.reviews{grid-template-columns:1fr;padding:22px 18px}}
+@media(prefers-reduced-motion:reduce){.rv-marquee{animation:none}}
 
 /* ═══ RESPONSIVO ═══ */
 @media(max-width:1240px){
