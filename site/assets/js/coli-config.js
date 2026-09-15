@@ -15,7 +15,7 @@ window.COLI_CONFIG = {
   slogan:    "Com a sorte na palma da mão",
   endereco:  "Rua Agostinho Gomes, 1770 – Ipiranga, São Paulo/SP – CEP 04206-000",
   telefones: ["(11) 2063-7676"],
-  horario:   "Seg a Sex 8h às 19h · Sáb 9h às 12h",
+  horario:   "Seg a Sex 9h às 18h · Sáb 9h às 12h",
   fundacao:  1986,
   mapsUrl:   "https://www.google.com/maps/search/?api=1&query=Coli+Loterias+Rua+Agostinho+Gomes+1770+Ipiranga+S%C3%A3o+Paulo",
   instagram: "https://www.instagram.com/coli_loterias/",

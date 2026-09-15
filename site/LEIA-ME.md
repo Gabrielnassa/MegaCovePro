@@ -37,7 +37,7 @@ Abra `assets/js/coli-config.js` e altere:
 ```js
 whatsapp:  "551120637676",   // 55 + DDD + número, só dígitos
 telefones: ["(11) 2063-7676"],
-horario:   "Seg a Sex 8h às 19h · Sáb 9h às 12h",
+horario:   "Seg a Sex 9h às 18h · Sáb 9h às 12h",
 instagram: "https://www.instagram.com/coli_loterias/",
 facebook:  "https://www.facebook.com/ColiLoterias/",
 ```
