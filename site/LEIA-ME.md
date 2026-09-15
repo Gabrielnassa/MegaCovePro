@@ -33,7 +33,7 @@ Loterias CAIXA. Tudo se atualiza sozinho a partir da **API oficial da CAIXA**.
 Abra `assets/js/coli-config.js` e altere:
 
 ```js
-whatsapp:  "551120618868",   // ⚠ confirme: 55 + DDD + número, só dígitos
+whatsapp:  "551120637676",   // 55 + DDD + número, só dígitos
 telefones: ["(11) 2061-8868", "(11) 2271-2828"],
 horario:   "Seg a Sex 8h às 19h · Sáb 8h às 14h",
 instagram: "https://www.instagram.com/coli_loterias/",

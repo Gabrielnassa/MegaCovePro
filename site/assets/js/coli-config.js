@@ -5,8 +5,8 @@
 window.COLI_CONFIG = {
 
   /* WhatsApp da lotérica: 55 + DDD + número (somente dígitos).
-     ⚠ CONFIRME este número antes de publicar. */
-  whatsapp: "551120618868",
+     WhatsApp da loja. */
+  whatsapp: "551120637676",
 
   /* Dados da lotérica */
   nome:      "Coli Loterias",
