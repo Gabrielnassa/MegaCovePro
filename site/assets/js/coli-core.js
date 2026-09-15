@@ -459,15 +459,16 @@ function renderAgeGate(){
   try{ var ok=JSON.parse(localStorage.getItem("coli:idade18")||"null"); if(ok && ok.t && (Date.now()-ok.t)<(30*864e5)) return; }catch(e){}
   var g=document.createElement("div"); g.className="idade"; g.id="idade"; g.setAttribute("role","dialog"); g.setAttribute("aria-modal","true"); g.setAttribute("aria-labelledby","idade-h");
   g.innerHTML='<div class="idade-box" id="idade-box">'
-    +'<img src="assets/img/logo.png" alt="'+COLI.esc(CFG.nome||"Coli Loterias")+'">'
-    +'<div class="idade-sim"><div class="n18">18+</div><h2 id="idade-h">Você tem 18 anos ou mais?</h2>'
-    +'<p>As Loterias CAIXA são exclusivas para maiores de idade. Para acessar o site da '+COLI.esc(CFG.nome||"Coli Loterias")+', confirme que você tem 18 anos ou mais.</p>'
-    +'<div class="idade-btns"><button class="btn btn-laranja" type="button" id="idade-ok">Sim, tenho 18 anos ou mais</button><button class="btn btn-ghost" type="button" id="idade-nao">Não tenho</button></div>'
-    +'<small>Jogue com responsabilidade. Proibido para menores de 18 anos (Lei 13.756/2018).</small></div>'
-    +'<div class="idade-nao"><div class="n18" style="background:#e6eaf1;color:#5b6572">🔒</div><h2>Acesso restrito</h2>'
-    +'<p>Este site é destinado apenas a maiores de 18 anos. Obrigado pela compreensão.</p>'
-    +'<div class="idade-btns"><a class="btn btn-azul" href="https://www.google.com.br">Sair do site</a><button class="btn btn-ghost" type="button" id="idade-voltar">Voltar</button></div></div>'
-    +'</div>';
+    +'<div class="idade-top"><img src="assets/img/logo.png" alt="'+COLI.esc(CFG.nome||"Coli Loterias")+'"></div>'
+    +'<div class="idade-body">'
+    +'<div class="idade-sim"><div class="n18">18<span>+</span></div><h2 id="idade-h">Você tem 18 anos ou mais?</h2>'
+    +'<p>As Loterias CAIXA são exclusivas para maiores de idade.</p>'
+    +'<div class="idade-btns"><button class="idade-btn sim" type="button" id="idade-ok">Sim</button><button class="idade-btn nao" type="button" id="idade-nao">Não</button></div></div>'
+    +'<div class="idade-nao"><div class="n18 off">🔒</div><h2>Acesso restrito</h2>'
+    +'<p>Este site é destinado apenas a maiores de 18 anos.</p>'
+    +'<div class="idade-btns"><a class="idade-btn sim" href="https://www.google.com.br">Sair</a><button class="idade-btn nao" type="button" id="idade-voltar">Voltar</button></div></div>'
+    +'<small>Jogue com responsabilidade · Proibido para menores de 18 anos</small>'
+    +'</div></div>';
   document.body.appendChild(g); document.body.style.overflow="hidden";
   document.getElementById("idade-ok").addEventListener("click",function(){
     try{ localStorage.setItem("coli:idade18",JSON.stringify({t:Date.now()})); }catch(e){}
