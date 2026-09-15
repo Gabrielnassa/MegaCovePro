@@ -143,8 +143,8 @@ COLI.norm = function(d, fonte){
   var dez = d.listaDezenas || d.dezenas || d.resultado || d.resultado_1 || d.dezenasSorteadasOrdemSorteio || [];
   var dez2= d.listaDezenasSegundoSorteio || d.dezenas2 || d.dezenasSegundoSorteio || d.resultado_2 || [];
   var trev= d.trevosSorteados || d.trevos || [];
-  var time= d.nomeTimeCoracaoMesSorte || d.timeCoracao || d.time_do_coracao || d.timeDoCoracao || null;
-  var mes = d.mesSorte || d.mes_da_sorte || null;
+  var time= String(d.nomeTimeCoracaoMesSorte || d.timeCoracao || d.time_do_coracao || d.timeDoCoracao || "").trim() || null;
+  var mes = String(d.mesSorte || d.mes_da_sorte || "").trim() || null;
   if(time && /^(JANEIRO|FEVEREIRO|MARÇO|MARCO|ABRIL|MAIO|JUNHO|JULHO|AGOSTO|SETEMBRO|OUTUBRO|NOVEMBRO|DEZEMBRO)$/i.test(time)){ mes=time; time=null; }
   var rateioRaw = d.listaRateioPremio || d.premiacoes || d.rateio || [];
   var rateio = rateioRaw.map(function(r){
