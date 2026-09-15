@@ -218,6 +218,7 @@ document.addEventListener("DOMContentLoaded",function(){
   $("ct-maps").href=CFG.mapsUrl||"#";
   if(CFG.instagram) $("ct-ig").href=CFG.instagram; else $("ct-ig").hidden=true;
   if(CFG.facebook) $("ct-fb").href=CFG.facebook; else $("ct-fb").hidden=true;
+  if(CFG.youtube) $("ct-yt").href=CFG.youtube; else $("ct-yt").hidden=true;
   buildPills(); buildRows(); renderHero(true); restartHero();
   COLI.api.resumo().then(function(r){
     RESUMO=r;

@@ -43,6 +43,15 @@ facebook:  "https://www.facebook.com/ColiLoterias/",
 Todos os botões "Fale conosco", "Jogar" e os jogos gerados pela
 surpresinha já usam esse número.
 
+**Prêmios entregues (página Quem somos):** no mesmo arquivo, a lista
+`premios` alimenta a linha do tempo. Para incluir um prêmio novo, copie
+uma linha e coloque no topo da lista:
+
+```js
+{ data: "Junho de 2026", loteria: "Mega-Sena", valor: "R$ 3 milhões",
+  titulo: "Bolão premiado", texto: "Descrição curta." },
+```
+
 ---
 
 ## 3. Como publicar no WordPress (hospedagem com PHP)

@@ -451,6 +451,26 @@ table.hist-tbl{width:100%;border-collapse:collapse;font-size:.8rem;min-width:620
 @media(max-width:900px){.qs-hero{padding:34px 22px}.qs-hero h1{font-size:1.7rem}.qs-2col{grid-template-columns:1fr}.qs-mvv{grid-template-columns:1fr}}
 @media(max-width:640px){.qs-steps{grid-template-columns:1fr}.qs-nums{grid-template-columns:1fr 1fr}}
 
+/* prêmios + IA (quem somos) */
+.qs-timeline.premios li{background:#f7f9fc;border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.qs-timeline.premios li::before{top:18px}
+.qs-timeline .pv{display:block;font-weight:900;font-size:1.5rem;color:var(--laranja2);line-height:1.1;margin:4px 0 4px}
+.ia-sec{display:grid;grid-template-columns:1.2fr .8fr;gap:26px;align-items:center;background:var(--navy);color:#fff;border-radius:22px;padding:40px 44px;margin-bottom:26px;position:relative;overflow:hidden}
+.ia-sec::before{content:'';position:absolute;right:-10%;top:-40%;width:50%;height:180%;background:radial-gradient(circle,rgba(247,148,29,.22) 0,transparent 60%)}
+.ia-sec .tag{display:inline-block;background:rgba(255,255,255,.12);color:var(--laranja);font-weight:900;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;padding:6px 12px;border-radius:20px;margin-bottom:12px}
+.ia-sec h2{font-weight:900;font-size:1.7rem;line-height:1.15;margin-bottom:12px}
+.ia-sec p{color:#c9d3e6;font-weight:600;font-size:.95rem;line-height:1.65;margin-bottom:14px}
+.ia-sec p b{color:#fff}
+.ia-sec ul{list-style:none}
+.ia-sec li{color:#e8ecf4;font-weight:700;font-size:.88rem;margin-bottom:8px}
+.ia-vis{position:relative;z-index:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:26px 20px;text-align:center}
+.ia-chip{width:64px;height:64px;border-radius:18px;background:linear-gradient(145deg,#ffb04a,var(--laranja2));display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 16px;box-shadow:0 10px 24px rgba(247,148,29,.4)}
+.ia-balls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.ia-balls i{font-style:normal;width:44px;height:44px;border-radius:50%;background:#209869;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -4px 8px rgba(0,0,0,.2);animation:float 4s ease-in-out infinite}
+.ia-balls i:nth-child(2n){animation-delay:.6s}.ia-balls i:nth-child(3n){animation-delay:1.2s}
+.ia-lbl{font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#94a3b8}
+@media(max-width:900px){.ia-sec{grid-template-columns:1fr;padding:28px 20px}.ia-sec h2{font-size:1.35rem}}
+
 /* ═══ RESPONSIVO ═══ */
 @media(max-width:1240px){
   .main{grid-template-columns:1fr}

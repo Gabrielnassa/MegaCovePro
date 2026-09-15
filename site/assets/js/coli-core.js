@@ -344,7 +344,8 @@ function renderFooter(){
         +(CFG.horario?'<p>🕒 '+COLI.esc(CFG.horario)+'</p>':'')
         +'<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-wa" href="'+COLI.waURL()+'" target="_blank" rel="noopener">'+SVG_WA+' WhatsApp</a>'
         +(CFG.instagram?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.instagram)+'" target="_blank" rel="noopener">Instagram</a>':'')
-        +(CFG.facebook?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.facebook)+'" target="_blank" rel="noopener">Facebook</a>':'')+'</p></div>'
+        +(CFG.facebook?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.facebook)+'" target="_blank" rel="noopener">Facebook</a>':'')
+        +(CFG.youtube?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.youtube)+'" target="_blank" rel="noopener">YouTube</a>':'')+'</p></div>'
       +'<div><h4>Estatísticas</h4><ul>'+links.slice(0,metade).join("")+'</ul></div>'
       +'<div><h4>&nbsp;</h4><ul>'+links.slice(metade).join("")+'</ul></div>'
       +'<div><h4>Navegação</h4><ul><li><a href="index.html">Início</a></li><li><a href="resultados.html">Últimos resultados</a></li><li><a href="index.html#surpresinha">Monte seu jogo</a></li><li><a href="quem-somos.html">Quem somos</a></li><li><a href="index.html#contato">Contato</a></li>'
