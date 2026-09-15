@@ -32,6 +32,23 @@ window.COLI_CONFIG = {
     /* , { data: "Mês de 2026", loteria: "Mega-Sena", valor: "R$ 1 milhão", titulo: "…", texto: "…" } */
   ],
 
+  /* ═══ AVALIAÇÕES DO GOOGLE (seção da página inicial) ═══
+     Atualize a nota e o total de vez em quando. Para incluir uma avaliação,
+     copie uma linha da lista. "linkAvaliar" é o link "Escreva sua avaliação"
+     do seu perfil no Google (Perfil da Empresa → Pedir avaliações).        */
+  google: {
+    nome: "Coli Loterias - Ipiranga",
+    nota: 4.6,
+    total: 131,
+    linkPerfil:  "https://www.google.com/maps/search/?api=1&query=Coli+Loterias+Rua+Agostinho+Gomes+1770+Ipiranga+S%C3%A3o+Paulo",
+    linkAvaliar: "https://www.google.com/maps/search/?api=1&query=Coli+Loterias+Rua+Agostinho+Gomes+1770+Ipiranga+S%C3%A3o+Paulo",
+    avaliacoes: [
+      { nome: "Ricardo Menck",   quando: "12 meses atrás", nota: 5, texto: "Ótimo atendimento!" },
+      { nome: "Tulio",           quando: "1 ano atrás",    nota: 5, texto: "Ótimo lugar" },
+      { nome: "Luciana Gaggini", quando: "1 ano atrás",    nota: 5, texto: "Sempre aposto lá, atendentes bastante gentis." }
+    ]
+  },
+
   /* Link dos bolões oficiais da CAIXA (Marketplace) */
   bolaoUrl: "https://www.loteriasonline.caixa.gov.br/silce-web/#/bolao-caixa/2894",
 

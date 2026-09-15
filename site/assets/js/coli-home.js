@@ -207,6 +207,28 @@ function gerar(){
   var wa=$("sp-wa"); wa.href=COLI.waURL(msg); wa.classList.add("show");
 }
 
+/* ───────── AVALIAÇÕES DO GOOGLE ───────── */
+var G_SVG='<svg viewBox="0 0 48 48" width="22" height="22"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.5 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v8.1h12.8c-.3 2.1-1.7 5.3-4.8 7.4l7.4 5.7c4.4-4.1 7.1-10.1 7.1-17.2z"/><path fill="#FBBC05" d="M10.5 28.6A14.5 14.5 0 0 1 9.7 24c0-1.6.3-3.2.8-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2 1.4-4.7 2.4-8.5 2.4-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.2C6.5 42.6 14.6 48 24 48z"/></svg>';
+function stars(n){ var h=''; for(var i=1;i<=5;i++){ var f=Math.max(0,Math.min(1,n-i+1)); h+='<i style="--f:'+(f*100)+'%"></i>'; } return h; }
+function renderReviews(){
+  var g=CFG.google, sec=$("avaliacoes"); if(!sec) return;
+  if(!g||!g.avaliacoes||!g.avaliacoes.length){ sec.hidden=true; return; }
+  $("rv-nome").textContent=g.nome||CFG.nome||"";
+  $("rv-stars").innerHTML=stars(+g.nota||5)+'<b>'+String(g.nota||"").replace(".",",")+'</b>';
+  $("rv-total").textContent=(g.total?COLI.fmtInt(g.total)+" avaliações":"Avaliações")+" no Google";
+  $("rv-avaliar").href=g.linkAvaliar||g.linkPerfil||"#";
+  var cores=["#1435a8","#f7941d","#16a34a","#a61324","#7c3aed","#0891b2"];
+  $("rv-track").innerHTML=g.avaliacoes.map(function(a,i){
+    var ini=(a.nome||"?").trim().charAt(0).toUpperCase();
+    return '<article class="rv-card"><div class="rv-hd"><span class="rv-av" style="background:'+cores[i%cores.length]+'">'+COLI.esc(ini)+'</span><div><b>'+COLI.esc(a.nome||"")+'</b><span>'+COLI.esc(a.quando||"")+'</span></div>'+G_SVG+'</div>'
+      +'<div class="rv-stars sm">'+stars(+a.nota||5)+'<svg class="rv-ok" viewBox="0 0 24 24"><path fill="#1a73e8" d="M12 2l2.4 2.1 3.1-.4.9 3 2.8 1.4-1 3 1 3-2.8 1.4-.9 3-3.1-.4L12 22l-2.4-2.1-3.1.4-.9-3L2.8 16l1-3-1-3 2.8-1.4.9-3 3.1.4z"/><path fill="#fff" d="M10.5 15.5l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4z"/></svg></div>'
+      +'<p>'+COLI.esc(a.texto||"")+'</p></article>';
+  }).join("");
+  var tr=$("rv-track");
+  $("rv-prev").addEventListener("click",function(){ tr.scrollBy({left:-300,behavior:"smooth"}); });
+  $("rv-next").addEventListener("click",function(){ tr.scrollBy({left:300,behavior:"smooth"}); });
+}
+
 /* ───────── INÍCIO ───────── */
 document.addEventListener("DOMContentLoaded",function(){
   $("side-bolao").href=CFG.bolaoUrl||"#";
@@ -219,7 +241,7 @@ document.addEventListener("DOMContentLoaded",function(){
   $("ct-hor").textContent=CFG.horario?"🕒 "+CFG.horario:"";
   $("ct-maps").href=CFG.mapsUrl||"#";
 
-  buildPills(); buildRows(); renderHero(true); restartHero();
+  buildPills(); buildRows(); renderHero(true); restartHero(); renderReviews();
   COLI.api.resumo().then(function(r){
     RESUMO=r;
     if(r&&r.jogos){
