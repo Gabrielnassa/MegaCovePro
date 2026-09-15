@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Últimos Resultados das Loterias CAIXA | Coli Loterias</title>
+<meta name="description" content="Resultados atualizados automaticamente de todas as Loterias CAIXA: Mega-Sena, Lotofácil, Quina, Lotomania, Dupla Sena, Timemania, Dia de Sorte, +Milionária, Super Sete e Loteca.">
+<meta name="theme-color" content="#0b1633">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/coli.css">
+</head>
+<body data-page="resultados">
+
+<header id="coli-header"></header>
+
+<div class="crumb"><div class="wrap"><a href="index.html">Início</a><span>/</span><span class="cur">Últimos resultados</span></div></div>
+
+<main class="page"><div class="wrap">
+  <div class="pg-title">
+    <span class="emo">🏆</span>
+    <h1>Últimos resultados</h1>
+  </div>
+  <p class="pg-sub">Todas as Loterias CAIXA num só lugar. A página consulta a API oficial e se atualiza sozinha assim que um novo sorteio é divulgado.</p>
+
+  <div class="res-band rb-wait" id="band"><span class="live-dot" style="width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block"></span> Consultando a CAIXA…</div>
+
+  <div class="res-grid" id="grid"></div>
+
+  <p class="tbl-foot" style="margin-top:22px">Os resultados oficiais são divulgados pela CAIXA. Em caso de divergência, vale o resultado oficial publicado em <a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener" style="color:#1435a8;font-weight:800">loterias.caixa.gov.br</a>.</p>
+</div></main>
+
+<footer id="coli-footer"></footer>
+
+<script src="assets/js/coli-config.js"></script>
+<script src="assets/js/coli-core.js"></script>
+<script src="assets/js/coli-resultados.js"></script>
+</body>
+</html>

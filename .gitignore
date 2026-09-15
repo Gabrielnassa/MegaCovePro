@@ -1,0 +1,4 @@
+tools/.cache/
+site/api/cache/*
+!site/api/cache/.htaccess
+*.tmp

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estatísticas da Dupla Sena — Todos os Concursos | Coli Loterias</title>
+<meta name="description" content="Estatísticas completas da Dupla Sena: números mais e menos sorteados, atrasados, pares e ímpares, somas e a lista de todos os concursos do 1º ao mais recente, atualizada automaticamente.">
+<meta name="theme-color" content="#A61324">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/coli.css">
+</head>
+<body data-page="estatisticas" data-jogo="duplasena">
+
+<header id="coli-header"></header>
+
+<div class="crumb"><div class="wrap"><a href="index.html">Início</a><span>/</span><a href="resultados.html">Resultados</a><span>/</span><span class="cur">Estatísticas da Dupla Sena</span></div></div>
+
+<main class="page"><div class="wrap">
+
+  <!-- CABEÇALHO DA LOTERIA -->
+  <section class="st-hero" id="st-hero" style="background:linear-gradient(135deg,#A61324,#6e0b17)">
+    <div class="st-hero-grid">
+      <div>
+        <h1><span class="emo">🎰</span> Dupla Sena</h1>
+        <p class="desc">Um bilhete, duas chances: são dois sorteios por concurso. Escolha de 6 a 15 números entre 50.</p>
+        <div class="st-kpis" id="kpis">
+          <div class="kpi"><b id="k-total">…</b><span>concursos analisados</span></div>
+          <div class="kpi"><b id="k-primeiro">…</b><span>primeiro concurso</span></div>
+          <div class="kpi"><b id="k-ultimo">…</b><span>último concurso</span></div>
+        </div>
+        <div style="margin-top:14px"><span class="status-bar wait" id="status"><span class="live-dot"></span> Carregando histórico…</span></div>
+      </div>
+      <div class="st-last" id="st-last">
+        <div class="lbl"><span>Último resultado</span><b id="l-num">…</b></div>
+        <div id="l-body"><div class="rc-balls"><span class="skel" style="width:100%;height:42px;display:block">&nbsp;</span></div></div>
+        <div class="nx" id="l-next"></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="st-conteudo">
+    <!-- FERRAMENTAS -->
+    <div class="st-tools">
+      <div class="seg" id="periodo" role="tablist" aria-label="Período analisado">
+        <button class="on" data-n="0" type="button">Todos os concursos</button>
+        <button data-n="1000" type="button">Últimos 1000</button>
+        <button data-n="500" type="button">Últimos 500</button>
+        <button data-n="100" type="button">Últimos 100</button>
+        <button data-n="50" type="button">Últimos 50</button>
+      </div>
+      <div class="seg" id="sorteio-seg" hidden role="tablist" aria-label="Sorteio (Dupla Sena)">
+        <button class="on" data-s="ambos" type="button">1º + 2º sorteio</button>
+        <button data-s="1" type="button">Só 1º</button>
+        <button data-s="2" type="button">Só 2º</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost sm" id="btn-csv" type="button">⬇ Baixar CSV</button>
+        <a class="btn btn-azul sm" href="#gerador">✨ Gerar jogo</a>
+        <button class="btn btn-line sm" id="btn-modal" type="button">🏆 Último resultado completo</button>
+      </div>
+    </div>
+
+    <div class="st-grid">
+      <!-- FREQUÊNCIA -->
+      <section class="panel full">
+        <div class="sec-hd2">
+          <h2 class="sec-title">🔢 Frequência de cada número</h2>
+          <div class="seg" id="ord-seg"><button class="on" data-o="num" type="button">Ordem numérica</button><button data-o="freq" type="button">Mais sorteados primeiro</button><button data-o="atraso" type="button">Mais atrasados primeiro</button></div>
+          <p id="freq-sub">Quantas vezes cada número foi sorteado no período escolhido. Passe o mouse para ver o atraso atual.</p>
+        </div>
+        <div class="numgrid" id="numgrid"></div>
+        <div class="legend">Menos sorteado <i id="legend-bar"></i> Mais sorteado · <span style="color:#f7941d">■</span> Top 10</div>
+      </section>
+
+      <!-- RANKINGS -->
+      <section class="panel">
+        <div class="sec-hd2"><h2 class="sec-title">🔥 Mais sorteados</h2></div>
+        <div class="rank" id="rank-hot"></div>
+      </section>
+      <section class="panel">
+        <div class="sec-hd2"><h2 class="sec-title">❄️ Menos sorteados</h2></div>
+        <div class="rank" id="rank-cold"></div>
+      </section>
+      <section class="panel">
+        <div class="sec-hd2"><h2 class="sec-title">⏳ Mais atrasados</h2><p>Há quantos concursos o número não é sorteado.</p></div>
+        <div class="rank" id="rank-late"></div>
+      </section>
+      <section class="panel">
+        <div class="sec-hd2"><h2 class="sec-title">⚡ Saíram no último concurso</h2><p>Frequência histórica de cada número do último sorteio.</p></div>
+        <div class="rank" id="rank-last"></div>
+      </section>
+
+      <!-- PADRÕES -->
+      <section class="panel" id="sec-pares">
+        <div class="sec-hd2"><h2 class="sec-title">⚖️ Pares e ímpares</h2><p>Quantos números pares saíram por concurso.</p></div>
+        <div class="mini-kpis" id="pares-kpis"></div>
+        <div class="bars" id="pares-bars"></div>
+      </section>
+      <section class="panel" id="sec-soma">
+        <div class="sec-hd2"><h2 class="sec-title">➕ Soma das dezenas</h2><p>Distribuição da soma dos números sorteados por concurso.</p></div>
+        <div class="mini-kpis" id="soma-kpis"></div>
+        <div class="hist" id="soma-hist"></div>
+      </section>
+      <section class="panel" id="sec-faixas">
+        <div class="sec-hd2"><h2 class="sec-title">📐 Distribuição por faixa</h2><p>Quantas dezenas sorteadas caem em cada faixa de números.</p></div>
+        <div class="bars" id="faixas-bars"></div>
+      </section>
+      <section class="panel" id="sec-repet">
+        <div class="sec-hd2"><h2 class="sec-title">🔁 Repetições e sequências</h2><p>Números repetidos do concurso anterior e pares consecutivos (ex.: 23 e 24).</p></div>
+        <div class="mini-kpis" id="repet-kpis"></div>
+        <div class="bars" id="repet-bars"></div>
+      </section>
+
+      <!-- ESPECIAIS -->
+      <section class="panel full" id="sec-colunas" hidden>
+        <div class="sec-hd2"><h2 class="sec-title">🧮 Dígitos por coluna</h2><p>Frequência de cada dígito (0 a 9) em cada uma das 7 colunas.</p></div>
+        <div class="cols7" id="cols7"></div>
+      </section>
+      <section class="panel full" id="sec-trevos" hidden>
+        <div class="sec-hd2"><h2 class="sec-title">🍀 Trevos mais sorteados</h2></div>
+        <div class="rank" id="rank-trevos" style="grid-template-columns:repeat(6,1fr)"></div>
+      </section>
+      <section class="panel full" id="sec-times" hidden>
+        <div class="sec-hd2"><h2 class="sec-title">⚽ Times do Coração mais sorteados</h2></div>
+        <div class="bars" id="times-bars"></div>
+      </section>
+
+      <!-- TODOS OS CONCURSOS -->
+      <section class="panel full" id="sec-tabela">
+        <div class="sec-hd2">
+          <h2 class="sec-title">📋 Todos os concursos</h2>
+          <p id="tbl-sub">Do primeiro concurso ao mais recente. Busque pelo número do concurso, por data ou por dezena.</p>
+        </div>
+        <div class="tbl-tools">
+          <input type="search" id="busca" placeholder="Buscar concurso, data (dd/mm/aaaa) ou dezena…" aria-label="Buscar">
+          <div class="seg"><button class="on" data-d="desc" type="button">Mais recentes</button><button data-d="asc" type="button">Mais antigos</button></div>
+        </div>
+        <div class="tbl-wrap"><table class="hist-tbl"><thead id="tbl-head"></thead><tbody id="tbl-body"></tbody></table></div>
+        <div class="tbl-foot"><span id="tbl-info"></span><button class="btn btn-ghost sm" id="btn-mais" type="button">Carregar mais</button></div>
+      </section>
+    </div>
+
+    <!-- GERADOR -->
+    <section class="sp-sec st-gen" id="gerador">
+      <div class="sec-hd"><h2>✨ Gerar jogo da Dupla Sena</h2><p>Palpite baseado nas estatísticas do período selecionado acima. Envie para a Coli pelo WhatsApp.</p></div>
+      <div class="sp-inner">
+        <div class="sp-row" id="g-modes">
+          <button class="sp-mode on" data-m="hot" type="button">🔥 Mais sorteados</button>
+          <button class="sp-mode" data-m="cold" type="button">❄️ Menos sorteados</button>
+          <button class="sp-mode" data-m="late" type="button">⏳ Mais atrasados</button>
+          <button class="sp-mode" data-m="mix" type="button">⚖️ Equilibrado</button>
+          <button class="sp-mode" data-m="rnd" type="button">🎲 Aleatório</button>
+        </div>
+        <button class="sp-gen" id="g-gen" type="button">✨ GERAR MEU JOGO</button>
+        <div class="sp-balls" id="g-balls"></div>
+        <div class="sp-trevos" id="g-trevos"></div>
+        <div class="sp-hint" id="g-hint">Clique em gerar</div>
+        <div class="sp-acts"><button class="sp-again" id="g-again" type="button">🔄 Gerar novamente</button><a class="sp-wa" id="g-wa" href="#" target="_blank" rel="noopener">💬 Jogar este jogo na Coli</a></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- LOTECA (sem estatísticas numéricas) -->
+  <div id="st-loteca" hidden>
+    <section class="panel" style="margin-bottom:20px">
+      <div class="sec-hd2"><h2 class="sec-title">🏟️ Resultado da rodada</h2></div>
+      <div id="loteca-body"><div class="empty">Carregando…</div></div>
+    </section>
+    <div class="info-box">A Loteca é um jogo de palpites de futebol e não possui dezenas: por isso não há estatísticas numéricas. Acompanhe aqui o resultado da rodada e a programação dos próximos jogos em <a href="https://loterias.caixa.gov.br/Paginas/Loteca.aspx" target="_blank" rel="noopener">loterias.caixa.gov.br</a>.</div>
+  </div>
+
+</div></main>
+
+<footer id="coli-footer"></footer>
+
+<script src="assets/js/coli-config.js"></script>
+<script src="assets/js/coli-core.js"></script>
+<script src="assets/js/coli-stats.js"></script>
+</body>
+</html>
