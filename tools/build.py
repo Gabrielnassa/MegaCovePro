@@ -15,7 +15,9 @@ Uso:  python3 tools/build.py            (usa cache de 12h em tools/.cache)
       python3 tools/build.py --forcar   (baixa tudo de novo)
       python3 tools/build.py --sem-zip
 """
-import json, os, re, sys, time, zipfile, datetime, urllib.request, shutil
+import json, os, re, sys, time, zipfile, datetime, urllib.request, shutil, html
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import blog_posts
 
 RAIZ   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE   = os.path.join(RAIZ, "site")
@@ -25,6 +27,7 @@ DIST   = os.path.join(RAIZ, "dist")
 GH     = "https://raw.githubusercontent.com/eitchtee/loterias.json/main/data/"
 FORCAR = "--forcar" in sys.argv
 SEMZIP = "--sem-zip" in sys.argv
+SITE_URL = os.environ.get("COLI_SITE_URL", "https://coliloterias.com.br/loterias/")   # endereço final do site (para canonical, sitemap e Open Graph)
 
 JOGOS = [
  # id, nome, arquivo no GitHub, tipo, min, max, emoji, cor1, cor2, descrição
@@ -104,6 +107,67 @@ def resumo_jogo(j, rows):
     if trevos is not None: out["trevos"] = trevos
     return out
 
+def gerar_blog():
+    """Gera blog.html, blog-<slug>.html, data/blog.json, sitemap.xml e robots.txt."""
+    print("Gerando blog…")
+    cores = {j[0]: (j[6], j[7]) for j in JOGOS}
+    tpl_post = open(os.path.join(RAIZ, "tools", "template-post.html"), encoding="utf-8").read()
+    tpl_blog = open(os.path.join(RAIZ, "tools", "template-blog.html"), encoding="utf-8").read()
+    ini = datetime.date.fromisoformat(blog_posts.DATA_INICIO)
+    lista, cards, urls = [], [], []
+    def esc(s): return html.escape(s, quote=True)
+    for i, p in enumerate(blog_posts.POSTS):
+        data = ini + datetime.timedelta(days=i * blog_posts.INTERVALO_DIAS)
+        data_iso = data.isoformat()
+        data_br = f"{data.day} de {['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'][data.month-1]} de {data.year}"
+        texto = re.sub(r"<[^>]+>", " ", p["corpo"] + " ".join(q + " " + a for q, a in p["faq"]))
+        leitura = max(2, round(len(texto.split()) / 200))
+        emo, cor = cores.get(p["loteria"], ("📰", "#1435a8"))
+        url = SITE_URL + f"blog-{p['slug']}.html"
+        faq_html = "\n".join(f'<details itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"><summary itemprop="name">{esc(q)}</summary><div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><p itemprop="text">{esc(a)}</p></div></details>' for q, a in p["faq"])
+        fontes = " · ".join(f'<a href="{esc(u)}" target="_blank" rel="noopener nofollow">{esc(u.replace("https://",""))}</a>' for u in p["fontes"])
+        side = ""
+        if p["loteria"]:
+            nome = next(j[1] for j in JOGOS if j[0] == p["loteria"])
+            side = f'<div class="scard" style="border-top:5px solid {cor}"><h3>{emo} {esc(nome)}</h3><p>Frequência, atrasos e todos os concursos da {esc(nome)}, do 1º ao mais recente.</p><a class="btn btn-line" href="estatisticas-{p["loteria"]}.html">Ver estatísticas</a></div>'
+        jsonld = [
+            {"@context": "https://schema.org", "@type": "Article", "headline": p["titulo"], "description": p["descricao"], "datePublished": data_iso, "dateModified": data_iso,
+             "author": {"@type": "Organization", "name": blog_posts.AUTOR, "url": SITE_URL}, "publisher": {"@type": "Organization", "name": "Coli Loterias", "logo": {"@type": "ImageObject", "url": SITE_URL + "assets/img/logo.png"}},
+             "mainEntityOfPage": url, "image": SITE_URL + "assets/img/logo.png", "articleSection": p["categoria"], "inLanguage": "pt-BR", "isAccessibleForFree": True},
+            {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p["faq"]]},
+            {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Início", "item": SITE_URL},
+                {"@type": "ListItem", "position": 2, "name": "Blog", "item": SITE_URL + "blog.html"},
+                {"@type": "ListItem", "position": 3, "name": p["titulo"], "item": url}]},
+        ]
+        page = (tpl_post.replace("{{TITULO}}", esc(p["titulo"])).replace("{{DESCRICAO}}", esc(p["descricao"])).replace("{{AUTOR}}", esc(blog_posts.AUTOR))
+                .replace("{{URL}}", url).replace("{{SITE_URL}}", SITE_URL).replace("{{DATA_ISO}}", data_iso).replace("{{DATA_BR}}", data_br)
+                .replace("{{CATEGORIA}}", esc(p["categoria"])).replace("{{LEITURA}}", str(leitura)).replace("{{RESUMO}}", esc(p["resumo"]))
+                .replace("{{CORPO}}", p["corpo"].strip()).replace("{{FAQ_HTML}}", faq_html).replace("{{FONTES}}", fontes)
+                .replace("{{JSONLD}}", json.dumps(jsonld, ensure_ascii=False)).replace("{{SLUG}}", p["slug"]).replace("{{COR}}", cor).replace("{{EMO}}", emo)
+                .replace("{{SIDE_LOTERIA}}", side))
+        open(os.path.join(SITE, f"blog-{p['slug']}.html"), "w", encoding="utf-8").write(page)
+        lista.append({"slug": p["slug"], "titulo": p["titulo"], "descricao": p["descricao"], "categoria": p["categoria"], "loteria": p["loteria"], "data": data_iso, "leitura": leitura})
+        urls.append((url, data_iso))
+        print(f"  ✓ blog-{p['slug']}.html  ({data_iso})")
+    with open(os.path.join(DATA, "blog.json"), "w", encoding="utf-8") as f:
+        json.dump({"gerado": datetime.date.today().isoformat(), "intervaloDias": blog_posts.INTERVALO_DIAS, "posts": lista}, f, ensure_ascii=False, separators=(",", ":"))
+    cats = sorted({p["categoria"] for p in blog_posts.POSTS})
+    cats_html = "".join(f'<button data-c="{esc(c)}" type="button">{esc(c)}</button>' for c in cats)
+    jsonld_blog = {"@context": "https://schema.org", "@type": "Blog", "name": "Blog da Coli Loterias", "url": SITE_URL + "blog.html", "publisher": {"@type": "Organization", "name": "Coli Loterias"}, "inLanguage": "pt-BR"}
+    open(os.path.join(SITE, "blog.html"), "w", encoding="utf-8").write(tpl_blog.replace("{{SITE_URL}}", SITE_URL).replace("{{CATS}}", cats_html).replace("{{CARDS}}", "").replace("{{JSONLD}}", json.dumps(jsonld_blog, ensure_ascii=False)))
+    # sitemap + robots
+    hoje = datetime.date.today().isoformat()
+    fixas = ["", "resultados.html", "quem-somos.html", "blog.html", "termos.html"] + [f"estatisticas-{j[0]}.html" for j in JOGOS]
+    sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for f_ in fixas: sm.append(f"  <url><loc>{SITE_URL}{f_}</loc><lastmod>{hoje}</lastmod><changefreq>{'daily' if f_ in ('', 'resultados.html') or f_.startswith('estatisticas') else 'monthly'}</changefreq></url>")
+    for u, d in urls:
+        if d <= hoje: sm.append(f"  <url><loc>{u}</loc><lastmod>{d}</lastmod><changefreq>monthly</changefreq></url>")
+    sm.append("</urlset>")
+    open(os.path.join(SITE, "sitemap.xml"), "w", encoding="utf-8").write("\n".join(sm))
+    open(os.path.join(SITE, "robots.txt"), "w", encoding="utf-8").write(f"User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: {SITE_URL}sitemap.xml\n")
+    print(f"  ✓ blog.html, data/blog.json, sitemap.xml ({len([1 for _, d in urls if d <= hoje])} matérias publicadas até hoje)")
+
 def main():
     os.makedirs(DATA, exist_ok=True)
     agora = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -130,6 +194,8 @@ def main():
                    .replace("{{COR}}", c1).replace("{{COR2}}", c2).replace("{{DESC}}", desc))
         open(os.path.join(SITE, f"estatisticas-{jid}.html"), "w", encoding="utf-8").write(html)
         print(f"  ✓ estatisticas-{jid}.html")
+
+    gerar_blog()
 
     if SEMZIP:
         return

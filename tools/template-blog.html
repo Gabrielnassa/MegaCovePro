@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog da Coli Loterias — Guias, dicas e novidades das Loterias CAIXA</title>
+<meta name="description" content="Matérias sobre as Loterias CAIXA: como jogar em cada modalidade, chances reais, bolões, como receber prêmios, estatísticas e jogo responsável. Novo conteúdo a cada 15 dias.">
+<link rel="canonical" href="{{SITE_URL}}blog.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Blog da Coli Loterias">
+<meta property="og:description" content="Guias, dicas e novidades das Loterias CAIXA, com novo conteúdo a cada 15 dias.">
+<meta property="og:url" content="{{SITE_URL}}blog.html">
+<meta property="og:image" content="{{SITE_URL}}assets/img/logo.png">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/coli.css">
+<script type="application/ld+json">{{JSONLD}}</script>
+</head>
+<body data-page="blog">
+
+<header id="coli-header"></header>
+
+<div class="crumb"><div class="wrap"><a href="index.html">Início</a><span>/</span><span class="cur">Blog</span></div></div>
+
+<main class="page"><div class="wrap">
+  <div class="pg-title"><span class="emo">📰</span><h1>Blog da Coli Loterias</h1></div>
+  <p class="pg-sub">Guias, dicas e novidades das Loterias CAIXA, escritos para quem quer apostar melhor. Uma matéria nova a cada 15 dias.</p>
+
+  <div class="blog-tools">
+    <div class="seg" id="blog-cats"><button class="on" data-c="" type="button">Todas</button>{{CATS}}</div>
+    <span class="status-bar" id="blog-prox"><span class="live-dot"></span> Carregando…</span>
+  </div>
+
+  <div class="blog-grid" id="blog-grid">
+{{CARDS}}
+  </div>
+  <p class="empty" id="blog-vazio" hidden>Nenhuma matéria nesta categoria ainda.</p>
+</div></main>
+
+<footer id="coli-footer"></footer>
+
+<script src="assets/js/coli-config.js"></script>
+<script src="assets/js/coli-core.js"></script>
+<script src="assets/js/coli-blog.js"></script>
+</body>
+</html>

@@ -74,6 +74,21 @@ facebook:  "https://www.facebook.com/ColiLoterias/",</pre>
 <p>Se tiver o logo em melhor resolução, substitua <code>assets/img/logo.png</code> mantendo o mesmo nome. Use PNG com fundo transparente, aproximadamente 360 × 115 px.</p>
 </div>
 
+<div class="step"><h3><span class="n">2b</span> (Opcional) Avaliações do Google automáticas</h3>
+<ol>
+<li>Descubra o <b>Place ID</b> da Coli em <code>developers.google.com/maps/documentation/places/web-service/place-id</code>.</li>
+<li>Em <code>console.cloud.google.com</code>, crie um projeto, ative a <b>Places API (New)</b> e gere uma <b>chave de API</b>.</li>
+<li>Abra <code>api/config.php</code> e preencha <code>GOOGLE_PLACE_ID</code> e <code>GOOGLE_API_KEY</code>.</li>
+<li>Depois de publicar, teste <code>…/loterias/api/avaliacoes.php</code>: deve responder <code>"ok":true</code>.</li>
+</ol>
+<div class="box info">O Google entrega até 5 avaliações por consulta pela API pública. A seção mescla essas com a lista fixa do <code>coli-config.js</code>. Para exibir todas as avaliações do perfil, use um widget (Elfsight/Trustindex).</div>
+</div>
+
+<div class="step"><h3><span class="n">2c</span> Blog automático</h3>
+<p>O blog já vem com 14 matérias sobre as Loterias CAIXA, otimizadas para SEO e para respostas de IA (GEO). Elas entram no ar sozinhas, uma a cada 15 dias, a partir da data do pacote. Não há nada a configurar. Para novas matérias, edite <code>tools/blog_posts.py</code> e gere o pacote de novo.</p>
+<div class="box info">Envie <code>sitemap.xml</code> ao Google Search Console (<code>https://coliloterias.com.br/loterias/sitemap.xml</code>) para acelerar a indexação.</div>
+</div>
+
 <h2>Parte 2 — Subir para a hospedagem</h2>
 
 <div class="step"><h3><span class="n">3</span> Entre no Gerenciador de Arquivos</h3>

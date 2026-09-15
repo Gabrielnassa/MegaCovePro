@@ -17,6 +17,9 @@ Loterias CAIXA. Tudo se atualiza sozinho a partir da **API oficial da CAIXA**.
 | `resultados.html` | Últimos resultados de todas as loterias, com rateio de prêmios |
 | `quem-somos.html` | Página institucional (história, prêmios, IA, contato) |
 | `termos.html` | Termos de uso, privacidade e jogo responsável (linkados no rodapé) |
+| `blog.html`, `blog-*.html` | Blog com matérias agendadas (uma a cada 15 dias) |
+| `api/avaliacoes.php`, `api/config.php` | Avaliações do Google automáticas (chave e Place ID ficam em `config.php`) |
+| `sitemap.xml`, `robots.txt` | SEO: mapa do site e instruções para buscadores |
 | `estatisticas-*.html` | Estatísticas de cada loteria (10 páginas) |
 | `assets/js/coli-config.js` | **Único arquivo que você precisa editar** (WhatsApp, endereço, horário) |
 | `assets/css/coli.css` | Visual do site |
@@ -55,6 +58,40 @@ uma linha e coloque no topo da lista:
 ```
 
 ---
+
+## 2.1 Avaliações do Google automáticas
+
+O site já mostra as avaliações fixas de `coli-config.js`. Para elas
+entrarem sozinhas (nota, total e avaliações mais recentes do Google):
+
+1. Descubra o **Place ID** da Coli em
+   https://developers.google.com/maps/documentation/places/web-service/place-id
+2. No https://console.cloud.google.com crie um projeto, ative **Places API (New)**
+   e gere uma **chave de API** (restrinja à Places API).
+3. Abra `api/config.php` e preencha `GOOGLE_PLACE_ID` e `GOOGLE_API_KEY`.
+4. Teste em `seusite/loterias/api/avaliacoes.php` (deve mostrar `"ok":true`).
+
+O servidor consulta o Google a cada 6 horas e a página mescla as avaliações
+novas com a lista fixa. **Limite do Google:** a API pública devolve até
+5 avaliações por consulta (as mais recentes). Para mostrar *todas* as
+avaliações do perfil, use um widget como Elfsight ou Trustindex (plano
+gratuito) e cole o código dele no lugar da seção `#avaliacoes` do `index.html`.
+
+## 2.2 Blog (uma matéria a cada 15 dias, automático)
+
+As matérias ficam em `tools/blog_posts.py`. O build gera uma página por
+matéria com SEO completo (título, descrição, canonical, Open Graph,
+dados estruturados Article + FAQ + Breadcrumb) e formatação GEO
+(resposta rápida, perguntas frequentes, fontes oficiais). Cada matéria
+tem uma data de publicação: a primeira em `DATA_INICIO` e as seguintes a
+cada `INTERVALO_DIAS`. As páginas já vão no zip, mas a lista do blog e a
+home só mostram cada matéria quando a data chega, sem precisar mexer
+no servidor. Há 14 matérias prontas (7 meses). Para escrever mais,
+adicione blocos ao final da lista e rode `python3 tools/build.py`.
+
+Antes de publicar, ajuste o endereço final do site no build
+(`SITE_URL` em `tools/build.py` ou a variável `COLI_SITE_URL`) para que
+canonical, sitemap e Open Graph apontem para a URL certa.
 
 ## 3. Como publicar no WordPress (hospedagem com PHP)
 

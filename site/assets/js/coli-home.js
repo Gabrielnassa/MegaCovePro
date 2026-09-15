@@ -210,9 +210,16 @@ function gerar(){
 /* ───────── AVALIAÇÕES DO GOOGLE ───────── */
 var G_SVG='<svg viewBox="0 0 48 48" width="22" height="22"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.5 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-2.8-.4-4H24v8.1h12.8c-.3 2.1-1.7 5.3-4.8 7.4l7.4 5.7c4.4-4.1 7.1-10.1 7.1-17.2z"/><path fill="#FBBC05" d="M10.5 28.6A14.5 14.5 0 0 1 9.7 24c0-1.6.3-3.2.8-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2 1.4-4.7 2.4-8.5 2.4-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.2C6.5 42.6 14.6 48 24 48z"/></svg>';
 function stars(n){ var h=''; for(var i=1;i<=5;i++){ var f=Math.max(0,Math.min(1,n-i+1)); h+='<i style="--f:'+(f*100)+'%"></i>'; } return h; }
-function renderReviews(){
-  var g=CFG.google, sec=$("avaliacoes"); if(!sec) return;
-  if(!g||!g.avaliacoes||!g.avaliacoes.length){ sec.hidden=true; return; }
+function renderReviews(live){
+  var g=Object.assign({},CFG.google||{}), sec=$("avaliacoes"); if(!sec) return;
+  if(live&&live.ok){
+    if(live.nota) g.nota=live.nota; if(live.total) g.total=live.total;
+    if(live.link) g.linkPerfil=live.link; if(live.avaliar) g.linkAvaliar=live.avaliar;
+    var vistos={}, lista=[];
+    (live.avaliacoes||[]).concat(g.avaliacoes||[]).forEach(function(a){ var k=((a.nome||"")+"|"+(a.texto||"")).toLowerCase(); if(!vistos[k]){ vistos[k]=1; lista.push(a); } });
+    g.avaliacoes=lista;
+  }
+  if(!g.avaliacoes||!g.avaliacoes.length){ sec.hidden=true; return; }
   $("rv-nome").textContent=g.nome||CFG.nome||"";
   $("rv-stars").innerHTML=stars(+g.nota||5)+'<b>'+String(g.nota||"").replace(".",",")+'</b>';
   $("rv-total").textContent=(g.total?COLI.fmtInt(g.total)+" avaliações":"Avaliações")+" no Google";
@@ -220,7 +227,8 @@ function renderReviews(){
   var cores=["#1435a8","#f7941d","#16a34a","#a61324","#7c3aed","#0891b2"];
   var cards=g.avaliacoes.map(function(a,i){
     var ini=(a.nome||"?").trim().charAt(0).toUpperCase();
-    return '<article class="rv-card"><div class="rv-hd"><span class="rv-av" style="background:'+cores[i%cores.length]+'">'+COLI.esc(ini)+'</span><div><b>'+COLI.esc(a.nome||"")+'</b><span>'+COLI.esc(a.quando||"")+'</span></div>'+G_SVG+'</div>'
+    var av=a.foto?'<img class="rv-av" src="'+COLI.esc(a.foto)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML=\'<span class=&quot;rv-av&quot; style=&quot;background:'+cores[i%cores.length]+'&quot;>'+COLI.esc(ini)+'</span>\'">':'<span class="rv-av" style="background:'+cores[i%cores.length]+'">'+COLI.esc(ini)+'</span>';
+    return '<article class="rv-card"><div class="rv-hd">'+av+'<div><b>'+COLI.esc(a.nome||"")+'</b><span>'+COLI.esc(a.quando||"")+'</span></div>'+G_SVG+'</div>'
       +'<div class="rv-stars sm">'+stars(+a.nota||5)+'<svg class="rv-ok" viewBox="0 0 24 24"><path fill="#1a73e8" d="M12 2l2.4 2.1 3.1-.4.9 3 2.8 1.4-1 3 1 3-2.8 1.4-.9 3-3.1-.4L12 22l-2.4-2.1-3.1.4-.9-3L2.8 16l1-3-1-3 2.8-1.4.9-3 3.1.4z"/><path fill="#fff" d="M10.5 15.5l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4z"/></svg></div>'
       +'<p>'+COLI.esc(a.texto||"")+'</p></article>';
   }).join("");
@@ -243,7 +251,9 @@ document.addEventListener("DOMContentLoaded",function(){
   $("ct-hor").textContent=CFG.horario?"🕒 "+CFG.horario:"";
   $("ct-maps").href=CFG.mapsUrl||"#";
 
-  buildPills(); buildRows(); renderHero(true); restartHero(); renderReviews();
+  buildPills(); buildRows(); renderHero(true); restartHero(); renderReviews(null);
+  /* avaliações ao vivo do Google (api/avaliacoes.php, cache de 6h no servidor) */
+  COLI.getJSON((CFG.api||"api/loterias.php").replace(/[^\/]*$/,"")+"avaliacoes.php",12000).then(function(d){ if(d&&d.ok) renderReviews(d); }).catch(function(){});
   COLI.api.resumo().then(function(r){
     RESUMO=r;
     if(r&&r.jogos){

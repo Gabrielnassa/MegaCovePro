@@ -510,12 +510,68 @@ table.hist-tbl{width:100%;border-collapse:collapse;font-size:.8rem;min-width:620
 .rv-hd>div{flex:1;min-width:0}
 .rv-hd>div b{display:block;font-weight:900;font-size:.9rem;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rv-hd>div span{display:block;font-size:.7rem;font-weight:700;color:var(--txt3)}
-.rv-av{width:40px;height:40px;border-radius:50%;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rv-av{width:40px;height:40px;border-radius:50%;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;object-fit:cover}
+.rv-card p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .rv-card p{font-size:.9rem;font-weight:600;color:var(--txt);line-height:1.5}
 .rv-nav{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--linha);box-shadow:var(--sombra);font-size:1.4rem;color:var(--txt2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
 .rv-nav:hover{color:var(--azul);border-color:var(--azul)}
 @media(max-width:900px){.reviews{grid-template-columns:1fr;padding:22px 18px}}
 @media(prefers-reduced-motion:reduce){.rv-marquee{animation:none}}
+
+/* ═══ BLOG ═══ */
+.home-blog-sec{margin-bottom:26px}
+.blog-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.bcard{background:var(--card);border-radius:var(--raio);box-shadow:var(--sombra);padding:22px;display:flex;flex-direction:column;gap:10px;border-top:5px solid var(--pc,var(--azul));transition:transform .18s,box-shadow .18s}
+.bcard:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(20,30,60,.14)}
+.bc-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bc-emo{font-size:1.6rem;line-height:1}
+.bc-cat{font-size:.66rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:var(--pc,var(--azul));background:#f3f5f9;padding:5px 10px;border-radius:20px}
+.bcard h3{font-weight:900;font-size:1.05rem;line-height:1.3;color:var(--txt)}
+.bcard p{font-size:.86rem;color:var(--txt2);font-weight:600;line-height:1.55;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.bc-meta{display:flex;justify-content:space-between;font-size:.72rem;font-weight:800;color:var(--txt3);border-top:1px solid var(--linha);padding-top:10px}
+.post-wrap{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+.post{background:var(--card);border-radius:var(--raio);box-shadow:var(--sombra);padding:36px 40px;min-width:0}
+.post-hd{border-bottom:1px solid var(--linha);padding-bottom:20px;margin-bottom:22px}
+.post-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:.74rem;font-weight:800;color:var(--txt3);margin-bottom:12px;align-items:center}
+.post-cat{color:var(--pc,var(--azul));background:#f3f5f9;padding:5px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;font-size:.66rem}
+.post h1{font-weight:900;font-size:2rem;line-height:1.15;color:var(--txt);margin-bottom:12px}
+.post-desc{font-size:1.02rem;color:var(--txt2);font-weight:600;line-height:1.6}
+.post-resumo{background:var(--azul-claro);border-left:5px solid var(--azul);border-radius:12px;padding:16px 20px;margin-bottom:26px}
+.post-resumo b{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--azul);margin-bottom:6px}
+.post-resumo p{font-weight:700;color:var(--txt);line-height:1.6;font-size:.98rem}
+.post-body h2{font-weight:900;font-size:1.35rem;color:var(--txt);margin:30px 0 10px}
+.post-body h3{font-weight:900;font-size:1.05rem;color:var(--txt);margin:20px 0 8px}
+.post-body p,.post-body li{font-size:1rem;color:#2b3446;font-weight:600;line-height:1.75}
+.post-body p{margin-bottom:14px}
+.post-body ul{padding-left:22px;margin-bottom:14px}
+.post-body li{margin-bottom:6px}
+.post-body a{color:var(--azul);font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:2px}
+.post-body table{width:100%;border-collapse:collapse;margin:12px 0 18px;font-size:.92rem}
+.post-body th{background:#f7f9fc;text-align:left;padding:10px 12px;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2)}
+.post-body td{padding:10px 12px;border-top:1px solid var(--linha);font-weight:700;color:var(--txt)}
+.post-aviso{background:#fff4e0;border-left:4px solid var(--laranja);border-radius:10px;padding:12px 16px;font-size:.84rem;font-weight:700;color:#7a4a00;margin:16px 0;line-height:1.55}
+.post-faq{margin-top:30px;border-top:1px solid var(--linha);padding-top:22px}
+.post-faq h2{font-weight:900;font-size:1.3rem;margin-bottom:12px}
+.post-faq details{background:#f7f9fc;border-radius:12px;padding:0;margin-bottom:10px;border:1px solid var(--linha)}
+.post-faq summary{cursor:pointer;font-weight:900;color:var(--txt);padding:14px 18px;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.post-faq summary::-webkit-details-marker{display:none}
+.post-faq summary::after{content:"+";color:var(--azul);font-size:1.2rem;line-height:1}
+.post-faq details[open] summary::after{content:"−"}
+.post-faq details p{padding:0 18px 16px;color:var(--txt2);font-weight:600;line-height:1.65}
+.post-ft{margin-top:26px;border-top:1px solid var(--linha);padding-top:18px}
+.post-fontes{font-size:.8rem;color:var(--txt3);font-weight:700;margin-bottom:12px;word-break:break-all}
+.post-fontes a{color:var(--azul)}
+.post-share{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.post-side{display:flex;flex-direction:column;gap:18px;position:sticky;top:90px}
+.post-rel{list-style:none}
+.post-rel li{padding:10px 0;border-bottom:1px solid var(--linha)}
+.post-rel li:last-child{border-bottom:none}
+.post-rel a{font-weight:800;font-size:.88rem;color:var(--txt);line-height:1.4;display:block}
+.post-rel a:hover{color:var(--azul)}
+.post-rel span{font-size:.7rem;font-weight:700;color:var(--txt3)}
+@media(max-width:1024px){.blog-grid{grid-template-columns:repeat(2,1fr)}.post-wrap{grid-template-columns:1fr}.post-side{position:static}}
+@media(max-width:640px){.blog-grid{grid-template-columns:1fr}.post{padding:24px 18px}.post h1{font-size:1.45rem}}
 
 /* ═══ RESPONSIVO ═══ */
 @media(max-width:1240px){

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITULO}} | Blog Coli Loterias</title>
+<meta name="description" content="{{DESCRICAO}}">
+<meta name="author" content="{{AUTOR}}">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="{{URL}}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{TITULO}}">
+<meta property="og:description" content="{{DESCRICAO}}">
+<meta property="og:url" content="{{URL}}">
+<meta property="og:image" content="{{SITE_URL}}assets/img/logo.png">
+<meta property="og:site_name" content="Coli Loterias">
+<meta property="og:locale" content="pt_BR">
+<meta property="article:published_time" content="{{DATA_ISO}}">
+<meta property="article:modified_time" content="{{DATA_ISO}}">
+<meta property="article:section" content="{{CATEGORIA}}">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/coli.css">
+<script type="application/ld+json">{{JSONLD}}</script>
+</head>
+<body data-page="blog" data-post="{{SLUG}}" data-publicado="{{DATA_ISO}}">
+
+<header id="coli-header"></header>
+
+<div class="crumb"><div class="wrap"><a href="index.html">Início</a><span>/</span><a href="blog.html">Blog</a><span>/</span><span class="cur">{{CATEGORIA}}</span></div></div>
+
+<main class="page"><div class="wrap post-wrap">
+  <article class="post" itemscope itemtype="https://schema.org/Article">
+    <header class="post-hd" style="--pc:{{COR}}">
+      <div class="post-meta"><span class="post-cat">{{CATEGORIA}}</span><time datetime="{{DATA_ISO}}" itemprop="datePublished">{{DATA_BR}}</time><span>{{LEITURA}} min de leitura</span><span itemprop="author">{{AUTOR}}</span></div>
+      <h1 itemprop="headline">{{EMO}} {{TITULO}}</h1>
+      <p class="post-desc" itemprop="description">{{DESCRICAO}}</p>
+    </header>
+
+    <div class="post-resumo" id="resumo"><b>Resposta rápida</b><p>{{RESUMO}}</p></div>
+
+    <div class="post-body" itemprop="articleBody">
+{{CORPO}}
+    </div>
+
+    <section class="post-faq" id="faq">
+      <h2>Perguntas frequentes</h2>
+{{FAQ_HTML}}
+    </section>
+
+    <footer class="post-ft">
+      <div class="post-fontes"><b>Fontes oficiais:</b> {{FONTES}}</div>
+      <div class="post-aviso">As informações desta matéria têm caráter educativo e refletem as regras das Loterias CAIXA na data de publicação. Valores de aposta e de prêmio mudam com o tempo: confirme sempre no site oficial. Proibido para menores de 18 anos. Jogue com responsabilidade.</div>
+      <div class="post-share">
+        <a class="btn btn-wa" id="post-wa" href="#" target="_blank" rel="noopener">💬 Compartilhar no WhatsApp</a>
+        <a class="btn btn-laranja" href="index.html#surpresinha">✨ Montar meu jogo</a>
+        <a class="btn btn-line" href="blog.html">← Todas as matérias</a>
+      </div>
+    </footer>
+  </article>
+
+  <aside class="post-side">
+    <div class="scard">
+      <h3>Mais do blog</h3>
+      <ul class="post-rel" id="post-rel"></ul>
+    </div>
+    <div class="scard">
+      <h3>Resultados ao vivo</h3>
+      <p>Confira os últimos sorteios e o próximo prêmio de todas as loterias.</p>
+      <a class="btn btn-azul" href="resultados.html">Ver resultados</a>
+    </div>
+    {{SIDE_LOTERIA}}
+  </aside>
+</div></main>
+
+<footer id="coli-footer"></footer>
+
+<script src="assets/js/coli-config.js"></script>
+<script src="assets/js/coli-core.js"></script>
+<script src="assets/js/coli-blog.js"></script>
+</body>
+</html>
