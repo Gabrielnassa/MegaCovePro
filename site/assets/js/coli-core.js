@@ -409,8 +409,8 @@ COLI.ui = {
       h+='<div class="rm-extra">Números não disponíveis no momento.</div>';
     }
     if(n.trevos && n.trevos.length) h+='<div class="rm-extra">🍀 Trevos: '+n.trevos.join(" e ")+'</div>';
-    if(n.time) h+='<div class="rm-extra">⚽ Time do Coração: '+COLI.esc(n.time)+'</div>';
-    if(n.mes)  h+='<div class="rm-extra">📅 Mês de Sorte: '+COLI.esc(n.mes)+'</div>';
+    if(n.time && j.time) h+='<div class="rm-extra">⚽ Time do Coração: '+COLI.esc(n.time)+'</div>';
+    if(n.mes && j.id==="diadesorte")  h+='<div class="rm-extra">📅 Mês de Sorte: '+COLI.esc(n.mes)+'</div>';
     if(n.ganhadores===0 || n.acumulou===true) h+='<div class="rm-st">ACUMULOU!</div>';
     else if(n.ganhadores>0) h+='<div class="rm-st">🏆 '+COLI.fmtInt(n.ganhadores)+(n.ganhadores===1?" GANHADOR":" GANHADORES")+'</div>';
     if(n.rateio && n.rateio.length && opts.rateio!==false){
@@ -432,12 +432,21 @@ COLI.ui = {
       porJogo[nj]=porJogo[nj]||[];
       porJogo[nj].push({time:t.nomeTime||t.noTime||pick(t,/time|equipe/i)||"", gols:t.nuGols!=null?t.nuGols:(t.nuGolsTime!=null?t.nuGolsTime:pick(t,/gol/i)), ordem:t.nuSequencial!=null?t.nuSequencial:(t.icTimeColuna!=null?t.icTimeColuna:pick(t,/sequen|ordem|coluna/i))});
     });
-    var keys=Object.keys(porJogo).sort(function(a,b){return a-b;});
-    if(!keys.length) return '<div class="rm-extra">Veja os 14 jogos da rodada no site oficial.</div>';
+    var keys=Object.keys(porJogo).filter(function(k){return porJogo[k].length===2;}).sort(function(a,b){return a-b;});
+    var pares=[];
+    if(keys.length>=7){ keys.forEach(function(k){ var p=porJogo[k].sort(function(a,b){return (a.ordem>b.ordem)?1:-1;}); pares.push([k,p[0],p[1]]); }); }
+    else if(jogos.length>=4 && jogos.length%2===0){
+      /* sem campo de número do jogo confiável: pareia na ordem em que a CAIXA envia (2 times por jogo) */
+      for(var i=0;i<jogos.length;i+=2){
+        var t1=jogos[i], t2=jogos[i+1];
+        var mk=function(t){ return {time:t.nomeTime||t.noTime||pick(t,/time|equipe/i)||"", gols:t.nuGols!=null?t.nuGols:(t.nuGolsTime!=null?t.nuGolsTime:pick(t,/gol/i))}; };
+        pares.push([(i/2)+1, mk(t1), mk(t2)]);
+      }
+    }
+    if(!pares.length) return '<div class="rm-extra">Veja os 14 jogos da rodada no site oficial.</div>';
     var h='<table class="loteca-tbl"><tbody>';
-    keys.forEach(function(k){
-      var p=porJogo[k].sort(function(a,b){return (a.ordem>b.ordem)?1:-1;});
-      var a=p[0]||{}, b=p[1]||{};
+    pares.forEach(function(pr){
+      var k=pr[0], a=pr[1]||{}, b=pr[2]||{};
       var ga=+a.gols, gb=+b.gols, tem=!isNaN(ga)&&!isNaN(gb)&&a.gols!=null&&b.gols!=null;
       h+='<tr><td class="n">'+k+'</td><td class="'+(tem&&ga>gb?"win":"")+'">'+COLI.esc(a.time)+'</td><td class="g">'+(tem?ga:"")+'</td><td class="g">×</td><td class="g">'+(tem?gb:"")+'</td><td class="'+(tem&&gb>ga?"win":"")+'">'+COLI.esc(b.time)+'</td></tr>';
     });

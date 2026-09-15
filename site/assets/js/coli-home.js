@@ -89,7 +89,7 @@ function renderHero(semFade){
   setTimeout(function(){
     var hero=$("hero");
     var K=COLI.cor(j);
-    hero.style.setProperty("--hb1",K.bg1); hero.style.setProperty("--hb2",K.bg2); hero.style.setProperty("--hc",j.c1==="#1E2C6B"?"#8fa2ff":j.c1);
+    hero.style.setProperty("--hb1",K.bg1); hero.style.setProperty("--hb2",K.bg2); hero.style.setProperty("--hc",luz(j.c1));
     hero.style.setProperty("--glow",hexA(j.c1,.22));
     $("h-emoji").textContent=j.emo; $("h-nome").textContent=j.nome.toUpperCase(); $("h-nome").style.color=luz(j.c1);
     var p=n?n.premioProx:0, pv;
