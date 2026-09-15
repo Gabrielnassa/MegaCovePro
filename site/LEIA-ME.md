@@ -6,11 +6,14 @@ Loterias CAIXA. Tudo se atualiza sozinho a partir da **API oficial da CAIXA**.
 
 ---
 
+> **Guia ilustrado:** abra `PASSO-A-PASSO-WORDPRESS.html` no navegador para o passo a passo completo de publicação no WordPress, com solução de problemas e checklist.
+
 ## 1. O que tem na pasta
 
 | Arquivo / pasta | Para que serve |
 |---|---|
-| `index.html` | Página inicial (hero rotativo, próximos concursos, surpresinha) |
+| `PASSO-A-PASSO-WORDPRESS.html` | Guia de publicação no WordPress (abra no navegador) |
+| `index.html` | Página inicial (hero, próximos concursos, surpresinha, sobre a Coli, serviços, contato) |
 | `resultados.html` | Últimos resultados de todas as loterias, com rateio de prêmios |
 | `estatisticas-*.html` | Estatísticas de cada loteria (10 páginas) |
 | `assets/js/coli-config.js` | **Único arquivo que você precisa editar** (WhatsApp, endereço, horário) |
@@ -30,9 +33,11 @@ Loterias CAIXA. Tudo se atualiza sozinho a partir da **API oficial da CAIXA**.
 Abra `assets/js/coli-config.js` e altere:
 
 ```js
-whatsapp: "5511999999999",   // 55 + DDD + número, só dígitos
-endereco: "Rua Agostinho Gomes, 1770 – Ipiranga, São Paulo/SP",
-horario:  "Seg a Sex 8h às 19h · Sáb 8h às 14h",
+whatsapp:  "551120618868",   // ⚠ confirme: 55 + DDD + número, só dígitos
+telefones: ["(11) 2061-8868", "(11) 2271-2828"],
+horario:   "Seg a Sex 8h às 19h · Sáb 8h às 14h",
+instagram: "https://www.instagram.com/coli_loterias/",
+facebook:  "https://www.facebook.com/ColiLoterias/",
 ```
 
 Todos os botões "Fale conosco", "Jogar" e os jogos gerados pela

@@ -4,14 +4,20 @@
    ═══════════════════════════════════════════════════════════════ */
 window.COLI_CONFIG = {
 
-  /* WhatsApp da lotérica: 55 + DDD + número (somente dígitos) */
-  whatsapp: "5511999999999",
+  /* WhatsApp da lotérica: 55 + DDD + número (somente dígitos).
+     ⚠ CONFIRME este número antes de publicar. */
+  whatsapp: "551120618868",
 
-  /* Dados exibidos no rodapé */
-  nome:     "Coli Loterias",
-  endereco: "Rua Agostinho Gomes, 1770 – Ipiranga, São Paulo/SP",
-  horario:  "Seg a Sex 8h às 19h · Sáb 8h às 14h",
-  instagram:"",                 /* ex.: "https://instagram.com/coliloterias" (deixe "" para ocultar) */
+  /* Dados da lotérica */
+  nome:      "Coli Loterias",
+  slogan:    "Com a sorte na palma da mão",
+  endereco:  "Rua Agostinho Gomes, 1770 – Ipiranga, São Paulo/SP – CEP 04206-000",
+  telefones: ["(11) 2061-8868", "(11) 2271-2828"],
+  horario:   "Seg a Sex 8h às 19h · Sáb 8h às 14h",   /* ajuste se necessário */
+  fundacao:  1986,
+  mapsUrl:   "https://www.google.com/maps/search/?api=1&query=Coli+Loterias+Rua+Agostinho+Gomes+1770+Ipiranga+S%C3%A3o+Paulo",
+  instagram: "https://www.instagram.com/coli_loterias/",
+  facebook:  "https://www.facebook.com/ColiLoterias/",
 
   /* Link dos bolões oficiais da CAIXA (Marketplace) */
   bolaoUrl: "https://www.loteriasonline.caixa.gov.br/silce-web/#/bolao-caixa/2894",

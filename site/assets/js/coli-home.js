@@ -208,6 +208,16 @@ function gerar(){
 /* ───────── INÍCIO ───────── */
 document.addEventListener("DOMContentLoaded",function(){
   $("side-bolao").href=CFG.bolaoUrl||"#";
+  /* seções Sobre / Contato */
+  var anos=CFG.fundacao?(new Date().getFullYear()-CFG.fundacao):null;
+  if(anos){ $("anos-coli").textContent=anos; $("kpi-anos").textContent=anos+"+"; }
+  $("sobre-wa").href=COLI.waURL(); $("ct-wa").href=COLI.waURL();
+  $("ct-endereco").textContent=CFG.endereco||"";
+  $("ct-tel").innerHTML=(CFG.telefones&&CFG.telefones.length)?"📞 "+CFG.telefones.map(function(t){return '<a href="tel:+55'+String(t).replace(/\D/g,"")+'">'+COLI.esc(t)+'</a>';}).join(" · "):"";
+  $("ct-hor").textContent=CFG.horario?"🕒 "+CFG.horario:"";
+  $("ct-maps").href=CFG.mapsUrl||"#";
+  if(CFG.instagram) $("ct-ig").href=CFG.instagram; else $("ct-ig").hidden=true;
+  if(CFG.facebook) $("ct-fb").href=CFG.facebook; else $("ct-fb").hidden=true;
   buildPills(); buildRows(); renderHero(true); restartHero();
   COLI.api.resumo().then(function(r){
     RESUMO=r;

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo a passo — publicar o site Coli Loterias no WordPress</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#1b2438;background:#f3f5f9;margin:0;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:32px 20px 60px}
+header{background:#0b1633;color:#fff;padding:36px 20px}
+header .wrap{padding:0 20px}
+header h1{margin:0 0 6px;font-size:1.7rem}
+header p{margin:0;color:#b9c4d6;font-weight:600}
+h2{color:#1435a8;font-size:1.3rem;margin:38px 0 12px;padding-bottom:6px;border-bottom:2px solid #e6eaf1}
+h3{font-size:1.02rem;margin:22px 0 8px}
+ol,ul{padding-left:22px}
+li{margin-bottom:8px}
+code,kbd{background:#e8edfb;color:#0e2680;padding:2px 6px;border-radius:5px;font-size:.92em;font-family:ui-monospace,Consolas,monospace}
+pre{background:#0b1633;color:#e8ecf4;padding:14px 16px;border-radius:10px;overflow-x:auto;font-size:.85rem}
+.box{border-radius:12px;padding:14px 18px;margin:16px 0;font-weight:600}
+.ok{background:#e9f9ef;border-left:5px solid #16a34a}
+.warn{background:#fff4e0;border-left:5px solid #f7941d}
+.info{background:#e8edfb;border-left:5px solid #1435a8}
+table{width:100%;border-collapse:collapse;font-size:.92rem;margin:12px 0}
+th,td{padding:9px 10px;border-bottom:1px solid #e6eaf1;text-align:left;vertical-align:top}
+th{background:#f7f9fc;font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:#5b6572}
+.step{background:#fff;border-radius:14px;box-shadow:0 4px 20px rgba(20,30,60,.08);padding:20px 22px;margin:14px 0}
+.step h3{margin-top:0;display:flex;align-items:center;gap:10px}
+.step h3 .n{background:#f7941d;color:#1b1200;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0}
+.check li{list-style:none;position:relative;padding-left:26px}
+.check li::before{content:"☐";position:absolute;left:0;top:0;font-size:1.1rem;color:#1435a8}
+@media print{header{background:#fff;color:#000}header p{color:#333}.step{box-shadow:none;border:1px solid #ddd}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Publicar o site Coli Loterias no WordPress</h1>
+  <p>Passo a passo completo para colocar o site 100% funcional em <b>coliloterias.com.br</b>, com resultados e estatísticas se atualizando sozinhos.</p>
+</div></header>
+
+<div class="wrap">
+
+<div class="box info">⏱ Tempo estimado: <b>20 a 30 minutos</b>. Você vai precisar do login do <b>painel da hospedagem</b> (cPanel, Plesk, Hostinger, Locaweb, HostGator, KingHost…) ou de um acesso FTP, e do login do <b>WordPress</b>.</div>
+
+<h2>Como o site funciona (resumo)</h2>
+<p>O site é um conjunto de páginas HTML + um pequeno arquivo PHP. Ele <b>não usa banco de dados</b> e <b>não depende de tema ou plugin</b> do WordPress. Fica em uma pasta própria dentro da hospedagem, ao lado do WordPress, e o WordPress só precisa de um link no menu apontando para ele.</p>
+<pre>public_html/                ← pasta pública da hospedagem
+├── wp-admin/               ← WordPress (não mexa)
+├── wp-content/             ← WordPress (não mexa)
+├── wp-config.php, index.php …
+└── loterias/               ← ★ o site novo (conteúdo do zip)
+    ├── index.html, resultados.html, estatisticas-*.html
+    ├── api/loterias.php    ← consulta a API oficial da CAIXA
+    ├── api/cache/          ← cache (precisa de permissão de escrita)
+    ├── data/               ← histórico de todos os concursos (escrita)
+    └── assets/             ← css, js, imagens</pre>
+<p>Quando alguém abre o site, o navegador chama <code>api/loterias.php</code>, que consulta a CAIXA, guarda em cache por 10 minutos e devolve os resultados. Quando sai um sorteio novo, o PHP baixa só o concurso novo, acrescenta ao histórico em <code>data/</code> e todas as estatísticas já saem recalculadas.</p>
+
+<h2>Parte 1 — Preparar o zip</h2>
+
+<div class="step"><h3><span class="n">1</span> Confira os dados da lotérica</h3>
+<p>Extraia o zip no seu computador e abra o arquivo <code>coli-loterias/assets/js/coli-config.js</code> no Bloco de Notas (ou em qualquer editor de texto). Ele já vem preenchido com os dados públicos da Coli; confirme e ajuste:</p>
+<pre>whatsapp:  "551120618868",   ← ⚠ CONFIRME: 55 + DDD + número, só dígitos
+telefones: ["(11) 2061-8868", "(11) 2271-2828"],
+horario:   "Seg a Sex 8h às 19h · Sáb 8h às 14h",
+instagram: "https://www.instagram.com/coli_loterias/",
+facebook:  "https://www.facebook.com/ColiLoterias/",</pre>
+<p>Salve o arquivo. Se você editou, compacte a pasta <code>coli-loterias</code> de novo em um zip (botão direito → <i>Enviar para → Pasta compactada</i>) ou envie o arquivo editado separadamente depois do passo 4.</p>
+<div class="box warn">O número do WhatsApp aparece em todos os botões "Fale conosco", "Jogar" e nos jogos gerados pela surpresinha. Teste-o no celular antes de publicar.</div>
+</div>
+
+<div class="step"><h3><span class="n">2</span> (Opcional) Troque o logo</h3>
+<p>Se tiver o logo em melhor resolução, substitua <code>assets/img/logo.png</code> mantendo o mesmo nome. Use PNG com fundo transparente, aproximadamente 360 × 115 px.</p>
+</div>
+
+<h2>Parte 2 — Subir para a hospedagem</h2>
+
+<div class="step"><h3><span class="n">3</span> Entre no Gerenciador de Arquivos</h3>
+<ol>
+<li>Faça login no painel da hospedagem (ex.: <code>cpanel.seuprovedor.com.br</code> ou o painel da Hostinger/Locaweb).</li>
+<li>Abra o <b>Gerenciador de Arquivos</b> (<i>File Manager</i>).</li>
+<li>Entre na pasta pública do site. Normalmente é <code>public_html/</code>. Você sabe que está no lugar certo quando vê as pastas <code>wp-admin</code> e <code>wp-content</code>.</li>
+</ol>
+<div class="box info">Alternativa por FTP: use o FileZilla com os dados de FTP do painel e envie a pasta <code>coli-loterias</code> inteira (já extraída) para dentro de <code>public_html/</code>.</div>
+</div>
+
+<div class="step"><h3><span class="n">4</span> Envie e extraia o zip</h3>
+<ol>
+<li>Clique em <b>Upload</b> (Carregar) e escolha <code>coli-loterias.zip</code>. Aguarde 100%.</li>
+<li>Volte para a lista, clique com o botão direito no zip → <b>Extract</b> (Extrair) → confirme em <code>public_html</code>.</li>
+<li>Vai aparecer a pasta <code>coli-loterias</code>. Clique com o botão direito → <b>Rename</b> → renomeie para <code>loterias</code> (nome curto para o endereço ficar <code>coliloterias.com.br/loterias/</code>).</li>
+<li>Apague o arquivo zip enviado (não é mais necessário).</li>
+</ol>
+</div>
+
+<div class="step"><h3><span class="n">5</span> Dê permissão de escrita em duas pastas</h3>
+<p>O PHP precisa gravar o cache e o histórico atualizado.</p>
+<ol>
+<li>Entre em <code>loterias/api/</code>, botão direito na pasta <code>cache</code> → <b>Permissions</b> (Permissões) → marque <b>755</b> → Salvar.</li>
+<li>Volte para <code>loterias/</code>, botão direito na pasta <code>data</code> → <b>Permissions</b> → <b>755</b> → Salvar. Marque a opção de aplicar aos arquivos dentro dela, se houver.</li>
+</ol>
+<div class="box info">Se no passo 6 aparecer <code>"cache_gravavel": false</code> ou <code>"data_gravavel": false</code>, repita com <b>775</b>. Só como último recurso use <b>777</b>.</div>
+</div>
+
+<div class="step"><h3><span class="n">6</span> Teste a conexão com a CAIXA</h3>
+<p>Abra no navegador:</p>
+<pre>https://coliloterias.com.br/loterias/api/loterias.php?acao=status</pre>
+<p>Resposta esperada:</p>
+<pre>{"ok":true,"php":"8.x","curl":true,"cache_gravavel":true,"data_gravavel":true,"caixa_online":true,...}</pre>
+<table>
+<tr><th>Se aparecer…</th><th>O que fazer</th></tr>
+<tr><td><code>"caixa_online": false</code></td><td>A hospedagem bloqueia conexões de saída ou a CAIXA está fora do ar no momento. Recarregue em 1 minuto. Se persistir, peça ao suporte da hospedagem para <b>liberar conexões HTTPS de saída (cURL) para servicebus2.caixa.gov.br</b>. Enquanto isso o site funciona com as fontes de reserva.</td></tr>
+<tr><td><code>"curl": false</code></td><td>Peça ao suporte para ativar a extensão <b>cURL</b> do PHP (é padrão em qualquer plano).</td></tr>
+<tr><td>Erro 403 / página do plugin de segurança</td><td>Um plugin (Wordfence, iThemes, All In One Security) bloqueou o PHP fora do WordPress. Adicione <code>/loterias/</code> à lista de exceções (<i>allowlist</i>) do plugin ou nas regras do <code>.htaccess</code> dele.</td></tr>
+<tr><td>Erro 500</td><td>Versão de PHP muito antiga. No painel, em <b>Selecionar versão do PHP</b>, escolha 8.1 ou superior.</td></tr>
+<tr><td>Página em branco ou download do arquivo</td><td>O PHP não está sendo executado nessa pasta. Confirme que enviou para dentro de <code>public_html</code> (não para uma pasta de arquivos estáticos/CDN).</td></tr>
+</table>
+</div>
+
+<div class="step"><h3><span class="n">7</span> Abra o site</h3>
+<pre>https://coliloterias.com.br/loterias/</pre>
+<p>Em poucos segundos a faixa verde <b>"Atualizado com a CAIXA às hh:mm"</b> deve aparecer no bloco "Próximos concursos", e os valores de prêmio devem preencher o topo. Clique em uma loteria para ver o último resultado e depois em <b>Estatísticas</b> para conferir o histórico completo.</p>
+</div>
+
+<h2>Parte 3 — Ligar ao WordPress</h2>
+
+<div class="step"><h3><span class="n">8</span> Coloque o link no menu do WordPress</h3>
+<ol>
+<li>Entre em <code>coliloterias.com.br/wp-admin</code>.</li>
+<li>Vá em <b>Aparência → Menus</b> (ou, em temas de bloco, <b>Aparência → Editor → Navegação</b>).</li>
+<li>Em <b>Adicionar itens do menu → Links personalizados</b>: URL <code>/loterias/</code>, texto <b>Resultados e Estatísticas</b>. Clique em <i>Adicionar ao menu</i>.</li>
+<li>Repita, se quiser, com <code>/loterias/resultados.html</code> (texto "Resultados") e <code>/loterias/estatisticas-megasena.html</code> (texto "Estatísticas").</li>
+<li><b>Salvar menu</b>.</li>
+</ol>
+</div>
+
+<div class="step"><h3><span class="n">9</span> Escolha como o site novo aparece em coliloterias.com.br</h3>
+<p>Três opções, da mais simples para a mais completa. Você pode começar pela A e mudar depois.</p>
+
+<h3>Opção A — Site novo em /loterias/ e WordPress continua na home</h3>
+<p>É o que os passos até aqui já fizeram. Nada mais a fazer.</p>
+
+<h3>Opção B — O site novo vira a página inicial de coliloterias.com.br (recomendado)</h3>
+<p>O WordPress continua instalado (para o wp-admin e o que mais você usa), mas quem abre <code>coliloterias.com.br</code> cai direto no site novo.</p>
+<ol>
+<li>No Gerenciador de Arquivos, em <code>public_html/</code>, abra o arquivo <code>.htaccess</code> (ative "Mostrar arquivos ocultos" se não aparecer) → <b>Edit</b>.</li>
+<li>Cole estas linhas <b>no topo</b> do arquivo, antes de <code># BEGIN WordPress</code>:</li>
+</ol>
+<pre># Coli Loterias: home aponta para o site novo
+RewriteEngine On
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule ^$ /loterias/ [R=302,L]</pre>
+<ol start="3">
+<li>Salve. Abra <code>coliloterias.com.br</code> em uma aba anônima: deve abrir o site novo.</li>
+<li>Quando estiver satisfeito, troque <code>302</code> por <code>301</code> (redirecionamento definitivo, melhor para o Google).</li>
+</ol>
+<div class="box info">Não tem <code>.htaccess</code> (servidor Nginx, ex.: alguns planos Hostinger/Locaweb)? Instale o plugin gratuito <b>Redirection</b> no WordPress e crie a regra: origem <code>^/$</code> (regex) → destino <code>/loterias/</code>.</div>
+
+<h3>Opção C — Mostrar o site dentro do layout do WordPress (iframe)</h3>
+<p>Útil se você quer manter o cabeçalho e o rodapé do tema atual.</p>
+<ol>
+<li><b>Páginas → Adicionar nova</b>, título "Loterias".</li>
+<li>Adicione um bloco <b>HTML personalizado</b> e cole:</li>
+</ol>
+<pre>&lt;iframe src="/loterias/index.html" style="width:100%;min-height:100vh;border:0"
+        title="Coli Loterias" loading="lazy"&gt;&lt;/iframe&gt;</pre>
+<ol start="3">
+<li>Se o tema tiver a opção, escolha o modelo <b>Largura total</b> / <i>Full width</i>. Publique e coloque a página no menu.</li>
+</ol>
+<div class="box warn">Não cole o HTML das páginas diretamente em um bloco do WordPress: o site tem 12 páginas ligadas entre si, arquivos de dados e o PHP, e isso só funciona com a pasta inteira na hospedagem.</div>
+</div>
+
+<div class="step"><h3><span class="n">10</span> Ajustes finais</h3>
+<ul>
+<li><b>Plugin de cache</b> (WP Rocket, LiteSpeed, W3 Total Cache, Cloudflare): adicione <code>/loterias/api/*</code> às exclusões de cache. Caso contrário o plugin pode "congelar" o resultado por horas.</li>
+<li><b>Cloudflare:</b> após publicar, faça <i>Purge Everything</i> em Caching. Crie uma <i>Cache Rule</i> de <i>Bypass</i> para <code>coliloterias.com.br/loterias/api/*</code>.</li>
+<li><b>HTTPS:</b> todos os caminhos do site são relativos, então funciona em http e https sem ajuste.</li>
+<li><b>Google Analytics / Pixel:</b> se usar, cole o código antes de <code>&lt;/head&gt;</code> em cada arquivo <code>.html</code> da pasta (ou peça para incluir no próximo pacote).</li>
+</ul>
+</div>
+
+<h2>Parte 4 — Checklist final</h2>
+<ul class="check">
+<li><code>loterias.php?acao=status</code> mostra <code>caixa_online: true</code> e as duas pastas graváveis.</li>
+<li>A página inicial mostra a faixa verde "Atualizado com a CAIXA" e valores de prêmio.</li>
+<li>Clicar em uma loteria abre o modal com dezenas e faixas de prêmio.</li>
+<li><code>resultados.html</code> mostra as 10 loterias com concurso e data recentes.</li>
+<li>A página de estatísticas da Mega-Sena mostra "X concursos, do 1º ao …" com o número do último concurso divulgado pela CAIXA.</li>
+<li>O botão do WhatsApp abre uma conversa com o número certo.</li>
+<li>O link "Abrir no Google Maps" leva à lotérica.</li>
+<li>O site abre bem no celular (menu ☰ funciona).</li>
+<li>O menu do WordPress tem o link para <code>/loterias/</code>.</li>
+</ul>
+
+<h2>Manutenção</h2>
+<p><b>Não há manutenção obrigatória.</b> Resultados, prêmios, próximos concursos e o histórico das estatísticas se atualizam sozinhos. Se quiser mudar telefone, horário ou WhatsApp, edite apenas <code>assets/js/coli-config.js</code> e envie de novo pelo Gerenciador de Arquivos.</p>
+<p>Se um dia a CAIXA mudar o endereço da API, a linha a alterar é <code>const CAIXA_API</code> no topo de <code>api/loterias.php</code>.</p>
+
+<h2>Perguntas frequentes</h2>
+<h3>Por que o valor do prêmio às vezes demora?</h3>
+<p>A CAIXA publica o resultado primeiro e a estimativa do próximo prêmio alguns minutos depois. O site reconsulta a cada 5 minutos e quando a aba volta ao foco.</p>
+<h3>A faixa está amarela: "sem conexão com a CAIXA"</h3>
+<p>A API da CAIXA oscila, principalmente na hora do sorteio (20h–21h). O site mostra os últimos dados salvos e volta ao normal sozinho. Se a faixa ficar amarela por horas, faça o teste do passo 6.</p>
+<h3>Posso mudar o nome da pasta depois?</h3>
+<p>Sim. Renomeie a pasta e ajuste o link no menu do WordPress (e o redirecionamento da Opção B). Tudo dentro do site usa caminhos relativos.</p>
+<h3>Quero o site em um subdomínio (resultados.coliloterias.com.br)</h3>
+<p>No painel, crie o subdomínio apontando a raiz de documentos para <code>public_html/loterias</code>. Nenhuma alteração no site é necessária.</p>
+
+<p style="margin-top:40px;color:#8b94a3;font-size:.85rem">Coli Loterias · guia de publicação · versão 2.0</p>
+</div>
+</body>
+</html>

@@ -318,6 +318,7 @@ function renderHeader(){
       +'<div><a class="top'+(page==="resultados"?" on":"")+'" href="resultados.html">Resultados</a></div>'
       +'<div class="has-dd"><button class="top'+(page==="estatisticas"?" on":"")+'" type="button" aria-haspopup="true">Estatísticas <span class="car">▾</span></button><div class="dd">'+dd+'</div></div>'
       +'<div><a class="top" href="index.html#surpresinha">Monte seu jogo</a></div>'
+      +'<div><a class="top" href="index.html#sobre">A Coli</a></div>'
       +'<div><a class="top" href="'+COLI.esc(CFG.bolaoUrl||"#")+'" target="_blank" rel="noopener">Bolões</a></div>'
     +'</nav>'
     +'<div style="display:flex;align-items:center;gap:8px">'
@@ -336,15 +337,20 @@ function renderFooter(){
   el.className="foot";
   el.innerHTML='<div class="wrap">'
     +'<div class="foot-grid">'
-      +'<div><img src="assets/img/logo.png" alt="'+COLI.esc(CFG.nome||"")+'"><p>'+COLI.esc(CFG.endereco||"")+'</p>'+(CFG.horario?'<p>'+COLI.esc(CFG.horario)+'</p>':'')
-        +'<p style="margin-top:10px"><a class="btn btn-wa" href="'+COLI.waURL()+'" target="_blank" rel="noopener">'+SVG_WA+' WhatsApp</a>'
-        +(CFG.instagram?' <a class="btn btn-ghost" style="margin-left:6px" href="'+COLI.esc(CFG.instagram)+'" target="_blank" rel="noopener">Instagram</a>':'')+'</p></div>'
+      +'<div><img src="assets/img/logo.png" alt="'+COLI.esc(CFG.nome||"")+'">'
+        +(CFG.slogan?'<p style="color:#fff;font-weight:800;margin-bottom:6px">'+COLI.esc(CFG.slogan)+'</p>':'')
+        +'<p>📍 <a href="'+COLI.esc(CFG.mapsUrl||"#")+'" target="_blank" rel="noopener" style="color:#c3ccdb">'+COLI.esc(CFG.endereco||"")+'</a></p>'
+        +(CFG.telefones&&CFG.telefones.length?'<p>📞 '+CFG.telefones.map(function(t){return '<a href="tel:+55'+String(t).replace(/\D/g,"")+'" style="color:#c3ccdb">'+COLI.esc(t)+'</a>';}).join(" · ")+'</p>':'')
+        +(CFG.horario?'<p>🕒 '+COLI.esc(CFG.horario)+'</p>':'')
+        +'<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-wa" href="'+COLI.waURL()+'" target="_blank" rel="noopener">'+SVG_WA+' WhatsApp</a>'
+        +(CFG.instagram?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.instagram)+'" target="_blank" rel="noopener">Instagram</a>':'')
+        +(CFG.facebook?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.facebook)+'" target="_blank" rel="noopener">Facebook</a>':'')+'</p></div>'
       +'<div><h4>Estatísticas</h4><ul>'+links.slice(0,metade).join("")+'</ul></div>'
       +'<div><h4>&nbsp;</h4><ul>'+links.slice(metade).join("")+'</ul></div>'
-      +'<div><h4>Navegação</h4><ul><li><a href="index.html">Início</a></li><li><a href="resultados.html">Últimos resultados</a></li><li><a href="index.html#surpresinha">Monte seu jogo</a></li>'
+      +'<div><h4>Navegação</h4><ul><li><a href="index.html">Início</a></li><li><a href="resultados.html">Últimos resultados</a></li><li><a href="index.html#surpresinha">Monte seu jogo</a></li><li><a href="index.html#sobre">Sobre a Coli</a></li><li><a href="index.html#contato">Contato</a></li>'
         +'<li><a href="'+COLI.esc(CFG.bolaoUrl||"#")+'" target="_blank" rel="noopener">Bolões da CAIXA</a></li><li><a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">Site oficial das Loterias</a></li></ul></div>'
     +'</div>'
-    +'<div class="foot-bt"><span>© '+ano+' '+COLI.esc(CFG.nome||"Coli Loterias")+'. Todos os direitos reservados.</span>'
+    +'<div class="foot-bt"><span>© '+ano+' '+COLI.esc(CFG.nome||"Coli Loterias")+(CFG.fundacao?' · desde '+CFG.fundacao:'')+'. Todos os direitos reservados.</span>'
     +'<span>Resultados oficiais divulgados pela <a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">CAIXA</a>. Em caso de divergência, vale o resultado oficial. Jogue com responsabilidade · proibido para menores de 18 anos.</span></div>'
     +'</div>';
   if(!document.getElementById("wa-float")){
