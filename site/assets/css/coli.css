@@ -666,6 +666,34 @@ table.hist-tbl{width:100%;border-collapse:collapse;font-size:.8rem;min-width:620
   .pills{grid-template-columns:1fr}
   .ctag{width:100%}
   .ccol{flex:1 1 100%;padding:0}
-  .rank{grid-template-columns:1fr}
+}
+/* estatísticas no celular: tabela vira cartões, rankings em 2 colunas */
+@media(max-width:640px){
+  .rank{grid-template-columns:repeat(2,1fr);gap:8px}
+  .rk{padding:8px;gap:7px}
+  .rk .dn{width:34px;height:34px;font-size:.8rem}
+  .rk .dl b{font-size:.74rem}
+  .rk .dl span{font-size:.58rem;white-space:normal}
+  .tbl-wrap{overflow:visible;border:none;border-radius:0}
+  table.hist-tbl{min-width:0;display:block}
+  .hist-tbl thead{display:none}
+  .hist-tbl tbody{display:block}
+  .hist-tbl tr{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:12px 12px;border:1px solid var(--linha);border-radius:12px;margin-bottom:8px;background:#fff}
+  .hist-tbl tr:hover td{background:transparent}
+  .hist-tbl td{display:block;padding:0;border-top:none}
+  .hist-tbl td.n{order:1;font-size:.95rem}
+  .hist-tbl td.d{order:2;margin-left:auto;font-size:.78rem}
+  .hist-tbl td:nth-child(n+3){order:3;flex-basis:100%}
+  .hist-tbl .mb{gap:5px}
+  .hist-tbl .mb i{width:30px;height:30px;font-size:.74rem}
+  body[data-jogo="duplasena"] .hist-tbl td:nth-child(4)::before{content:"2º sorteio"}
+  body[data-jogo="maismilionaria"] .hist-tbl td:nth-child(4)::before{content:"Trevos"}
+  body[data-jogo="timemania"] .hist-tbl td:nth-child(4)::before{content:"Time do Coração"}
+  .hist-tbl td:nth-child(4)::before{display:block;font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin:4px 0 2px}
+  .numgrid.c8{grid-template-columns:repeat(5,1fr)}
+  .bar{grid-template-columns:80px 1fr 64px;font-size:.72rem}
+  .st-kpis{grid-template-columns:1fr 1fr 1fr}
+  .kpi{padding:10px 8px}.kpi b{font-size:1.05rem}.kpi span{font-size:.55rem}
+  .st-tools .seg{width:100%;justify-content:center}
 }
 @media print{.hdr,.foot,.wa-float,.sp-sec,.st-gen{display:none}}
