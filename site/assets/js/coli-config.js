@@ -30,6 +30,9 @@ window.COLI_CONFIG = {
   /* Pasta com o histórico completo dos concursos (arquivos .json) */
   dataDir: "data/",
 
+  /* Pergunta "Você tem 18 anos ou mais?" ao abrir o site (lembra por 30 dias) */
+  verificarIdade: true,
+
   /* De quantos em quantos minutos a página consulta novos resultados */
   atualizarCadaMin: 5
 };

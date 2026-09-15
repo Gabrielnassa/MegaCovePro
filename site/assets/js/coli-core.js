@@ -318,7 +318,7 @@ function renderHeader(){
       +'<div><a class="top'+(page==="resultados"?" on":"")+'" href="resultados.html">Resultados</a></div>'
       +'<div class="has-dd"><button class="top'+(page==="estatisticas"?" on":"")+'" type="button" aria-haspopup="true">Estatísticas <span class="car">▾</span></button><div class="dd">'+dd+'</div></div>'
       +'<div><a class="top" href="index.html#surpresinha">Monte seu jogo</a></div>'
-      +'<div><a class="top" href="index.html#sobre">A Coli</a></div>'
+      +'<div><a class="top'+(page==="quem-somos"?" on":"")+'" href="quem-somos.html">Quem somos</a></div>'
       +'<div><a class="top" href="'+COLI.esc(CFG.bolaoUrl||"#")+'" target="_blank" rel="noopener">Bolões</a></div>'
     +'</nav>'
     +'<div style="display:flex;align-items:center;gap:8px">'
@@ -338,16 +338,16 @@ function renderFooter(){
   el.innerHTML='<div class="wrap">'
     +'<div class="foot-grid">'
       +'<div><img src="assets/img/logo.png" alt="'+COLI.esc(CFG.nome||"")+'">'
-        +(CFG.slogan?'<p style="color:#fff;font-weight:800;margin-bottom:6px">'+COLI.esc(CFG.slogan)+'</p>':'')
-        +'<p>📍 <a href="'+COLI.esc(CFG.mapsUrl||"#")+'" target="_blank" rel="noopener" style="color:#c3ccdb">'+COLI.esc(CFG.endereco||"")+'</a></p>'
-        +(CFG.telefones&&CFG.telefones.length?'<p>📞 '+CFG.telefones.map(function(t){return '<a href="tel:+55'+String(t).replace(/\D/g,"")+'" style="color:#c3ccdb">'+COLI.esc(t)+'</a>';}).join(" · ")+'</p>':'')
+        +(CFG.slogan?'<p style="color:var(--txt);font-weight:800;margin-bottom:6px">'+COLI.esc(CFG.slogan)+'</p>':'')
+        +'<p>📍 <a href="'+COLI.esc(CFG.mapsUrl||"#")+'" target="_blank" rel="noopener" style="color:var(--txt2)">'+COLI.esc(CFG.endereco||"")+'</a></p>'
+        +(CFG.telefones&&CFG.telefones.length?'<p>📞 '+CFG.telefones.map(function(t){return '<a href="tel:+55'+String(t).replace(/\D/g,"")+'" style="color:var(--azul)">'+COLI.esc(t)+'</a>';}).join(" · ")+'</p>':'')
         +(CFG.horario?'<p>🕒 '+COLI.esc(CFG.horario)+'</p>':'')
         +'<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-wa" href="'+COLI.waURL()+'" target="_blank" rel="noopener">'+SVG_WA+' WhatsApp</a>'
         +(CFG.instagram?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.instagram)+'" target="_blank" rel="noopener">Instagram</a>':'')
         +(CFG.facebook?'<a class="btn btn-ghost" href="'+COLI.esc(CFG.facebook)+'" target="_blank" rel="noopener">Facebook</a>':'')+'</p></div>'
       +'<div><h4>Estatísticas</h4><ul>'+links.slice(0,metade).join("")+'</ul></div>'
       +'<div><h4>&nbsp;</h4><ul>'+links.slice(metade).join("")+'</ul></div>'
-      +'<div><h4>Navegação</h4><ul><li><a href="index.html">Início</a></li><li><a href="resultados.html">Últimos resultados</a></li><li><a href="index.html#surpresinha">Monte seu jogo</a></li><li><a href="index.html#sobre">Sobre a Coli</a></li><li><a href="index.html#contato">Contato</a></li>'
+      +'<div><h4>Navegação</h4><ul><li><a href="index.html">Início</a></li><li><a href="resultados.html">Últimos resultados</a></li><li><a href="index.html#surpresinha">Monte seu jogo</a></li><li><a href="quem-somos.html">Quem somos</a></li><li><a href="index.html#contato">Contato</a></li>'
         +'<li><a href="'+COLI.esc(CFG.bolaoUrl||"#")+'" target="_blank" rel="noopener">Bolões da CAIXA</a></li><li><a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">Site oficial das Loterias</a></li></ul></div>'
     +'</div>'
     +'<div class="foot-bt"><span>© '+ano+' '+COLI.esc(CFG.nome||"Coli Loterias")+(CFG.fundacao?' · desde '+CFG.fundacao:'')+'. Todos os direitos reservados.</span>'
@@ -452,5 +452,31 @@ COLI.ui = {
 };
 COLI.nomeFonte = function(f){ return {caixa:"API oficial da CAIXA",publica:"API pública das Loterias",base:"base diária (sem valores de prêmio)",historico:"histórico local"}[f]||f; };
 
-document.addEventListener("DOMContentLoaded",function(){ renderHeader(); renderFooter(); });
+
+/* ───────── VERIFICAÇÃO DE IDADE (+18) ───────── */
+function renderAgeGate(){
+  if(CFG.verificarIdade===false) return;
+  try{ var ok=JSON.parse(localStorage.getItem("coli:idade18")||"null"); if(ok && ok.t && (Date.now()-ok.t)<(30*864e5)) return; }catch(e){}
+  var g=document.createElement("div"); g.className="idade"; g.id="idade"; g.setAttribute("role","dialog"); g.setAttribute("aria-modal","true"); g.setAttribute("aria-labelledby","idade-h");
+  g.innerHTML='<div class="idade-box" id="idade-box">'
+    +'<img src="assets/img/logo.png" alt="'+COLI.esc(CFG.nome||"Coli Loterias")+'">'
+    +'<div class="idade-sim"><div class="n18">18+</div><h2 id="idade-h">Você tem 18 anos ou mais?</h2>'
+    +'<p>As Loterias CAIXA são exclusivas para maiores de idade. Para acessar o site da '+COLI.esc(CFG.nome||"Coli Loterias")+', confirme que você tem 18 anos ou mais.</p>'
+    +'<div class="idade-btns"><button class="btn btn-laranja" type="button" id="idade-ok">Sim, tenho 18 anos ou mais</button><button class="btn btn-ghost" type="button" id="idade-nao">Não tenho</button></div>'
+    +'<small>Jogue com responsabilidade. Proibido para menores de 18 anos (Lei 13.756/2018).</small></div>'
+    +'<div class="idade-nao"><div class="n18" style="background:#e6eaf1;color:#5b6572">🔒</div><h2>Acesso restrito</h2>'
+    +'<p>Este site é destinado apenas a maiores de 18 anos. Obrigado pela compreensão.</p>'
+    +'<div class="idade-btns"><a class="btn btn-azul" href="https://www.google.com.br">Sair do site</a><button class="btn btn-ghost" type="button" id="idade-voltar">Voltar</button></div></div>'
+    +'</div>';
+  document.body.appendChild(g); document.body.style.overflow="hidden";
+  document.getElementById("idade-ok").addEventListener("click",function(){
+    try{ localStorage.setItem("coli:idade18",JSON.stringify({t:Date.now()})); }catch(e){}
+    g.remove(); document.body.style.overflow="";
+  });
+  document.getElementById("idade-nao").addEventListener("click",function(){ document.getElementById("idade-box").classList.add("negado"); });
+  document.getElementById("idade-voltar").addEventListener("click",function(){ document.getElementById("idade-box").classList.remove("negado"); });
+  setTimeout(function(){ var b=document.getElementById("idade-ok"); if(b) b.focus(); },50);
+}
+
+document.addEventListener("DOMContentLoaded",function(){ renderHeader(); renderFooter(); renderAgeGate(); });
 })();
