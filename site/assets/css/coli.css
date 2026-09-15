@@ -396,15 +396,17 @@ table.hist-tbl{width:100%;border-collapse:collapse;font-size:.8rem;min-width:620
 .serv span{display:block;font-size:1.8rem;line-height:1;margin-bottom:8px}
 .serv b{display:block;font-weight:900;font-size:.8rem;color:var(--txt)}
 .serv small{display:block;font-size:.68rem;color:var(--txt3);font-weight:700;margin-top:3px}
-.contato{display:grid;grid-template-columns:1fr 1.3fr;gap:0;background:var(--card);border-radius:var(--raio);box-shadow:var(--sombra);overflow:hidden;margin-bottom:26px}
-.ct-info{padding:32px}
-.ct-end{font-weight:800;font-size:1rem;color:var(--txt);margin:14px 0 8px;line-height:1.5}
+.contato{display:grid;grid-template-columns:1fr 1.3fr;gap:0;background:var(--card);border-radius:var(--raio);box-shadow:var(--sombra);overflow:hidden;margin-bottom:26px;align-items:stretch}
+.ct-info{padding:40px 36px;display:flex;flex-direction:column;justify-content:center}
+.ct-tag{display:inline-block;align-self:flex-start;background:#fff4e0;color:var(--laranja2);font-weight:900;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;padding:6px 12px;border-radius:20px;margin-bottom:12px}
+.ct-title{font-weight:900;font-size:1.7rem;line-height:1.15;color:var(--txt);margin-bottom:14px}
+.ct-end{font-weight:800;font-size:1rem;color:var(--txt);margin:0 0 10px;line-height:1.5;max-width:420px}
 .ct-line{font-weight:700;color:var(--txt2);font-size:.9rem;margin-bottom:6px}
 .ct-line a{color:var(--azul)}
-.ct-map{min-height:320px;background:#e6eaf1}
-.ct-map iframe{width:100%;height:100%;min-height:320px;border:0;display:block}
+.ct-map{min-height:360px;background:#e6eaf1;position:relative}
+.ct-map iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
 @media(max-width:1024px){.serv-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:900px){.sobre{grid-template-columns:1fr;padding:24px 18px}.contato{grid-template-columns:1fr}.ct-info{padding:22px 18px}}
+@media(max-width:900px){.sobre{grid-template-columns:1fr;padding:24px 18px}.contato{grid-template-columns:1fr}.ct-info{padding:26px 18px}.ct-map{min-height:280px}.ct-title{font-size:1.35rem}}
 @media(max-width:640px){.sobre-cards{grid-template-columns:1fr}.serv-grid{grid-template-columns:repeat(2,1fr)}.sobre h2{font-size:1.35rem}}
 
 /* ═══ VERIFICAÇÃO DE IDADE (18+) ═══ */
