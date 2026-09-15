@@ -12,7 +12,7 @@ var PER=0, SORTEIO="ambos", ORD="num", DIR="desc", MOSTRA=50, BUSCA="";
 var STATS=null;
 var N=J.max-J.min+1;
 var pad=function(v){ return J.colunas?String(v):COLI.pad2(v); };
-var cor=J.c1;
+var K=COLI.cor(J), cor=J.c1, FG=K.fg, TX=K.tx;
 
 /* ───────────────────────── CÁLCULOS ───────────────────────── */
 function dezenasDe(r){
@@ -64,7 +64,7 @@ function calcular(rows){
 function recorte(){ return PER>0?HIST.slice(-PER):HIST; }
 
 /* ───────────────────────── RENDERIZAÇÃO ───────────────────────── */
-function heat(v,mn,mx){ var t=(mx===mn)?1:(v-mn)/(mx-mn); return {bg:mix("#eef1f6",cor,Math.pow(t,1.2)), fg:t>.55?"#fff":"#1b2438"}; }
+function heat(v,mn,mx){ var t=(mx===mn)?1:(v-mn)/(mx-mn); return {bg:mix("#eef1f6",cor,Math.pow(t,1.2)), fg:t>.55?FG:"#1b2438"}; }
 function mix(a,b,t){
   var pa=hex(a),pb=hex(b); var r=Math.round(pa[0]+(pb[0]-pa[0])*t),g=Math.round(pa[1]+(pb[1]-pa[1])*t),bl=Math.round(pa[2]+(pb[2]-pa[2])*t);
   return "rgb("+r+","+g+","+bl+")";
@@ -81,12 +81,12 @@ function renderCabecalho(){
   var ult = LIVE && HIST.length && LIVE.numero>=HIST[tot-1][0] ? LIVE : (tot?COLI.normFromRow(ID,HIST[tot-1]):null);
   if(ult){
     $("l-num").textContent="Concurso "+ult.numero+(ult.data?" · "+ult.data:"");
-    var h=COLI.ui.htmlResultado(J,ult,{bolaCls:"rball",bolaStyle:"background:linear-gradient(145deg,"+J.c1+","+J.c2+")",rateio:false})
-      .replace(/class="rm-balls"/g,'class="rc-balls"').replace(/class="rm-lbl"/g,'class="rc-lbl"').replace(/class="rm-extra"/g,'class="rc-extra"').replace(/class="rm-st"/g,'class="rc-status" style="color:'+J.c1+'"');
+    var h=COLI.ui.htmlResultado(J,ult,{bolaCls:"rball",bolaStyle:"background:linear-gradient(145deg,"+J.c1+","+J.c2+");color:"+FG,rateio:false})
+      .replace(/class="rm-balls"/g,'class="rc-balls"').replace(/class="rm-lbl"/g,'class="rc-lbl"').replace(/class="rm-extra"/g,'class="rc-extra"').replace(/class="rm-st"/g,'class="rc-status" style="color:'+TX+'"');
     $("l-body").innerHTML=h;
     var proxData=ult.proxData?COLI.parseData(ult.proxData,J.hora):null; if(!proxData||proxData<new Date()) proxData=COLI.proxSorteio(ID);
     var premio=ult.premioProx>0?COLI.fmtMoedaCompacta(ult.premioProx):null;
-    $("l-next").innerHTML='<span>Próximo: concurso <b>'+(ult.proxNum||ult.numero+1)+'</b>'+(proxData?' · '+COLI.fmtData(proxData)+' ('+COLI.DSN[proxData.getDay()]+')':'')+'</span>'+(premio?'<span>Prêmio estimado <b style="color:'+J.c1+'">'+premio+'</b></span>':'');
+    $("l-next").innerHTML='<span>Próximo: concurso <b>'+(ult.proxNum||ult.numero+1)+'</b>'+(proxData?' · '+COLI.fmtData(proxData)+' ('+COLI.DSN[proxData.getDay()]+')':'')+'</span>'+(premio?'<span>Prêmio estimado <b style="color:'+TX+'">'+premio+'</b></span>':'');
   }
 }
 function renderGrid(){
@@ -104,7 +104,7 @@ function renderGrid(){
   }).join("");
   $("freq-sub").textContent=(PER?"Últimos "+COLI.fmtInt(s.total):"Todos os "+COLI.fmtInt(s.total))+" concursos"+(J.dupla?" ("+(SORTEIO==="ambos"?"1º e 2º sorteios":"só o "+SORTEIO+"º sorteio")+")":"")+" · média de "+(s.total?(s.freq.reduce(function(a,b){return a+b;},0)/N).toFixed(1).replace(".",","):0)+" sorteios por número. Passe o mouse para ver o atraso atual.";
 }
-function rankHTML(itens){ return itens.map(function(o){ return '<div class="rk"><div class="dn" style="background:'+(o.cor||cor)+'">'+o.n+'</div><div class="dl"><b>'+o.b+'</b><span>'+o.s+'</span></div></div>'; }).join(""); }
+function rankHTML(itens){ return itens.map(function(o){ return '<div class="rk"><div class="dn" style="background:'+(o.cor||cor)+';color:'+(o.cor?"#fff":FG)+'">'+o.n+'</div><div class="dl"><b>'+o.b+'</b><span>'+o.s+'</span></div></div>'; }).join(""); }
 function renderRanks(){
   var s=STATS, idx=[]; for(var i=0;i<N;i++) idx.push(i);
   var hot=idx.slice().sort(function(a,b){return s.freq[b]-s.freq[a]||a-b;}).slice(0,10);
@@ -185,9 +185,9 @@ function renderTabela(reset){
   var vis=ordenada.slice(0,MOSTRA);
   var ultimo=HIST.length?HIST[HIST.length-1][0]:0;
   $("tbl-body").innerHTML=vis.length?vis.map(function(r){
-    var tds='<td class="n">'+r[0]+(r[0]===ultimo?' <span class="novo" style="background:'+cor+';color:#fff">último</span>':'')+'</td><td class="d">'+COLI.esc(r[1])+' <small style="color:#8b94a3">'+COLI.diaSemana(r[1])+'</small></td>'
-      +'<td><span class="mb">'+r[2].map(function(d){return '<i style="background:'+cor+'">'+pad(d)+'</i>';}).join("")+'</span></td>';
-    if(J.dupla) tds+='<td><span class="mb">'+(r[3]||[]).map(function(d){return '<i class="s2" style="background:'+cor+'">'+pad(d)+'</i>';}).join("")+'</span></td>';
+    var tds='<td class="n">'+r[0]+(r[0]===ultimo?' <span class="novo" style="background:'+cor+';color:'+FG+'">último</span>':'')+'</td><td class="d">'+COLI.esc(r[1])+' <small style="color:#8b94a3">'+COLI.diaSemana(r[1])+'</small></td>'
+      +'<td><span class="mb">'+r[2].map(function(d){return '<i style="background:'+cor+';color:'+FG+'">'+pad(d)+'</i>';}).join("")+'</span></td>';
+    if(J.dupla) tds+='<td><span class="mb">'+(r[3]||[]).map(function(d){return '<i class="s2" style="background:'+cor+';color:'+FG+'">'+pad(d)+'</i>';}).join("")+'</span></td>';
     if(J.trevos) tds+='<td><span class="mb">'+(r[3]||[]).map(function(d){return '<i style="background:#166534">'+d+'</i>';}).join("")+'</span></td>';
     if(J.time) tds+='<td>'+COLI.esc(r[3]||"")+'</td>';
     return '<tr>'+tds+'</tr>';
@@ -221,7 +221,7 @@ function gerar(){
   var picks=[], desc, trevos=[];
   if(J.colunas){
     for(var c=0;c<7;c++){ var w=GMODE==="late"?pesos(s.colsAtraso[c],"hot"):pesos(s.cols[c],GMODE==="mix"?"rnd":GMODE); picks.push(weightedPick(w,1)[0]); }
-    $("g-balls").innerHTML=picks.map(function(x,i){return '<div class="sp-ball" style="background:'+cor+';animation-delay:'+(i*.04)+'s" title="Coluna '+(i+1)+'">'+x+'</div>';}).join("");
+    $("g-balls").innerHTML=picks.map(function(x,i){return '<div class="sp-ball" style="background:'+cor+';color:'+FG+';animation-delay:'+(i*.04)+'s" title="Coluna '+(i+1)+'">'+x+'</div>';}).join("");
     desc=picks.map(function(x,i){return "Col"+(i+1)+": "+x;}).join(" | ");
   } else {
     var base;
@@ -237,7 +237,7 @@ function gerar(){
     } else { base=[]; for(var z=0;z<N;z++) base.push(1); }
     if(!picks.length) picks=weightedPick(base,J.pick);
     picks=picks.map(function(i){return i+J.min;}).sort(function(a,b){return a-b;});
-    $("g-balls").innerHTML=picks.map(function(x,i){return '<div class="sp-ball" style="background:'+cor+';animation-delay:'+(i*.04)+'s">'+pad(x)+'</div>';}).join("");
+    $("g-balls").innerHTML=picks.map(function(x,i){return '<div class="sp-ball" style="background:'+cor+';color:'+FG+';animation-delay:'+(i*.04)+'s">'+pad(x)+'</div>';}).join("");
     if(J.trevos){ trevos=weightedPick(pesos(s.trevos,GMODE==="cold"?"cold":(GMODE==="hot"?"hot":"rnd")),2).map(function(i){return i+1;}).sort(); $("g-trevos").innerHTML=trevos.map(function(x){return '<div class="sp-trevo">🍀'+x+'</div>';}).join(""); }
     desc=picks.map(pad).join(", ")+(trevos.length?"\n🍀 Trevos: "+trevos.join(" e "):"");
   }
@@ -285,7 +285,7 @@ function iniciarLoteca(){
     if(!n){ $("loteca-body").innerHTML='<div class="empty">Não foi possível carregar o resultado agora.</div>'; status("Sem conexão com a CAIXA","warn"); return; }
     LIVE=n;
     $("l-num").textContent="Concurso "+n.numero+(n.data?" · "+n.data:"");
-    var h=COLI.ui.htmlResultado(J,n,{rateio:false}).replace(/class="rm-extra"/g,'class="rc-extra"').replace(/class="rm-st"/g,'class="rc-status" style="color:'+J.c1+'"');
+    var h=COLI.ui.htmlResultado(J,n,{rateio:false}).replace(/class="rm-extra"/g,'class="rc-extra"').replace(/class="rm-st"/g,'class="rc-status" style="color:'+TX+'"');
     $("l-body").innerHTML=h;
     var proxData=n.proxData?COLI.parseData(n.proxData,J.hora):null; if(!proxData||proxData<new Date()) proxData=COLI.proxSorteio(ID);
     $("l-next").innerHTML='<span>Próximo: concurso <b>'+(n.proxNum||n.numero+1)+'</b>'+(proxData?' · '+COLI.fmtData(proxData):'')+'</span>'+(n.premioProx>0?'<span>Prêmio estimado <b style="color:'+J.c1+'">'+COLI.fmtMoedaCompacta(n.premioProx)+'</b></span>':'');

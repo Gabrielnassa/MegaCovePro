@@ -38,7 +38,7 @@ JOGOS = [
   "Marque 50 números entre 100 e ganhe acertando 20, 19, 18, 17, 16, 15 ou nenhum número."),
  ("duplasena","Dupla Sena","dupla-sena","dupla",1,50,"🎰","#A61324","#6e0b17",
   "Um bilhete, duas chances: são dois sorteios por concurso. Escolha de 6 a 15 números entre 50."),
- ("timemania","Timemania","timemania","time",1,80,"⚽","#00A651","#00703a",
+ ("timemania","Timemania","timemania","time",1,80,"⚽","#0a6b3a","#044a26",
   "Escolha 10 números entre 80 e um Time do Coração. Ganhe com 3 a 7 acertos ou acertando o time."),
  ("diadesorte","Dia de Sorte","dia-de-sorte","normal",1,31,"🌞","#CB852B","#8f5c17",
   "Marque de 7 a 15 números entre 31 e um Mês de Sorte. Ganhe com 4, 5, 6 ou 7 acertos."),

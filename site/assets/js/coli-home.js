@@ -10,7 +10,8 @@ var RESUMO=null;    /* data/resumo.json */
 /* ───────── PILLS ───────── */
 function buildPills(){
   $("pills").innerHTML=J.map(function(j){
-    return '<a class="pill" style="background:linear-gradient(135deg,'+j.c1+','+j.c2+')" href="estatisticas-'+j.id+'.html">'
+    var K=COLI.cor(j);
+    return '<a class="pill" style="background:linear-gradient(135deg,'+j.c1+','+j.c2+');color:'+K.fg+'" href="estatisticas-'+j.id+'.html">'
       +'<span class="pi">'+j.emo+'</span><span class="pt"><b>'+COLI.esc(j.nome)+'</b><span id="pv-'+j.id+'">Estatísticas ›</span></span></a>';
   }).join("");
 }
@@ -18,14 +19,14 @@ function buildPills(){
 /* ───────── LINHAS DE CONCURSOS ───────── */
 function buildRows(){
   $("crows").innerHTML=J.map(function(j){
-    var prox=COLI.proxSorteio(j.id);
+    var prox=COLI.proxSorteio(j.id), K=COLI.cor(j);
     return '<div class="crow" id="row-'+j.id+'">'
-      +'<button class="ctag" type="button" style="background:'+j.c1+'" data-modal="'+j.id+'" title="Ver último resultado"><span class="cico">'+j.emo+'</span><b>'+COLI.esc(j.nome)+'</b></button>'
+      +'<button class="ctag" type="button" style="background:'+j.c1+';color:'+K.fg+'" data-modal="'+j.id+'" title="Ver último resultado"><span class="cico">'+j.emo+'</span><b>'+COLI.esc(j.nome)+'</b></button>'
       +'<div class="ccol"><div class="l">Próximo concurso</div><div class="v" id="rn-'+j.id+'"><span class="skel">0000</span></div></div>'
       +'<div class="ccol"><div class="l">Data do sorteio</div><div class="v" id="rd-'+j.id+'">'+(prox?COLI.fmtDataCurta(prox)+'<span class="sx">'+COLI.DSN[prox.getDay()]+'</span>':"—")+'</div></div>'
-      +'<div class="ccol pz"><div class="l">Prêmio estimado</div><div class="v" id="rp-'+j.id+'" style="color:'+j.c1+'"><span class="skel">R$ 00 milhões</span></div></div>'
-      +'<div class="cacts"><button class="btn btn-line sm" type="button" data-modal="'+j.id+'" style="border-color:'+j.c1+';color:'+j.c1+'">Último resultado</button>'
-      +'<a class="b-st" style="background:'+j.c1+'" href="estatisticas-'+j.id+'.html" title="Estatísticas da '+COLI.esc(j.nome)+'" aria-label="Estatísticas">'+COLI.SVG.chart+'</a></div>'
+      +'<div class="ccol pz"><div class="l">Prêmio estimado</div><div class="v" id="rp-'+j.id+'" style="color:'+K.tx+'"><span class="skel">R$ 00 milhões</span></div></div>'
+      +'<div class="cacts"><button class="btn btn-line sm" type="button" data-modal="'+j.id+'" style="border-color:'+K.tx+';color:'+K.tx+'">Último resultado</button>'
+      +'<a class="b-st" style="background:'+j.c1+';color:'+K.fg+'" href="estatisticas-'+j.id+'.html" title="Estatísticas da '+COLI.esc(j.nome)+'" aria-label="Estatísticas">'+COLI.SVG.chart+'</a></div>'
       +'</div>';
   }).join("");
 }
@@ -87,7 +88,8 @@ function renderHero(semFade){
   var wrap=$("hero-fade"); if(!semFade&&wrap) wrap.style.opacity="0";
   setTimeout(function(){
     var hero=$("hero");
-    hero.style.setProperty("--hb1",j.c1); hero.style.setProperty("--hb2",j.c2); hero.style.setProperty("--hc",j.c1==="#1E2C6B"?"#8fa2ff":j.c1);
+    var K=COLI.cor(j);
+    hero.style.setProperty("--hb1",K.bg1); hero.style.setProperty("--hb2",K.bg2); hero.style.setProperty("--hc",j.c1==="#1E2C6B"?"#8fa2ff":j.c1);
     hero.style.setProperty("--glow",hexA(j.c1,.22));
     $("h-emoji").textContent=j.emo; $("h-nome").textContent=j.nome.toUpperCase(); $("h-nome").style.color=luz(j.c1);
     var p=n?n.premioProx:0, pv;
@@ -131,7 +133,7 @@ function renderDestaques(id){
   var late=(r.atraso||[]).map(function(a,i){return i;}).sort(function(a,b){return r.atraso[b]-r.atraso[a];}).slice(0,2);
   var pad=function(i){ return j.colunas?String(i+j.min):COLI.pad2(i+j.min); };
   $("dest-sub").textContent=j.nome+" · "+COLI.fmtInt(r.total)+" concursos analisados";
-  $("dest-grid").innerHTML=hot.map(function(i){ return '<div class="dest hot"><div class="dn" style="background:'+j.c1+'">'+pad(i)+'</div><div class="dl"><b>Mais sorteado</b><span>Saiu '+COLI.fmtInt(r.freq[i])+' vezes</span></div></div>'; }).join("")
+  $("dest-grid").innerHTML=hot.map(function(i){ return '<div class="dest hot"><div class="dn" style="background:'+j.c1+';color:'+COLI.cor(j).fg+'">'+pad(i)+'</div><div class="dl"><b>Mais sorteado</b><span>Saiu '+COLI.fmtInt(r.freq[i])+' vezes</span></div></div>'; }).join("")
     +late.map(function(i){ return '<div class="dest cold"><div class="dn" style="background:#5b6572">'+pad(i)+'</div><div class="dl"><b>Mais atrasado</b><span>Há '+COLI.fmtInt(r.atraso[i])+' concursos</span></div></div>'; }).join("");
   $("dest-link").href="estatisticas-"+id+".html";
 }
@@ -172,7 +174,7 @@ function gerar(){
       var w = modo==="late" ? pesos((r&&r.colsAtraso&&r.colsAtraso[c])||col,"hot") : pesos(col, modo==="mix"?"rnd":modo);
       picks.push(weightedPick(w,1)[0]);
     }
-    $("sp-balls").innerHTML=picks.map(function(x,i){ return '<div class="sp-ball" style="background:'+j.c1+';animation-delay:'+(i*.04)+'s" title="Coluna '+(i+1)+'">'+x+'</div>'; }).join("");
+    $("sp-balls").innerHTML=picks.map(function(x,i){ return '<div class="sp-ball" style="background:'+j.c1+';color:'+COLI.cor(j).fg+';animation-delay:'+(i*.04)+'s" title="Coluna '+(i+1)+'">'+x+'</div>'; }).join("");
     $("sp-trevos").innerHTML="";
     desc=picks.map(function(x,i){return "Col"+(i+1)+": "+x;}).join(" | ");
   } else {
@@ -190,7 +192,7 @@ function gerar(){
     if(!picks.length) picks=weightedPick(base,j.pick);
     picks=picks.map(function(i){return i+j.min;}).sort(function(a,b){return a-b;});
     var pad=function(x){ return COLI.pad2(x); };
-    $("sp-balls").innerHTML=picks.map(function(x,i){ return '<div class="sp-ball" style="background:'+j.c1+';animation-delay:'+(i*.04)+'s">'+pad(x)+'</div>'; }).join("");
+    $("sp-balls").innerHTML=picks.map(function(x,i){ return '<div class="sp-ball" style="background:'+j.c1+';color:'+COLI.cor(j).fg+';animation-delay:'+(i*.04)+'s">'+pad(x)+'</div>'; }).join("");
     var trevos=[];
     if(j.trevos){
       var tw=(r&&r.trevos&&r.trevos.length===6)?pesos(r.trevos,modo==="cold"?"cold":(modo==="hot"?"hot":"rnd")):[1,1,1,1,1,1];

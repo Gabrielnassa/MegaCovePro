@@ -7,23 +7,23 @@ var CFG=window.COLI_CONFIG||{}, J=COLI.JOGOS, $=function(id){return document.get
 var EST={};   /* id → norm exibido */
 
 function cardHTML(j){
-  var n=EST[j.id];
-  var hd='<div class="rc-hd" style="background:linear-gradient(135deg,'+j.c1+','+j.c2+')"><span class="ic">'+j.emo+'</span><span class="nm">'+COLI.esc(j.nome)+'</span><span class="cc">'+(n?"Concurso "+n.numero:"…")+'</span></div>';
+  var n=EST[j.id], K=COLI.cor(j);
+  var hd='<div class="rc-hd" style="background:linear-gradient(135deg,'+j.c1+','+j.c2+');color:'+K.fg+'"><span class="ic">'+j.emo+'</span><span class="nm">'+COLI.esc(j.nome)+'</span><span class="cc">'+(n?"Concurso "+n.numero:"…")+'</span></div>';
   var bd, ft;
   if(!n){
     bd='<div class="rc-bd"><div class="rc-dt"><span class="skel">Sorteio de 00/00/0000</span></div><div class="rc-balls">'+'<span class="skel" style="width:100%;height:42px;display:block">&nbsp;</span>'+'</div></div>';
     ft='<div class="rc-ft"><div class="rc-next">Próximo concurso</div><div class="rc-nv"><span class="skel">R$ 00 milhões</span></div></div>';
   } else {
-    var corpo=COLI.ui.htmlResultado(j,n,{bolaCls:"rball",bolaStyle:"background:linear-gradient(145deg,"+j.c1+","+j.c2+")",rateioCls:"rc-rateio"});
-    corpo=corpo.replace(/class="rm-balls"/g,'class="rc-balls"').replace(/class="rm-lbl"/g,'class="rc-lbl"').replace(/class="rm-extra"/g,'class="rc-extra"').replace(/class="rm-st"/g,'class="rc-status" style="color:'+j.c1+'"');
+    var corpo=COLI.ui.htmlResultado(j,n,{bolaCls:"rball",bolaStyle:"background:linear-gradient(145deg,"+j.c1+","+j.c2+");color:"+K.fg,rateioCls:"rc-rateio"});
+    corpo=corpo.replace(/class="rm-balls"/g,'class="rc-balls"').replace(/class="rm-lbl"/g,'class="rc-lbl"').replace(/class="rm-extra"/g,'class="rc-extra"').replace(/class="rm-st"/g,'class="rc-status" style="color:'+K.tx+'"');
     bd='<div class="rc-bd"><div class="rc-dt"><span>'+(n.data?"Sorteio de "+n.data+(COLI.diaSemana(n.data)?" ("+COLI.diaSemana(n.data)+")":""):"")+'</span>'+(n.local?'<span>'+COLI.esc(n.local)+'</span>':'')+'</div>'+corpo+'</div>';
     var proxData=n.proxData?COLI.parseData(n.proxData,j.hora):null; if(!proxData||proxData<new Date()) proxData=COLI.proxSorteio(j.id);
     var premio=n.premioProx>0?COLI.fmtMoedaCompacta(n.premioProx):null;
     ft='<div class="rc-ft"><div class="rc-next">Próximo concurso '+(n.proxNum||n.numero+1)+(n.acumulou&&premio?" · acumulado":"")+'</div>'
-      +'<div class="rc-nv" style="color:'+j.c1+'">'+(premio||(j.loteca?"14 jogos da rodada":"Prêmio a divulgar"))+'</div>'
+      +'<div class="rc-nv" style="color:'+K.tx+'">'+(premio||(j.loteca?"14 jogos da rodada":"Prêmio a divulgar"))+'</div>'
       +'<div class="rc-nd">Sorteio em '+(proxData?COLI.fmtData(proxData)+" ("+COLI.DSN[proxData.getDay()]+")":"—")+'</div>'
-      +'<div class="rc-links"><a class="rc-bt" style="border-color:'+j.c1+';color:'+j.c1+'" href="estatisticas-'+j.id+'.html">📊 Estatísticas</a>'
-      +'<a class="rc-bt" style="border-color:'+j.c1+';background:'+j.c1+';color:#fff" href="'+COLI.esc(CFG.bolaoUrl||"#")+'" target="_blank" rel="noopener">🎟️ Bolões</a>'
+      +'<div class="rc-links"><a class="rc-bt" style="border-color:'+K.tx+';color:'+K.tx+'" href="estatisticas-'+j.id+'.html">📊 Estatísticas</a>'
+      +'<a class="rc-bt" style="border-color:'+j.c1+';background:'+j.c1+';color:'+K.fg+'" href="'+COLI.esc(CFG.bolaoUrl||"#")+'" target="_blank" rel="noopener">🎟️ Bolões</a>'
       +'</div></div>';
   }
   return '<article class="rcard" id="card-'+j.id+'">'+hd+bd+ft+'</article>';

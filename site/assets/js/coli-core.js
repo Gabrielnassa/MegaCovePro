@@ -24,7 +24,7 @@ COLI.JOGOS = [
   desc:"Marque 50 números entre 100 e ganhe acertando 20, 19, 18, 17, 16, 15 ou nenhum número."},
  {id:"duplasena",     nome:"Dupla Sena",    emo:"🎰", c1:"#A61324",c2:"#6e0b17",fg:"#fff", min:1,max:50,pick:6,  dias:[1,3,5],hora:20, gh:"dupla-sena", dupla:true,
   desc:"Um bilhete, duas chances: são dois sorteios por concurso. Escolha de 6 a 15 números entre 50."},
- {id:"timemania",     nome:"Timemania",     emo:"⚽", c1:"#00A651",c2:"#00703a",fg:"#fff", min:1,max:80,pick:7,  dias:[0,2,4],hora:20, gh:"timemania", time:true,
+ {id:"timemania",     nome:"Timemania",     emo:"⚽", c1:"#FFD100",c2:"#E3B900",fg:"#0a5c33",tx:"#8a6d00",bg1:"#0a6b3a",bg2:"#044a26", min:1,max:80,pick:7,  dias:[0,2,4],hora:20, gh:"timemania", time:true,
   desc:"Escolha 10 números entre 80 e um Time do Coração. Ganhe com 3 a 7 acertos ou acertando o time."},
  {id:"diadesorte",    nome:"Dia de Sorte",  emo:"🌞", c1:"#CB852B",c2:"#8f5c17",fg:"#fff", min:1,max:31,pick:7,  dias:[0,1,2,3,4,5],hora:20, gh:"dia-de-sorte",
   desc:"Marque de 7 a 15 números entre 31 e um Mês de Sorte. Ganhe com 4, 5, 6 ou 7 acertos."},
@@ -35,6 +35,8 @@ COLI.JOGOS = [
  {id:"loteca",        nome:"Loteca",        emo:"🏟️", c1:"#D0202E",c2:"#8f151f",fg:"#fff", min:0,max:0, pick:0,  dias:[1],hora:14, gh:null, loteca:true,
   desc:"Dê o seu palpite nos 14 jogos de futebol da rodada. Ganha quem acerta 14 ou 13 resultados."}
 ];
+/* cores derivadas: fg = texto sobre a cor, tx = a cor usada como texto em fundo branco, bg1/bg2 = fundos escuros (hero/modal) */
+COLI.cor = function(j){ return {c1:j.c1,c2:j.c2,fg:j.fg||"#fff",tx:j.tx||j.c1,bg1:j.bg1||j.c1,bg2:j.bg2||j.c2}; };
 COLI.byId = function(id){ for(var i=0;i<COLI.JOGOS.length;i++) if(COLI.JOGOS[i].id===id) return COLI.JOGOS[i]; return null; };
 
 /* ───────────────────────── UTILITÁRIOS ───────────────────────── */
@@ -444,7 +446,7 @@ COLI.ui = {
   modalResultado: function(id, dadosPrevios){
     var j=COLI.byId(id); if(!j) return;
     var m=ensureModal();
-    var box=document.getElementById("rm-box"); box.style.background="linear-gradient(160deg,"+j.c1+","+j.c2+")";
+    var box=document.getElementById("rm-box"); var K=COLI.cor(j); box.style.background="linear-gradient(160deg,"+K.bg1+","+K.bg2+")";
     document.getElementById("rm-title").textContent=j.emo+" "+j.nome;
     document.getElementById("rm-sub").textContent="Carregando último resultado…";
     document.getElementById("rm-body").innerHTML='<div class="rm-balls"><span class="skel" style="width:220px;height:40px">&nbsp;</span></div>';
