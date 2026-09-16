@@ -199,3 +199,10 @@ sozinho quando não encontra a tag. Envie esses arquivos junto com o restante do
 
 Quem já tinha o atalho salvo continua vendo o ícone antigo: é preciso apagar o atalho e
 salvar de novo (o iPhone guarda o ícone no momento em que o atalho é criado).
+
+## Atualizei os arquivos e o site continua igual?
+
+Cada página chama CSS e JS com `?v=<versão>` (gerado pelo `tools/build.py`) e o `.htaccess`
+pede ao navegador para revalidar as páginas HTML. Ao trocar de versão, apague a pasta antiga
+antes de extrair o zip novo, limpe o cache do plugin do WordPress/Cloudflare, se houver, e
+recarregue com Ctrl+Shift+R. No iPhone, apague e recrie o atalho da tela inicial.

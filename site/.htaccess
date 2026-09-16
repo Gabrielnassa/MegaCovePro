@@ -1,0 +1,16 @@
+# Coli Loterias — regras de cache para o navegador nunca ficar com versão antiga
+# (as páginas HTML são sempre revalidadas; CSS/JS levam ?v=versão e podem ficar em cache)
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|webmanifest|json)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <FilesMatch "\.(png|svg|jpg|jpeg|webp|ico)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+</IfModule>

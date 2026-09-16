@@ -219,6 +219,14 @@ RewriteRule ^$ /loterias/ [R=302,L]</pre>
 <p>A API da CAIXA oscila, principalmente na hora do sorteio (20h–21h). O site mostra os últimos dados salvos e volta ao normal sozinho. Se a faixa ficar amarela por horas, faça o teste do passo 6.</p>
 <h3>Posso mudar o nome da pasta depois?</h3>
 <p>Sim. Renomeie a pasta e ajuste o link no menu do WordPress (e o redirecionamento da Opção B). Tudo dentro do site usa caminhos relativos.</p>
+<h3>Subi o zip novo, mas o site continua igual (ícone antigo, botão antigo, "Time do Coração" na Mega-Sena)</h3>
+<p>É cache: o navegador ou a hospedagem guardou o <code>coli-core.js</code> e o <code>coli.css</code> antigos. A partir desta versão isso não acontece mais, porque cada página chama os arquivos com um número de versão (<code>coli-core.js?v=…</code>) que muda a cada pacote, e o <code>.htaccess</code> manda o navegador sempre reconferir as páginas. Para a troca atual, faça uma vez:</p>
+<ol>
+<li>Apague a pasta antiga por completo e extraia o zip novo (não só copie por cima). Confira que <code>.htaccess</code>, <code>apple-touch-icon.png</code> e <code>apple-touch-icon-precomposed.png</code> estão na raiz da pasta.</li>
+<li>Se o WordPress tiver plugin de cache (LiteSpeed Cache, WP Rocket, W3 Total Cache, WP Super Cache), clique em <b>Limpar todo o cache</b>. Se usar Cloudflare, em <b>Caching → Purge Everything</b>.</li>
+<li>No computador, recarregue com <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Mac: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>). No iPhone, Ajustes → Safari → Limpar Histórico e Dados.</li>
+<li>Ícone da tela inicial do iPhone: apague o atalho antigo e adicione de novo. O iOS grava o ícone no momento em que o atalho é criado e nunca o atualiza sozinho.</li>
+</ol>
 <h3>Quero o site em um subdomínio (resultados.coliloterias.com.br)</h3>
 <p>No painel, crie o subdomínio apontando a raiz de documentos para <code>public_html/loterias</code>. Nenhuma alteração no site é necessária.</p>
 

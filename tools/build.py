@@ -168,6 +168,38 @@ def gerar_blog():
     open(os.path.join(SITE, "robots.txt"), "w", encoding="utf-8").write(f"User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: {SITE_URL}sitemap.xml\n")
     print(f"  ✓ blog.html, data/blog.json, sitemap.xml ({len([1 for _, d in urls if d <= hoje])} matérias publicadas até hoje)")
 
+def carimbar_versao():
+    """Acrescenta ?v=<hash> aos CSS/JS/manifest/ícones referenciados em todas as páginas.
+    Assim o navegador (e o cache da hospedagem) baixa a versão nova depois de cada upload,
+    em vez de continuar usando um coli-core.js/coli.css antigo."""
+    import hashlib
+    h = hashlib.sha1()
+    for sub in ("assets/css", "assets/js"):
+        d = os.path.join(SITE, sub)
+        for fn in sorted(os.listdir(d)):
+            if fn.endswith((".css", ".js")):
+                h.update(open(os.path.join(d, fn), "rb").read())
+    for fn in ("manifest.webmanifest", "assets/img/apple-touch-icon.png", "assets/img/icon-192.png", "assets/img/icon-512.png", "assets/img/favicon.svg"):
+        fp = os.path.join(SITE, fn)
+        if os.path.exists(fp): h.update(open(fp, "rb").read())
+    v = h.hexdigest()[:10]
+    pat = re.compile(r'((?:href|src)=")((?:assets/(?:css|js|img)/[^"?]+\.(?:css|js|svg|png))|manifest\.webmanifest)(?:\?v=[0-9a-f]+)?"')
+    n = 0
+    for fn in sorted(os.listdir(SITE)):
+        if not fn.endswith(".html"): continue
+        fp = os.path.join(SITE, fn)
+        html = open(fp, encoding="utf-8").read()
+        novo = pat.sub(lambda m: m.group(1) + m.group(2) + "?v=" + v + '"', html)
+        if novo != html:
+            open(fp, "w", encoding="utf-8").write(novo); n += 1
+    # o manifest também aponta para os ícones
+    mp = os.path.join(SITE, "manifest.webmanifest")
+    if os.path.exists(mp):
+        m = open(mp, encoding="utf-8").read()
+        m2 = re.sub(r'("src":\s*")([^"?]+)(?:\?v=[0-9a-f]+)?"', lambda k: k.group(1) + k.group(2) + "?v=" + v + '"', m)
+        if m2 != m: open(mp, "w", encoding="utf-8").write(m2)
+    print(f"  ✓ versão dos arquivos: {v} ({n} páginas atualizadas)")
+
 def main():
     os.makedirs(DATA, exist_ok=True)
     agora = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -196,6 +228,7 @@ def main():
         print(f"  ✓ estatisticas-{jid}.html")
 
     gerar_blog()
+    carimbar_versao()
 
     if SEMZIP:
         return
