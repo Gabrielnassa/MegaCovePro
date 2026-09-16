@@ -188,3 +188,14 @@ A barra de status de cada página informa qual fonte respondeu.
 * PHP 7.4 ou superior com extensão cURL (padrão nas hospedagens).
 * Servidor com saída para a internet (para chamar a API da CAIXA).
 * Nenhum banco de dados, nenhuma dependência externa.
+
+## Ícone na tela inicial do celular
+
+O ícone que o iPhone/Android mostram ao "Adicionar à Tela de Início" vem de
+`assets/img/apple-touch-icon.png`, `assets/img/icon-192.png` e `assets/img/icon-512.png`
+(referenciados em todas as páginas e no `manifest.webmanifest`). Por segurança, há cópias
+na raiz (`apple-touch-icon.png` e `apple-touch-icon-precomposed.png`), que o iOS busca
+sozinho quando não encontra a tag. Envie esses arquivos junto com o restante do pacote.
+
+Quem já tinha o atalho salvo continua vendo o ícone antigo: é preciso apagar o atalho e
+salvar de novo (o iPhone guarda o ícone no momento em que o atalho é criado).
