@@ -99,9 +99,6 @@ function renderHero(semFade){
     else pv=j.loteca?'<small style="font-size:1.6rem">14 jogos da rodada</small>':'<small style="font-size:1.6rem">'+(n?'Prêmio a divulgar':'Consultando…')+'</small>';
     $("h-prize").innerHTML=pv;
     $("h-lbl").textContent=(n&&n.acumulou&&p>0)?"Prêmio acumulado":"Prêmio estimado";
-    var proxNum=n?(n.proxNum||n.numero+1):null;
-    var ult=n||resumoNorm(j.id);
-    $("h-conc").innerHTML=(proxNum?'Concurso <b>'+proxNum+'</b>':'&nbsp;')+(ult&&ult.dezenas&&ult.dezenas.length?' · último ('+ult.numero+'): <b>'+ult.dezenas.join(" ")+'</b>':'');
     $("h-link").href="estatisticas-"+j.id+".html";
     $("h-ver").setAttribute("data-modal",j.id);
     var alvo=n&&n.proxData?COLI.parseData(n.proxData,j.hora):null;

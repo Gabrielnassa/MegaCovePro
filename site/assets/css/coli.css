@@ -71,9 +71,8 @@ input,select{font-family:inherit}
 .h-emo{font-size:2.2rem;line-height:1;filter:drop-shadow(0 3px 8px rgba(0,0,0,.45))}
 .h-game span.nm{font-weight:900;font-size:1.55rem;font-style:italic;letter-spacing:.5px}
 .h-lbl{font-weight:800;font-size:.85rem;color:#b9c4d6;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:4px}
-.h-prize{font-weight:900;font-size:3.9rem;line-height:1;color:#fff;margin-bottom:8px}
+.h-prize{font-weight:900;font-size:3.9rem;line-height:1;color:#fff;margin-bottom:26px}
 .h-prize small{font-size:2rem}
-.h-conc{font-size:.85rem;font-weight:700;color:#b9c4d6;margin-bottom:22px}
 .h-btns{display:flex;gap:10px;flex-wrap:wrap}
 .h-btn{border:2px solid rgba(255,255,255,.75);color:#fff;background:rgba(255,255,255,.12);padding:12px 24px;border-radius:10px;font-weight:900;font-size:.88rem;display:inline-flex;align-items:center;gap:8px;transition:all .2s;text-shadow:0 1px 2px rgba(0,0,0,.35)}
 .h-btn:hover{background:#fff;color:#0b1633;border-color:#fff;text-shadow:none}
