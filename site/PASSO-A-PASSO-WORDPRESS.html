@@ -227,6 +227,14 @@ RewriteRule ^$ /loterias/ [R=302,L]</pre>
 <li>No computador, recarregue com <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Mac: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>). No iPhone, Ajustes → Safari → Limpar Histórico e Dados.</li>
 <li>Ícone da tela inicial do iPhone: apague o atalho antigo e adicione de novo. O iOS grava o ícone no momento em que o atalho é criado e nunca o atualiza sozinho.</li>
 </ol>
+<h3>O ícone da Coli não aparece ao salvar na tela de início do iPhone</h3>
+<p>O iPhone pega o ícone da página que está aberta na hora de salvar. Se essa página é uma página do WordPress (por exemplo, o site novo aparecendo dentro do WordPress, Opção C, ou a home do WordPress redirecionando), o ícone vem do <b>Ícone do Site</b> do WordPress, e não dos arquivos do pacote. Faça os dois:</p>
+<ol>
+<li><b>No WordPress:</b> Aparência → Personalizar → Identidade do Site → <b>Ícone do site</b> → envie o arquivo <code>assets/img/icon-512.png</code> do pacote (512×512, fundo branco) e publique. Se o tema não tiver esse menu, use Configurações → Geral → Ícone do site.</li>
+<li><b>Nos arquivos do pacote:</b> confira que existem <code>apple-touch-icon.png</code> e <code>apple-touch-icon-precomposed.png</code> na raiz da pasta e <code>assets/img/apple-touch-icon.png</code>. Abra no celular o endereço <code>https://coliloterias.com.br/loterias/apple-touch-icon.png</code>: tem de aparecer o ícone da Coli. Se der erro 404, os arquivos não foram enviados.</li>
+<li>No iPhone: Ajustes → Safari → Limpar Histórico e Dados dos Sites. Depois abra o site de novo, apague o atalho antigo e toque em Compartilhar → <b>Adicionar à Tela de Início</b>. O iOS grava o ícone só nesse momento.</li>
+</ol>
+<p>Se usar plugin de cache ou Cloudflare, limpe o cache antes do passo 3.</p>
 <h3>Quero o site em um subdomínio (resultados.coliloterias.com.br)</h3>
 <p>No painel, crie o subdomínio apontando a raiz de documentos para <code>public_html/loterias</code>. Nenhuma alteração no site é necessária.</p>
 

@@ -183,20 +183,22 @@ def carimbar_versao():
         fp = os.path.join(SITE, fn)
         if os.path.exists(fp): h.update(open(fp, "rb").read())
     v = h.hexdigest()[:10]
-    pat = re.compile(r'((?:href|src)=")((?:assets/(?:css|js|img)/[^"?]+\.(?:css|js|svg|png))|manifest\.webmanifest)(?:\?v=[0-9a-f]+)?"')
+    pat = re.compile(r'((?:href|src)=")((?:assets/(?:css|js)/[^"?]+\.(?:css|js))|manifest\.webmanifest)(?:\?v=[0-9a-f]+)?"')
+    # ícones ficam sem ?v= (o iOS e o Android buscam pelo caminho exato)
+    limpa = re.compile(r'((?:href|src)="(?:assets/img/[^"?]+\.(?:svg|png)|apple-touch-icon(?:-precomposed)?\.png))\?v=[0-9a-f]+"')
     n = 0
     for fn in sorted(os.listdir(SITE)):
         if not fn.endswith(".html"): continue
         fp = os.path.join(SITE, fn)
         html = open(fp, encoding="utf-8").read()
-        novo = pat.sub(lambda m: m.group(1) + m.group(2) + "?v=" + v + '"', html)
+        novo = limpa.sub(r'\1"', pat.sub(lambda m: m.group(1) + m.group(2) + "?v=" + v + '"', html))
         if novo != html:
             open(fp, "w", encoding="utf-8").write(novo); n += 1
     # o manifest também aponta para os ícones
     mp = os.path.join(SITE, "manifest.webmanifest")
     if os.path.exists(mp):
         m = open(mp, encoding="utf-8").read()
-        m2 = re.sub(r'("src":\s*")([^"?]+)(?:\?v=[0-9a-f]+)?"', lambda k: k.group(1) + k.group(2) + "?v=" + v + '"', m)
+        m2 = re.sub(r'("src":\s*")([^"?]+)(?:\?v=[0-9a-f]+)?"', lambda k: k.group(1) + k.group(2) + '"', m)
         if m2 != m: open(mp, "w", encoding="utf-8").write(m2)
     print(f"  ✓ versão dos arquivos: {v} ({n} páginas atualizadas)")
 
