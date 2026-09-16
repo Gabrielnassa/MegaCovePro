@@ -241,6 +241,14 @@ input,select{font-family:inherit}
 .rm-tbl tr+tr td{border-top:1px solid rgba(255,255,255,.08)}
 .rm-foot{margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .rm-foot a{color:#fff;font-size:.76rem;font-weight:800;text-decoration:underline;opacity:.9}
+/* modal em cor clara (Timemania amarela): texto e detalhes escuros */
+.modal-box.claro .modal-x{color:rgba(0,0,0,.65)}
+.modal-box.claro .modal-x:hover{background:rgba(0,0,0,.1)}
+.modal-box.claro .rm-foot a{color:inherit}
+.modal-box.claro .rm-ball{color:inherit;box-shadow:0 3px 8px rgba(0,0,0,.18)}
+.modal-box.claro .rm-tbl{background:rgba(0,0,0,.09)}
+.modal-box.claro .rm-tbl tr+tr td{border-top-color:rgba(0,0,0,.1)}
+.modal-box.claro .skel{background:rgba(0,0,0,.12)}
 
 /* ═══ PÁGINAS INTERNAS ═══ */
 .crumb{background:#fff;border-bottom:1px solid var(--linha)}

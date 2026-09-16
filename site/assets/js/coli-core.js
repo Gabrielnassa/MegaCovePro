@@ -456,7 +456,7 @@ COLI.ui = {
   modalResultado: function(id, dadosPrevios){
     var j=COLI.byId(id); if(!j) return;
     var m=ensureModal();
-    var box=document.getElementById("rm-box"); var K=COLI.cor(j); box.style.background="linear-gradient(160deg,"+K.bg1+","+K.bg2+")";
+    var box=document.getElementById("rm-box"); var K=COLI.cor(j); box.style.background="linear-gradient(160deg,"+K.c1+","+K.c2+")"; box.style.color=K.fg; box.classList.toggle("claro",K.fg.toLowerCase()!=="#fff");
     document.getElementById("rm-title").textContent=j.emo+" "+j.nome;
     document.getElementById("rm-sub").textContent="Carregando último resultado…";
     document.getElementById("rm-body").innerHTML='<div class="rm-balls"><span class="skel" style="width:220px;height:40px">&nbsp;</span></div>';
