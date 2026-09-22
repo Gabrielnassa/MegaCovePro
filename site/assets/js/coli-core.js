@@ -170,7 +170,7 @@ COLI.norm = function(d, fonte){
     acumuladoProx: +(d.valorAcumuladoProximoConcurso||0)||0,
     arrecadado: +(d.valorArrecadado||0)||0,
     local: d.localSorteio ? (d.localSorteio+(d.nomeMunicipioUFSorteio?" – "+d.nomeMunicipioUFSorteio:"")) : (d.local||""),
-    jogos: jogos, fonte: fonte||"?"
+    jogos: jogos, fonte: (d._fonte&&d._fonte!=="caixa"&&fonte==="caixa")?d._fonte:(fonte||"?"), stale: !!d._stale
   };
 };
 /* linha compacta do histórico: [numero,"dd/mm/aaaa",[dezenas],extra] */
@@ -218,28 +218,44 @@ COLI.api = {
   /* último resultado de uma loteria */
   ultimo: function(id){
     var c=LS.get("ultimo:"+id); if(c) return Promise.resolve(c);
+    var j=COLI.byId(id);
     return tentar([
-      function(){ return getJSON(API+"?jogo="+id, 9000).then(function(d){ return COLI.norm(d,"caixa"); }); },
+      function(){ return getJSON(API+"?jogo="+id, 9000).then(function(d){ return COLI.norm(d,"caixa"); }); }
+    ]).then(function(n){
+      if(n && !COLI.desatualizado(n,j)) return n;
+      return COLI.api.reserva(id).then(function(r){ return COLI.maisNovo(n,r); });
+    }).then(function(n){ if(n && !COLI.desatualizado(n,j)) LS.set("ultimo:"+id,n,TTL); return n; });
+  },
+  /* fontes de reserva lidas direto pelo navegador (sem passar pelo PHP) */
+  reserva: function(id){
+    return tentar([
       function(){ return getJSON(PUB1+id+"/latest", 7000).then(function(d){ return COLI.norm(d,"publica"); }); },
       function(){ return getJSON(PUB2+id+"/ultimo", 7000).then(function(d){ return COLI.norm(d,"publica"); }); },
       function(){ return ghUltimo(id); }
-    ]).then(function(n){ if(n) LS.set("ultimo:"+id,n,TTL); return n; });
+    ]);
   },
   /* todos os últimos de uma vez (1 requisição quando há PHP) → {id: norm} */
   ultimos: function(){
     var c=LS.get("ultimos"); if(c) return Promise.resolve(c);
     return getJSON(API+"?acao=ultimos", 15000).then(function(d){
-      var out={}, ok=0;
-      COLI.JOGOS.forEach(function(j){ var n=COLI.norm(d&&d[j.id],"caixa"); if(n){ out[j.id]=n; ok++; } });
-      if(!ok) throw new Error("vazio");
+      var out={};
+      COLI.JOGOS.forEach(function(j){ var n=COLI.norm(d&&d[j.id],"caixa"); if(n) out[j.id]=n; });
       return out;
-    }).catch(function(){
-      return Promise.all(COLI.JOGOS.map(function(j){ return COLI.api.ultimo(j.id); })).then(function(arr){
-        var out={}; arr.forEach(function(n,i){ if(n) out[COLI.JOGOS[i].id]=n; }); return out;
+    }).catch(function(){ return {}; }).then(function(out){
+      /* loterias que faltaram ou vieram vencidas: tenta as reservas pelo navegador e fica com o concurso mais novo */
+      var pend=COLI.JOGOS.filter(function(j){ return !out[j.id] || COLI.desatualizado(out[j.id],j); });
+      if(!pend.length) return out;
+      return Promise.all(pend.map(function(j){ return COLI.api.reserva(j.id).catch(function(){ return null; }); })).then(function(arr){
+        arr.forEach(function(r,i){ var id=pend[i].id; var m=COLI.maisNovo(out[id],r); if(m) out[id]=m; });
+        return out;
       });
     }).then(function(out){
       var ok=Object.keys(out).length;
-      if(ok){ LS.set("ultimos",out,TTL); Object.keys(out).forEach(function(k){ LS.set("ultimo:"+k,out[k],TTL); }); }
+      if(ok){
+        var todosFrescos=COLI.JOGOS.every(function(j){ return out[j.id] && !COLI.desatualizado(out[j.id],j); });
+        if(todosFrescos) LS.set("ultimos",out,TTL);
+        Object.keys(out).forEach(function(k){ if(!COLI.desatualizado(out[k])) LS.set("ultimo:"+k,out[k],TTL); });
+      }
       return out;
     });
   },
@@ -477,7 +493,21 @@ COLI.ui = {
   },
   statusBar: function(el, tipo, txt){ if(!el) return; el.className="status-bar "+(tipo||""); el.innerHTML='<span class="live-dot"></span> '+COLI.esc(txt); }
 };
-COLI.nomeFonte = function(f){ return {caixa:"API oficial da CAIXA",publica:"API pública das Loterias",base:"base diária (sem valores de prêmio)",historico:"histórico local"}[f]||f; };
+COLI.nomeFonte = function(f){ return {caixa:"API oficial da CAIXA",publica:"API pública das Loterias",base:"base diária (sem valores de prêmio)",cache:"último resultado guardado (pode estar desatualizado)",historico:"histórico local"}[f]||f; };
+/* Um resultado está desatualizado quando o próximo sorteio já aconteceu (com 3 h de folga para a CAIXA publicar)
+   ou quando a data do sorteio é antiga demais para a frequência da loteria. */
+COLI.desatualizado = function(n, j){
+  if(!n) return true;
+  if(n.stale) return true;
+  j = j || COLI.byId(n.jogo||"") || null;
+  var agora = Date.now(), folga = 3*3600e3;
+  var prox = n.proxData ? COLI.parseData(n.proxData, j?j.hora:20) : null;
+  if(prox && !isNaN(prox.getTime())) return agora > prox.getTime()+folga;
+  var d = n.data ? COLI.parseData(n.data, j?j.hora:20) : null;
+  if(d && !isNaN(d.getTime())){ var dias=(j&&j.dias&&j.dias.length)?Math.ceil(7/j.dias.length)+1:8; return agora > d.getTime()+dias*864e5+folga; }
+  return false;
+};
+COLI.maisNovo = function(a, b){ if(!a) return b||null; if(!b) return a; return (b.numero>a.numero)?b:a; };
 
 
 /* ───────── VERIFICAÇÃO DE IDADE (+18) ───────── */

@@ -65,9 +65,11 @@ function atualizar(){
       aplicarLinha(j,n);
     });
     var ag=new Date(), hh=COLI.pad2(ag.getHours())+":"+COLI.pad2(ag.getMinutes());
-    if(ok===J.length && fontes.caixa) COLI.ui.statusBar($("status"),"","Atualizado com a CAIXA às "+hh);
-    else if(ok>0) COLI.ui.statusBar($("status"),fontes.base&&!fontes.caixa&&!fontes.publica?"warn":"", "Atualizado às "+hh+" · "+ok+"/"+J.length+" loterias"+(fontes.base?" · prêmios indisponíveis na fonte de reserva":""));
-    else COLI.ui.statusBar($("status"),"warn","Sem conexão com a CAIXA agora — exibindo dados salvos");
+    var vencidos=J.filter(function(j){ return LIVE[j.id] && COLI.desatualizado(LIVE[j.id],j); });
+    if(ok===0) COLI.ui.statusBar($("status"),"warn","Sem conexão com a CAIXA agora — exibindo dados salvos");
+    else if(vencidos.length) COLI.ui.statusBar($("status"),"warn","Atualizado às "+hh+" · aguardando a CAIXA publicar: "+vencidos.map(function(j){return j.nome;}).join(", "));
+    else if(ok===J.length && fontes.caixa && !fontes.base) COLI.ui.statusBar($("status"),"","Atualizado com a CAIXA às "+hh);
+    else COLI.ui.statusBar($("status"),"", "Atualizado às "+hh+" · "+ok+"/"+J.length+" loterias"+(fontes.base?" · fonte de reserva (prêmios podem não aparecer)":""));
     renderHero(true);
     atualizando=false;
   }).catch(function(){ COLI.ui.statusBar($("status"),"warn","Sem conexão com a CAIXA agora — exibindo dados salvos"); atualizando=false; });

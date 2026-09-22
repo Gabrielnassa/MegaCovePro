@@ -235,6 +235,15 @@ RewriteRule ^$ /loterias/ [R=302,L]</pre>
 <li>No iPhone: Ajustes → Safari → Limpar Histórico e Dados dos Sites. Depois abra o site de novo, apague o atalho antigo e toque em Compartilhar → <b>Adicionar à Tela de Início</b>. O iOS grava o ícone só nesse momento.</li>
 </ol>
 <p>Se usar plugin de cache ou Cloudflare, limpe o cache antes do passo 3.</p>
+<h3>Os resultados não estão atualizando sozinhos</h3>
+<p>O site consulta a CAIXA pelo servidor (arquivo <code>api/loterias.php</code>). Algumas hospedagens bloqueiam o PHP de acessar a internet, e a CAIXA às vezes recusa conexões de servidores. Por isso o site tem quatro fontes em cascata (CAIXA, duas APIs públicas e uma base diária no GitHub) e, se o servidor não conseguir, o próprio navegador do visitante busca nas fontes públicas.</p>
+<ol>
+<li>Abra <code>https://coliloterias.com.br/loterias/diagnostico.html</code>. A página testa cada fonte pelo servidor e pelo navegador e mostra o que o site está exibindo.</li>
+<li>Se a linha "Alguma fonte responde ao servidor?" estiver como <b>NÃO</b>, a hospedagem está bloqueando conexões externas do PHP. Peça ao suporte da hospedagem para liberar conexões de saída (cURL/HTTPS) para <code>servicebus2.caixa.gov.br</code> e <code>raw.githubusercontent.com</code>. Enquanto isso o site continua atualizando pelo navegador do visitante, com a base diária.</li>
+<li>Se "Pasta api/cache gravável" ou "Pasta data gravável" estiver como <b>NÃO</b>, dê permissão de escrita (passo 5).</li>
+<li>Clique em <b>Limpar caches</b> na página de diagnóstico se um resultado antigo tiver ficado preso.</li>
+<li>Tire uma captura de tela inteira da página e envie ao suporte se ainda assim não atualizar.</li>
+</ol>
 <h3>Quero o site em um subdomínio (resultados.coliloterias.com.br)</h3>
 <p>No painel, crie o subdomínio apontando a raiz de documentos para <code>public_html/loterias</code>. Nenhuma alteração no site é necessária.</p>
 

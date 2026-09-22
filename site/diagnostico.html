@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Diagnóstico — Coli Loterias</title>
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/coli.css?v=cea96903a2">
+<style>
+.dg{max-width:900px;margin:30px auto;padding:0 16px}
+.dg h1{font-size:1.5rem;margin-bottom:6px}
+.dg p{color:var(--txt2);font-weight:600;margin-bottom:14px}
+.dg table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--sombra);margin-bottom:18px;font-size:.85rem}
+.dg th,.dg td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--linha);vertical-align:top;word-break:break-word}
+.dg th{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);background:#f7f9fc}
+.dg .ok{color:#15803d;font-weight:900}.dg .bad{color:#b91c1c;font-weight:900}.dg .wait{color:var(--txt3);font-weight:800}
+.dg .btns{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 22px}
+.dg pre{background:#0b1633;color:#d7e0f2;border-radius:12px;padding:14px;font-size:.72rem;overflow:auto;max-height:340px}
+.dg h2{font-size:1.05rem;margin:18px 0 8px}
+</style>
+</head>
+<body data-page="diagnostico">
+<header id="coli-header"></header>
+<main class="dg">
+  <h1>🩺 Diagnóstico das fontes de resultados</h1>
+  <p>Esta página testa, pela hospedagem (PHP) e pelo navegador, cada fonte de resultados que o site usa. Tire uma captura de tela inteira e envie para o suporte se os resultados não estiverem atualizando.</p>
+  <div class="btns">
+    <button class="btn btn-azul" id="dg-rodar" type="button">↻ Rodar de novo</button>
+    <button class="btn btn-line" id="dg-limpar" type="button">🧹 Limpar caches (servidor e navegador)</button>
+    <button class="btn btn-line" id="dg-copiar" type="button">📋 Copiar relatório</button>
+  </div>
+
+  <h2>1. Servidor (api/loterias.php)</h2>
+  <table id="dg-php"><thead><tr><th>Item</th><th>Valor</th></tr></thead><tbody><tr><td colspan="2" class="wait">Consultando…</td></tr></tbody></table>
+
+  <h2>2. Fontes testadas pelo servidor</h2>
+  <table id="dg-fontes"><thead><tr><th>Fonte</th><th>Status</th><th>Último concurso (Mega-Sena)</th><th>Tempo</th><th>Erro</th></tr></thead><tbody><tr><td colspan="5" class="wait">Consultando…</td></tr></tbody></table>
+
+  <h2>3. Fontes testadas pelo navegador</h2>
+  <table id="dg-nav"><thead><tr><th>Fonte</th><th>Status</th><th>Último concurso (Mega-Sena)</th><th>Tempo</th><th>Erro</th></tr></thead><tbody><tr><td colspan="5" class="wait">Consultando…</td></tr></tbody></table>
+
+  <h2>4. O que o site está mostrando agora</h2>
+  <table id="dg-site"><thead><tr><th>Loteria</th><th>Concurso</th><th>Data</th><th>Fonte</th><th>Situação</th></tr></thead><tbody><tr><td colspan="5" class="wait">Consultando…</td></tr></tbody></table>
+
+  <h2>Relatório</h2>
+  <pre id="dg-json">…</pre>
+</main>
+<footer id="coli-footer"></footer>
+<script src="assets/js/coli-config.js?v=cea96903a2"></script>
+<script src="assets/js/coli-core.js?v=cea96903a2"></script>
+<script>
+(function(){
+"use strict";
+var CFG=window.COLI_CONFIG||{}, API=CFG.api||"api/loterias.php", $=function(i){return document.getElementById(i);};
+var REL={};
+function esc(s){ return COLI.esc(String(s==null?"":s)); }
+function st(ok){ return ok?'<span class="ok">✓ OK</span>':'<span class="bad">✗ Falhou</span>'; }
+function linhas(id, html){ $(id).querySelector("tbody").innerHTML=html; }
+function testarNav(nome,url,tipo){
+  var t=Date.now();
+  return COLI.getJSON(url,15000).then(function(d){
+    var n=null;
+    if(Array.isArray(d)){ d.forEach(function(x){ if(x&&x.concurso>n) n=x.concurso; }); }
+    else { var k=COLI.norm(d,tipo); n=k?k.numero:null; }
+    return {fonte:nome,url:url,ok:n!=null,concurso:n,ms:Date.now()-t,erro:n==null?"sem dados":""};
+  }).catch(function(e){ return {fonte:nome,url:url,ok:false,concurso:null,ms:Date.now()-t,erro:String(e&&e.message||e)}; });
+}
+function rodar(){
+  REL={hora:new Date().toString(), url:location.href, navegador:navigator.userAgent};
+  linhas("dg-php",'<tr><td colspan="2" class="wait">Consultando…</td></tr>');
+  linhas("dg-fontes",'<tr><td colspan="5" class="wait">Consultando…</td></tr>');
+  linhas("dg-nav",'<tr><td colspan="5" class="wait">Consultando…</td></tr>');
+  linhas("dg-site",'<tr><td colspan="5" class="wait">Consultando…</td></tr>');
+  /* 1 e 2: servidor */
+  COLI.getJSON(API+"?acao=status&_="+Date.now(),60000).then(function(s){
+    REL.servidor=s;
+    var it=[["PHP",s.php],["cURL",s.curl?"sim ("+(s.curl_versao||"")+")":"NÃO — o PHP não consegue acessar a internet"],["OpenSSL",s.openssl||"?"],["allow_url_fopen",s.allow_url_fopen?"sim":"não"],
+            ["Pasta api/cache gravável",s.cache_gravavel?"sim":"NÃO — dê permissão de escrita"],["Pasta data gravável",s.data_gravavel?"sim":"NÃO — dê permissão de escrita"],
+            ["Cache atual da Mega-Sena",s.cache_megasena?("concurso "+s.cache_megasena.concurso+" · fonte "+s.cache_megasena.fonte+" · há "+Math.round((s.cache_megasena.idade_seg||0)/60)+" min"):"vazio"],
+            ["Hora do servidor",s.hora_servidor],["CAIXA responde ao servidor?",s.caixa_online?"sim":"NÃO"],["Alguma fonte responde ao servidor?",s.alguma_fonte_online?"sim":"NÃO — a hospedagem está bloqueando conexões externas"]];
+    linhas("dg-php",it.map(function(r){ var ruim=/NÃO/.test(String(r[1])); return '<tr><td>'+esc(r[0])+'</td><td class="'+(ruim?"bad":"")+'">'+esc(r[1])+'</td></tr>'; }).join(""));
+    linhas("dg-fontes",(s.fontes||[]).map(function(f){ return '<tr><td>'+esc(COLI.nomeFonte(f.fonte))+'<br><small>'+esc(f.url)+'</small></td><td>'+st(f.ok)+'</td><td>'+esc(f.concurso||"—")+'</td><td>'+esc(f.ms)+' ms</td><td>'+esc(f.erro)+'</td></tr>'; }).join(""));
+  }).catch(function(e){
+    REL.servidor={erro:String(e&&e.message||e)};
+    linhas("dg-php",'<tr><td>api/loterias.php</td><td class="bad">Não respondeu ('+esc(e&&e.message||e)+'). O PHP não está rodando nesta pasta ou o arquivo não foi enviado.</td></tr>');
+    linhas("dg-fontes",'<tr><td colspan="5" class="bad">Sem resposta do servidor.</td></tr>');
+  }).then(mostrar);
+  /* 3: navegador */
+  Promise.all([
+    testarNav("caixa","https://servicebus2.caixa.gov.br/portaldeloterias/api/megasena","caixa"),
+    testarNav("publica","https://loteriascaixa-api.vercel.app/api/megasena/latest","publica"),
+    testarNav("guidi","https://api.guidi.dev.br/loteria/megasena/ultimo","publica"),
+    testarNav("base","https://raw.githubusercontent.com/eitchtee/loterias.json/main/data/mega-sena.json","base")
+  ]).then(function(arr){
+    REL.navegador_fontes=arr;
+    linhas("dg-nav",arr.map(function(f){ return '<tr><td>'+esc(COLI.nomeFonte(f.fonte))+'<br><small>'+esc(f.url)+'</small></td><td>'+st(f.ok)+'</td><td>'+esc(f.concurso||"—")+'</td><td>'+esc(f.ms)+' ms</td><td>'+esc(f.erro)+(f.fonte==="caixa"&&!f.ok?" (normal: a CAIXA bloqueia o navegador; por isso existe o PHP)":"")+'</td></tr>'; }).join(""));
+    mostrar();
+  });
+  /* 4: o que o site mostra */
+  try{ Object.keys(localStorage).forEach(function(k){ if(k.indexOf("coli:ultimo")===0) localStorage.removeItem(k); }); }catch(e){}
+  COLI.api.ultimos().then(function(map){
+    REL.site={};
+    linhas("dg-site",COLI.JOGOS.map(function(j){
+      var n=map&&map[j.id]; if(!n){ REL.site[j.id]=null; return '<tr><td>'+esc(j.nome)+'</td><td colspan="4" class="bad">sem dados</td></tr>'; }
+      var venc=COLI.desatualizado(n,j); REL.site[j.id]={concurso:n.numero,data:n.data,fonte:n.fonte,desatualizado:venc};
+      return '<tr><td>'+esc(j.nome)+'</td><td>'+esc(n.numero)+'</td><td>'+esc(n.data)+'</td><td>'+esc(COLI.nomeFonte(n.fonte))+'</td><td class="'+(venc?"bad":"ok")+'">'+(venc?"aguardando sorteio mais novo":"atual")+'</td></tr>';
+    }).join(""));
+    mostrar();
+  });
+}
+function mostrar(){ $("dg-json").textContent=JSON.stringify(REL,null,2); }
+$("dg-rodar").addEventListener("click",rodar);
+$("dg-copiar").addEventListener("click",function(){ try{ navigator.clipboard.writeText($("dg-json").textContent); this.textContent="✓ Copiado"; }catch(e){} });
+$("dg-limpar").addEventListener("click",function(){
+  try{ Object.keys(localStorage).forEach(function(k){ if(k.indexOf("coli:")===0 && k!=="coli:idade18") localStorage.removeItem(k); }); }catch(e){}
+  COLI.getJSON(API+"?acao=limpar&_="+Date.now(),30000).catch(function(){}).then(function(){ rodar(); });
+});
+document.addEventListener("DOMContentLoaded",rodar);
+})();
+</script>
+</body>
+</html>

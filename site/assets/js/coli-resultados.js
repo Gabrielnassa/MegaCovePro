@@ -43,8 +43,11 @@ function atualizar(primeira){
     });
     var ag=new Date(), hh=COLI.pad2(ag.getHours())+":"+COLI.pad2(ag.getMinutes());
     if(ok===0){ band.className="res-band rb-warn"; band.innerHTML='Não foi possível conectar à CAIXA agora. Confira em <a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">loterias.caixa.gov.br</a>.'; return; }
-    band.className="res-band "+(fontes.caixa||fontes.publica?"rb-ok":"rb-warn");
-    band.textContent="✓ "+(novos?novos+" resultado(s) novo(s) · ":"")+"Atualizado às "+hh+" · "+ok+"/"+J.length+" loterias · fonte: "+COLI.nomeFonte(fontes.caixa?"caixa":(fontes.publica?"publica":"base"));
+    var vencidos=J.filter(function(j){ return EST[j.id] && COLI.desatualizado(EST[j.id],j); });
+    var fontePrincipal=fontes.caixa?"caixa":(fontes.publica?"publica":(fontes.base?"base":"cache"));
+    if(vencidos.length){ band.className="res-band rb-warn"; band.textContent="Atualizado às "+hh+" · aguardando a CAIXA publicar: "+vencidos.map(function(j){return j.nome;}).join(", "); return; }
+    band.className="res-band "+(fontePrincipal==="cache"?"rb-warn":"rb-ok");
+    band.textContent="✓ "+(novos?novos+" resultado(s) novo(s) · ":"")+"Atualizado às "+hh+" · "+ok+"/"+J.length+" loterias · fonte: "+COLI.nomeFonte(fontePrincipal);
   }).catch(function(){ band.className="res-band rb-warn"; band.textContent="Não foi possível conectar à CAIXA agora."; });
 }
 

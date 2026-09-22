@@ -206,3 +206,10 @@ Cada página chama CSS e JS com `?v=<versão>` (gerado pelo `tools/build.py`) e 
 pede ao navegador para revalidar as páginas HTML. Ao trocar de versão, apague a pasta antiga
 antes de extrair o zip novo, limpe o cache do plugin do WordPress/Cloudflare, se houver, e
 recarregue com Ctrl+Shift+R. No iPhone, apague e recrie o atalho da tela inicial.
+
+## Resultados não atualizam?
+
+Abra `diagnostico.html` no site publicado. Ela testa as quatro fontes (CAIXA, duas APIs públicas
+e a base diária do GitHub) pelo servidor e pelo navegador, mostra o que o site está exibindo e
+permite limpar os caches. `api/loterias.php?acao=status` devolve o mesmo diagnóstico em JSON e
+`?acao=limpar` apaga o cache do servidor.
