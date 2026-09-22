@@ -27,6 +27,7 @@ DIST   = os.path.join(RAIZ, "dist")
 GH     = "https://raw.githubusercontent.com/eitchtee/loterias.json/main/data/"
 FORCAR = "--forcar" in sys.argv
 SEMZIP = "--sem-zip" in sys.argv
+GTM_ID = os.environ.get("COLI_GTM_ID", "GTM-PPGQ9CP9")   # Google Tag Manager (vazio = não instala)
 SITE_URL = os.environ.get("COLI_SITE_URL", "https://coliloterias.com.br/loterias/")   # endereço final do site (para canonical, sitemap e Open Graph)
 
 JOGOS = [
@@ -168,6 +169,37 @@ def gerar_blog():
     open(os.path.join(SITE, "robots.txt"), "w", encoding="utf-8").write(f"User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: {SITE_URL}sitemap.xml\n")
     print(f"  ✓ blog.html, data/blog.json, sitemap.xml ({len([1 for _, d in urls if d <= hoje])} matérias publicadas até hoje)")
 
+def inserir_gtm():
+    """Instala o Google Tag Manager em todas as páginas: script no topo do <head>
+    (logo após o charset) e <noscript> imediatamente após a abertura do <body>."""
+    if not GTM_ID: return
+    head = ('<!-- Google Tag Manager -->\n'
+            "<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\n"
+            "new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\n"
+            "j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n"
+            "'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n"
+            "})(window,document,'script','dataLayer','" + GTM_ID + "');</script>\n"
+            '<!-- End Google Tag Manager -->')
+    body = ('<!-- Google Tag Manager (noscript) -->\n'
+            '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=' + GTM_ID + '"\n'
+            'height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n'
+            '<!-- End Google Tag Manager (noscript) -->')
+    re_head = re.compile(r'\n?<!-- Google Tag Manager -->.*?<!-- End Google Tag Manager -->', re.S)
+    re_body = re.compile(r'\n?<!-- Google Tag Manager \(noscript\) -->.*?<!-- End Google Tag Manager \(noscript\) -->', re.S)
+    n = 0
+    for fn in sorted(os.listdir(SITE)):
+        if not fn.endswith(".html"): continue
+        fp = os.path.join(SITE, fn)
+        html = open(fp, encoding="utf-8").read()
+        novo = re_body.sub("", re_head.sub("", html))          # remove instalação anterior (idempotente)
+        m = re.search(r'<meta charset="[^"]+">', novo, re.I)
+        if m: novo = novo[:m.end()] + "\n" + head + novo[m.end():]
+        else:  novo = re.sub(r'(<head[^>]*>)', lambda k: k.group(1) + "\n" + head, novo, count=1, flags=re.I)
+        novo = re.sub(r'(<body[^>]*>)', lambda k: k.group(1) + "\n" + body, novo, count=1, flags=re.I)
+        if novo != html:
+            open(fp, "w", encoding="utf-8").write(novo); n += 1
+    print(f"  ✓ Google Tag Manager {GTM_ID} ({n} páginas)")
+
 def carimbar_versao():
     """Acrescenta ?v=<hash> aos CSS/JS/manifest/ícones referenciados em todas as páginas.
     Assim o navegador (e o cache da hospedagem) baixa a versão nova depois de cada upload,
@@ -230,6 +262,7 @@ def main():
         print(f"  ✓ estatisticas-{jid}.html")
 
     gerar_blog()
+    inserir_gtm()
     carimbar_versao()
 
     if SEMZIP:
