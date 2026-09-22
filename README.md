@@ -11,7 +11,16 @@ site/     → o site pronto para publicar (é o conteúdo do .zip)
 tools/    → build.py (gera data/*.json, páginas de estatísticas e o zip)
             template-estatisticas.html
 dist/     → coli-loterias.zip (entregável)
+            megacover-web.zip (MegaCover Pro Elite web, pronto para o GitHub Pages)
+megacover/→ MegaCover Pro Elite em HTML/JS (roda no GitHub Pages, sem servidor)
 ```
+
+## MegaCover Pro Elite (web)
+
+A pasta `megacover/` é a versão para navegador do programa desktop MegaCover
+Pro Elite v1.5.0 (Python/PySide6): estatísticas, gerador com MegaCover AI,
+fechamentos, simulador Monte Carlo e conferência para as 9 loterias CAIXA.
+Veja `megacover/README.md` para publicar no GitHub Pages.
 
 ## Publicar
 

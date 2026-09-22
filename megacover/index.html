@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MegaCover Pro Elite</title>
+<meta name="description" content="Análise estatística, gerador de jogos, fechamentos e simulação Monte Carlo para as 9 loterias CAIXA — direto no navegador.">
+<meta name="theme-color" content="#0f1420">
+<link rel="icon" href="assets/icon.png">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="topo">
+  <div class="marca">
+    <img src="assets/icon.png" alt="" width="36" height="36">
+    <div>
+      <h1>MegaCover Pro Elite<span class="tm">™</span></h1>
+      <p>Inteligência estatística para as Loterias CAIXA</p>
+    </div>
+  </div>
+  <div class="acoes-topo">
+    <button id="bt-atualizar-todas" class="bt primario" type="button">🔄 Atualizar TODAS</button>
+    <button id="bt-tema" class="bt icone" type="button" title="Alternar tema claro/escuro" aria-label="Alternar tema">◐</button>
+  </div>
+</header>
+
+<nav class="loterias" id="loterias" aria-label="Loterias"></nav>
+<nav class="abas" id="abas" aria-label="Módulos"></nav>
+
+<main id="conteudo" class="conteudo"><p class="carregando">Carregando…</p></main>
+
+<div id="status" class="status" role="status" aria-live="polite"></div>
+
+<footer class="rodape">
+  <p><strong>Aviso legal:</strong> ferramenta estatística e combinatória. Não prevê resultados nem garante prêmios.
+  Cada sorteio é aleatório e independente. Jogue com responsabilidade. Proibido para menores de 18 anos.</p>
+  <p>MegaCover Pro Elite v1.5.0 (Web) · NassaTech · Resultados oficiais em
+  <a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">loterias.caixa.gov.br</a></p>
+</footer>
+
+<script src="assets/engine.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
