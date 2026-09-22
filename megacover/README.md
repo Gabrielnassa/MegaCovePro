@@ -1,4 +1,4 @@
-# MegaCover Pro Elite™ — versão Web (GitHub Pages)
+# MegaCover Pro Elite™ 2.0 — versão Web (GitHub Pages)
 
 Versão em **HTML + JavaScript puro** do MegaCover Pro Elite v1.5.0: roda direto
 no navegador (computador ou celular), sem instalar Python, sem servidor e sem
@@ -18,6 +18,31 @@ Lotofácil, Quina, Lotomania, Dupla Sena, Timemania, Dia de Sorte, Super Sete e
 | 🎲 Simulador | Monte Carlo de 10 mil a 1 milhão de sorteios + probabilidade exata |
 | ✅ Conferir | Confere seus jogos num concurso ou em todo o histórico |
 | 📥 Dados | Atualizar online, adicionar concurso à mão, importar o CSV do desktop, exportar histórico, abrir projetos |
+
+O site tem duas partes:
+
+- **`index.html`** — página de apresentação (produto, recursos, planos, dúvidas).
+- **`app.html`** — o painel com as 8 ferramentas.
+
+## Beta hoje, assinatura amanhã
+
+Tudo o que é comercial fica em **`assets/plano.js`**:
+
+| Campo | Para que serve |
+|---|---|
+| `fase` | `"beta"` libera tudo grátis (hoje). `"assinatura"` faz os recursos PRO pedirem assinatura |
+| `precoMensal`, `precoAnual`, `economiaAnual` | valores mostrados na seção Planos (deixe `null` para "Em breve") |
+| `linkAssinatura` | link de pagamento (Mercado Pago, Stripe, Hotmart…) |
+| `whatsapp` / `email` | ativa o botão "Entrar na lista de espera" |
+| `pro` | lista dos recursos PRO (aparecem com o selo **PRO** no painel) |
+| `gratis` | limites do plano gratuito quando a fase for `"assinatura"` |
+
+> **Importante para cobrar de verdade:** o GitHub Pages só hospeda arquivos
+> estáticos, então um bloqueio feito apenas no navegador pode ser burlado.
+> Na hora de lançar a assinatura será preciso **login + verificação no servidor**
+> (por exemplo Supabase ou Firebase para as contas e Mercado Pago/Stripe para o
+> pagamento). A interface já está pronta para isso: basta trocar a função
+> `assinante()` em `assets/plano.js` por essa verificação.
 
 ## Como publicar no GitHub (5 minutos)
 
@@ -59,10 +84,13 @@ python3 -m http.server 8000
 ## Estrutura
 
 ```
-index.html              página única
+index.html              página de apresentação (landing)
+app.html                painel (as 8 ferramentas)
+assets/plano.js         fase Beta/assinatura, preços e links  ← edite aqui
+assets/site.css         estilos da página de apresentação
 assets/engine.js        motor: estatísticas, gerador, MegaScore, IA, fechamentos, Monte Carlo
 assets/app.js           interface (abas, gráficos, exportação)
-assets/style.css        tema claro/escuro, layout para celular
+assets/style.css        design system do painel (tema claro/escuro, celular)
 assets/icon.png         ícone
 data/*.json             histórico das 9 loterias  [concurso, data, [dezenas], extra]
 atualizar_dados.py      atualizador (usado pelo GitHub Actions)

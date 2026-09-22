@@ -2,43 +2,252 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MegaCover Pro Elite</title>
-<meta name="description" content="Análise estatística, gerador de jogos, fechamentos e simulação Monte Carlo para as 9 loterias CAIXA — direto no navegador.">
-<meta name="theme-color" content="#0f1420">
+<meta name="description" content="Inteligência estatística para as 9 loterias CAIXA: histórico completo, gerador com MegaScore™ e IA, fechamentos, simulação Monte Carlo e conferência. Beta gratuito.">
+<meta property="og:title" content="MegaCover Pro Elite — inteligência estatística para loterias">
+<meta property="og:description" content="Histórico completo, gerador com IA, fechamentos e simulação Monte Carlo para as 9 loterias CAIXA. Beta gratuito.">
+<meta property="og:image" content="assets/icon.png">
+<meta name="theme-color" content="#090b0f">
 <link rel="icon" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=JetBrains+Mono:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/site.css">
+<script>try{var t=localStorage.getItem("mc:tema");if(t)document.documentElement.setAttribute("data-theme",JSON.parse(t))}catch(e){}</script>
 </head>
-<body>
-<header class="topo">
-  <div class="marca">
-    <img src="assets/icon.png" alt="" width="36" height="36">
-    <div>
-      <h1>MegaCover Pro Elite<span class="tm">™</span></h1>
-      <p>Inteligência estatística para as Loterias CAIXA</p>
-    </div>
-  </div>
-  <div class="acoes-topo">
-    <button id="bt-atualizar-todas" class="bt primario" type="button">🔄 Atualizar TODAS</button>
-    <button id="bt-tema" class="bt icone" type="button" title="Alternar tema claro/escuro" aria-label="Alternar tema">◐</button>
+<body class="site">
+
+<header class="topo-site">
+  <div class="envolve">
+    <a class="marca" href="#topo"><img src="assets/icon.png" alt=""><span><b>MegaCover</b><small>Pro Elite</small></span></a>
+    <nav aria-label="Seções">
+      <a href="#recursos">Recursos</a><a href="#como">Como funciona</a><a href="#planos">Planos</a><a href="#faq">Dúvidas</a>
+    </nav>
+    <a class="bt primario" href="app.html">Abrir o painel</a>
   </div>
 </header>
 
-<nav class="loterias" id="loterias" aria-label="Loterias"></nav>
-<nav class="abas" id="abas" aria-label="Módulos"></nav>
+<main id="topo">
+  <section class="hero">
+    <div class="envolve">
+      <div>
+        <span class="selo-beta"><i></i>Beta aberto · todos os recursos PRO grátis</span>
+        <h1>Estatística de verdade para quem joga <em>com método.</em></h1>
+        <p class="lead">O MegaCover Pro Elite analisa o histórico completo das 9 loterias CAIXA, gera jogos filtrados com o MegaScore™, monta fechamentos e simula até um milhão de sorteios — direto no seu navegador.</p>
+        <div class="ctas">
+          <a class="bt primario grande" href="app.html">Começar grátis <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="bt grande" href="#recursos">Ver recursos</a>
+        </div>
+        <div class="prova">
+          <div><b>9</b><span>loterias CAIXA</span></div>
+          <div><b id="p-conc">24 mil+</b><span>concursos analisados</span></div>
+          <div><b>1 mi</b><span>simulações por teste</span></div>
+          <div><b>0</b><span>instalações</span></div>
+        </div>
+      </div>
 
-<main id="conteudo" class="conteudo"><p class="carregando">Carregando…</p></main>
+      <div class="demo" aria-label="Demonstração ao vivo">
+        <div class="barra-demo"><i></i><i></i><i></i></div>
+        <div class="linha">
+          <div><div class="sobre" id="d-rot">Mega-Sena · último concurso</div><div class="bolas" id="d-ult"><span class="bola">··</span></div></div>
+        </div>
+        <div class="linha">
+          <div style="min-width:0"><div class="sobre">Jogo sugerido · estratégia estatística</div><div class="bolas" id="d-jogo"><span class="bola">··</span></div></div>
+          <div class="medidor" title="MegaScore™ de 0 a 100">
+            <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--painel3)" stroke-width="3"/><circle id="d-arco" cx="18" cy="18" r="15.5" fill="none" stroke="var(--ouro)" stroke-width="3" stroke-linecap="round" stroke-dasharray="0 100" pathLength="100" style="transition:stroke-dasharray .8s cubic-bezier(.2,.7,.2,1)"/></svg>
+            <b id="d-score">–</b>
+          </div>
+        </div>
+        <button class="bt gerar" type="button" id="d-gerar"><svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Gerar outro jogo</button>
+        <p class="nota-demo">Demonstração real: calculada agora com o histórico completo. MegaScore™ mede o equilíbrio estatístico do jogo — não é chance de prêmio.</p>
+      </div>
+    </div>
+  </section>
 
-<div id="status" class="status" role="status" aria-live="polite"></div>
+  <div class="faixa-lot" aria-hidden="true"><div class="trilho" id="trilho"></div></div>
 
-<footer class="rodape">
-  <p><strong>Aviso legal:</strong> ferramenta estatística e combinatória. Não prevê resultados nem garante prêmios.
-  Cada sorteio é aleatório e independente. Jogue com responsabilidade. Proibido para menores de 18 anos.</p>
-  <p>MegaCover Pro Elite v1.5.0 (Web) · NassaTech · Resultados oficiais em
-  <a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">loterias.caixa.gov.br</a></p>
+  <section class="secao" id="recursos">
+    <div class="envolve">
+      <div class="cab-secao">
+        <div class="sobre">Recursos</div>
+        <h2>Tudo o que um apostador analítico precisa, num só painel.</h2>
+        <p>Oito módulos que conversam entre si: gere, otimize, simule e confira sem sair da tela.</p>
+      </div>
+      <div class="recursos">
+        <div class="recurso largo">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M9 3v2M15 3v2M9 19v2M15 19v2M3 9h2M3 15h2M19 9h2M19 15h2M7 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM10 10h4v4h-4z"/></svg>
+          <h3>MegaCover AI <span class="pro">PRO</span></h3>
+          <p>Dois motores de otimização — o evolutivo DNA das Combinações™ e o recozimento simulado Otimização Elite™ — refinam o seu conjunto inteiro de jogos, equilibrando MegaScore™, cobertura do volante e diversidade entre apostas.</p>
+        </div>
+        <div class="recurso">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+          <h3>Estatísticas</h3>
+          <p>Frequência, atraso atual, maior atraso e tendência de cada dezena, desde o 1º concurso.</p>
+        </div>
+        <div class="recurso">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M5 5h4v4H5zM15 5h4v4h-4zM5 15h4v4H5zM15 15h4v4h-4zM9 7h6M7 9v6M17 9v6M9 17h6"/></svg>
+          <h3>Padrões</h3>
+          <p>Pares e ímpares, somas, faixas, sequências, repetições e primos em gráficos claros.</p>
+        </div>
+        <div class="recurso">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+          <h3>Gerador</h3>
+          <p>4 estratégias, 8 filtros e MegaScore™ de 0 a 100 em cada jogo. Inclui Time do Coração, Mês da Sorte e Trevos.</p>
+        </div>
+        <div class="recurso">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01"/></svg>
+          <h3>Fechamentos <span class="pro">PRO</span></h3>
+          <p>Volante clicável e cobertura combinatória calculada. Super Sete com a regra oficial das colunas.</p>
+        </div>
+        <div class="recurso">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM8 8h.01M16 8h.01M12 12h.01M8 16h.01M16 16h.01"/></svg>
+          <h3>Simulador</h3>
+          <p>Monte Carlo de até 1 milhão de sorteios e a probabilidade exata de cada faixa.</p>
+        </div>
+        <div class="recurso">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
+          <h3>Conferência</h3>
+          <p>Confira seus jogos no último concurso ou descubra como teriam ido em todo o histórico.</p>
+        </div>
+        <div class="recurso">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+          <h3>Exportação <span class="pro">PRO</span></h3>
+          <p>Excel, PDF, TXT e projetos salvos para continuar de onde parou.</p>
+        </div>
+        <div class="recurso">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg>
+          <h3>Sempre atualizado</h3>
+          <p>Os resultados novos entram sozinhos todos os dias, direto da base pública de concursos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao" id="como" style="padding-top:0">
+    <div class="envolve">
+      <div class="cab-secao">
+        <div class="sobre">Como funciona</div>
+        <h2>Do histórico ao volante em três passos.</h2>
+      </div>
+      <div class="passos">
+        <div class="passo"><h3>Escolha a loteria</h3><p>O painel carrega o histórico completo e atualiza os concursos novos com um clique.</p></div>
+        <div class="passo"><h3>Gere e otimize</h3><p>Defina estratégia e filtros; a MegaCover AI refina o conjunto e o MegaScore™ avalia cada jogo.</p></div>
+        <div class="passo"><h3>Simule e confira</h3><p>Teste o conjunto contra um milhão de sorteios e confira depois do resultado oficial.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao" id="planos" style="padding-top:0">
+    <div class="envolve">
+      <div class="cab-secao">
+        <div class="sobre">Planos</div>
+        <h2>Grátis durante o Beta. Simples depois dele.</h2>
+        <p>Enquanto o MegaCover está em fase de testes, você usa todos os recursos PRO sem pagar nada. Quem participar do Beta será avisado antes do lançamento das assinaturas.</p>
+      </div>
+      <div class="planos" id="planos-grade"></div>
+    </div>
+  </section>
+
+  <section class="secao" id="faq" style="padding-top:0">
+    <div class="envolve">
+      <div class="cab-secao">
+        <div class="sobre">Dúvidas frequentes</div>
+        <h2>Perguntas diretas, respostas honestas.</h2>
+      </div>
+      <div class="faq">
+        <details><summary>O MegaCover aumenta minhas chances de ganhar?</summary><p>Não existe método capaz de prever um sorteio: cada concurso é aleatório e independente. O MegaCover organiza a informação, evita combinações estatisticamente desequilibradas, amplia a cobertura do seu conjunto de jogos e mostra as probabilidades reais — para você decidir com método, não com palpite.</p></details>
+        <details><summary>O que é o MegaScore™?</summary><p>Uma nota de 0 a 100 que avalia o equilíbrio do jogo em cinco critérios: frequência (25%), distribuição no volante (25%), atraso (20%), cobertura (20%) e padrões improváveis (10%). É uma medida de qualidade estatística, não uma probabilidade de prêmio.</p></details>
+        <details><summary>De onde vêm os resultados?</summary><p>Do histórico público dos concursos das Loterias CAIXA, desde o 1º sorteio de cada modalidade, atualizado automaticamente todos os dias. Em caso de divergência, vale sempre o resultado oficial publicado pela CAIXA.</p></details>
+        <details><summary>Preciso instalar alguma coisa?</summary><p>Não. Funciona no navegador do computador, do tablet e do celular. Os cálculos rodam no seu próprio aparelho — seus jogos não são enviados a nenhum servidor.</p></details>
+        <details><summary>Quanto vai custar depois do Beta?</summary><p>Os valores das assinaturas mensal e anual serão anunciados antes do fim do período de testes. O Beta continua gratuito até lá, sem cartão de crédito.</p></details>
+        <details><summary>O MegaCover é da CAIXA?</summary><p>Não. É uma ferramenta independente da NassaTech, sem vínculo com a Caixa Econômica Federal. "Loterias CAIXA" e os nomes das modalidades são marcas da CAIXA. As apostas são feitas nas lotéricas ou nos canais oficiais.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="chamada">
+    <div class="envolve">
+      <div class="caixa-cta">
+        <h2>Seu próximo jogo merece mais que um palpite.</h2>
+        <p>Entre no Beta agora — é grátis, sem cadastro e funciona em qualquer aparelho.</p>
+        <a class="bt primario grande" href="app.html">Abrir o painel <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape-site">
+  <div class="envolve">
+    <div>
+      <a class="marca" href="#topo" style="padding:0 0 12px"><img src="assets/icon.png" alt=""><span><b>MegaCover</b><small>Pro Elite</small></span></a>
+      <p>Ferramenta estatística e combinatória para as Loterias CAIXA. Desenvolvido por NassaTech.</p>
+      <p>Não é afiliado à Caixa Econômica Federal. Resultados oficiais em <a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">loterias.caixa.gov.br</a>.</p>
+      <p>© <span id="ano">2026</span> NassaTech · <span id="versao"></span></p>
+    </div>
+    <div class="resp">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>
+      <div><p><b style="color:var(--txt)">Jogue com responsabilidade.</b></p><p style="margin:0">Proibido para menores de 18 anos. O MegaCover não prevê resultados nem garante prêmios. Aposte só o que pode perder e trate a loteria como entretenimento.</p></div>
+    </div>
+  </div>
 </footer>
 
+<script src="assets/plano.js"></script>
 <script src="assets/engine.js"></script>
-<script src="assets/app.js"></script>
+<script>
+(function () {
+  "use strict";
+  var P = window.MC_PLANO, $ = function (s) { return document.querySelector(s); };
+  function ic(d) { return '<svg class="ic" viewBox="0 0 24 24"><path d="' + d + '"/></svg>'; }
+  var OK = ic("M5 12l5 5L20 7"), NAO = ic("M6 6l12 12M18 6 6 18");
+  $("#ano").textContent = new Date().getFullYear();
+  $("#versao").textContent = "v" + P.versao;
+
+  /* faixa com as loterias */
+  var itens = MC.ORDEM.map(function (l) { return '<span style="--c:' + l.cor + '"><i></i>' + l.nome + "</span>"; }).join("");
+  $("#trilho").innerHTML = itens + itens;
+
+  /* planos (lidos de assets/plano.js) */
+  var pro = Object.keys(P.pro).map(function (k) { return P.pro[k]; });
+  var base = ["Histórico completo das 9 loterias", "Estatísticas e padrões", "Gerador com MegaScore™", "Conferência no último concurso"];
+  var contato = P.contatoUrl(), link = P.linkAssinatura;
+  function li(t, ok) { return '<li class="' + (ok ? "" : "nao") + '">' + (ok ? OK : NAO) + "<span>" + t + "</span></li>"; }
+  function botaoPro() {
+    if (!P.beta() && link) return '<a class="bt primario" href="' + link + '" target="_blank" rel="noopener">Assinar</a>';
+    if (contato) return '<a class="bt" href="' + contato + '" target="_blank" rel="noopener">Entrar na lista de espera</a>';
+    return '<button class="bt" type="button" disabled>Em breve</button>';
+  }
+  $("#planos-grade").innerHTML =
+    '<div class="plano atual"><span class="fita">' + (P.beta() ? "Disponível agora" : "Grátis") + "</span><h3>" + (P.beta() ? "Beta" : "Gratuito") + '</h3><p class="desc">' +
+      (P.beta() ? "Acesso completo durante o período de testes." : "Para conhecer o MegaCover.") + '</p><div class="preco">R$ 0</div><div class="obs">' + (P.beta() ? "sem cartão, sem cadastro" : "para sempre") + "</div><ul>" +
+      base.map(function (t) { return li(t, true); }).join("") + pro.map(function (t) { return li(t, P.beta()); }).join("") +
+      '</ul><a class="bt primario" href="app.html">' + (P.beta() ? "Entrar no Beta" : "Começar grátis") + "</a></div>" +
+    '<div class="plano"><h3>PRO Mensal</h3><p class="desc">Todos os recursos, com a flexibilidade de cancelar quando quiser.</p><div class="preco">' + (P.precoMensal ? P.precoMensal + "<small>/mês</small>" : "Em breve") + '</div><div class="obs">' + (P.precoMensal ? "renovação mensal" : "valor anunciado antes do lançamento") + "</div><ul>" +
+      base.concat(pro).map(function (t) { return li(t, true); }).join("") + "</ul>" + botaoPro() + "</div>" +
+    '<div class="plano"><h3>PRO Anual</h3><p class="desc">O melhor custo para quem joga o ano inteiro.</p><div class="preco">' + (P.precoAnual ? P.precoAnual + "<small>/ano</small>" : "Em breve") + '</div><div class="obs">' + (P.economiaAnual || (P.precoAnual ? "pagamento único anual" : "com desconto sobre o mensal")) + "</div><ul>" +
+      base.concat(pro).map(function (t) { return li(t, true); }).concat([li("Prioridade em novos recursos", true)]).join("") + "</ul>" + botaoPro() + "</div>";
+
+  /* demonstração ao vivo com o motor real */
+  var cfg = MC.TODAS.megasena, cs = null;
+  function bolas(l) { return l.map(function (d) { return '<span class="bola">' + cfg.fmt(d) + "</span>"; }).join(""); }
+  function gerar() {
+    if (!cs) return;
+    var j = MC.gerarJogos(cs, cfg, 6, 1, "Estatística")[0], s = MC.megascore(j, cfg, MC.contexto(cs, cfg));
+    $("#d-jogo").innerHTML = bolas(j);
+    $("#d-score").textContent = Math.round(s);
+    $("#d-arco").setAttribute("stroke-dasharray", s + " 100");
+  }
+  fetch("data/megasena.json").then(function (r) { return r.json(); }).then(function (d) {
+    cs = d.concursos.map(function (r) { return {concurso: r[0], data: r[1], dezenas: r[2].slice().sort(function (a, b) { return a - b; }), extra: ""}; });
+    var u = cs[cs.length - 1];
+    $("#d-rot").textContent = "Mega-Sena · concurso " + u.concurso.toLocaleString("pt-BR") + " · " + u.data;
+    $("#d-ult").innerHTML = bolas(u.dezenas);
+    gerar();
+  }).catch(function () { $("#d-rot").textContent = "Mega-Sena · abra pelo GitHub Pages para ver a demonstração"; });
+  $("#d-gerar").onclick = gerar;
+})();
+</script>
 </body>
 </html>

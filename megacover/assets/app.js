@@ -7,9 +7,43 @@ var GH = "https://raw.githubusercontent.com/eitchtee/loterias.json/main/data/";
 var GH_NOME = {megasena: "mega-sena", lotofacil: "lotofacil", quina: "quina", lotomania: "lotomania",
   duplasena: "dupla-sena", timemania: "timemania", diadesorte: "dia-de-sorte", supersete: "super-sete",
   maismilionaria: "mais-milionaria"};
-var ABAS = [["dashboard", "🏠 Dashboard"], ["estatisticas", "📊 Estatísticas"], ["padroes", "🧩 Padrões"],
-  ["gerador", "⚡ Gerador"], ["fechamentos", "🎯 Fechamentos"], ["simulador", "🎲 Simulador"],
-  ["conferir", "✅ Conferir"], ["dados", "📥 Dados"]];
+var ABAS = [["dashboard", "Visão geral", "painel"], ["estatisticas", "Estatísticas", "barras"], ["padroes", "Padrões", "padrao"],
+  ["gerador", "Gerador", "raio"], ["fechamentos", "Fechamentos", "alvo"], ["simulador", "Simulador", "dado"],
+  ["conferir", "Conferir", "check"], ["dados", "Dados", "banco"]];
+var PL = window.MC_PLANO || {beta: function () { return true; }, liberado: function () { return true; }, pro: {}, contatoUrl: function () { return ""; }};
+
+/* ícones de traço (24×24) */
+var ICONES = {
+  painel: "M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z",
+  barras: "M4 20V10M10 20V4M16 20v-7M22 20H2",
+  padrao: "M5 5h4v4H5zM15 5h4v4h-4zM5 15h4v4H5zM15 15h4v4h-4zM9 7h6M7 9v6M17 9v6M9 17h6",
+  raio: "M13 2 4 14h7l-1 8 9-12h-7z",
+  alvo: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01",
+  dado: "M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM8 8h.01M16 8h.01M12 12h.01M8 16h.01M16 16h.01",
+  check: "M9 11l3 3 8-8M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9",
+  banco: "M12 3c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3zM4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6",
+  info: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v5M12 8h.01",
+  ia: "M9 3v2M15 3v2M9 19v2M15 19v2M3 9h2M3 15h2M19 9h2M19 15h2M7 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM10 10h4v4h-4z",
+  baixar: "M12 4v11M7 10l5 5 5-5M5 20h14",
+  copiar: "M9 9h10v11H9zM5 15V4h10",
+  imprimir: "M7 9V3h10v6M7 17H4v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6h-3M7 14h10v7H7z",
+  salvar: "M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM7 3v5h8V3M7 21v-7h10v7",
+  abrir: "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
+  brilho: "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 17l.8 2.2L22 20l-2.2.8L19 23l-.8-2.2L16 20l2.2-.8z",
+  mais: "M12 5v14M5 12h14",
+  atualizar: "M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6",
+  lixo: "M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13",
+  historico: "M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2",
+  coroa: "M3 18h18M4 8l4 4 4-7 4 7 4-4-2 10H6z",
+  trofeu: "M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3",
+  lupa: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5",
+  x: "M6 6l12 12M18 6 6 18",
+  escudo: "M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"
+};
+function I(n, extra) { return '<svg class="ic' + (extra ? " " + extra : "") + '" viewBox="0 0 24 24" aria-hidden="true"><path d="' + ICONES[n] + '"/></svg>'; }
+function tagPro(recurso) { return PL.pro && PL.pro[recurso] ? ' <span class="pro" title="' + (PL.beta() ? "Recurso PRO — liberado grátis no Beta" : "Recurso PRO") + '">PRO</span>' : ""; }
+/* true se o recurso está liberado; senão abre o convite de assinatura */
+function pro(recurso) { if (PL.liberado(recurso)) return true; modalPlano(recurso); return false; }
 
 var S = {lot: "megasena", aba: "dashboard", dados: {}, meta: {}, ger: {}, fech: {}, carregando: {}, ordem: {}};
 var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -120,16 +154,16 @@ function atualizarOnline(id, silencioso) {
   }).catch(function (e) { if (!silencioso) throw e; return 0; });
 }
 function atualizarTodas() {
-  var bt = $("#bt-atualizar-todas"); bt.disabled = true; bt.textContent = "⏳ Atualizando…";
+  var bt = $("#bt-atualizar-todas"); bt.disabled = true; bt.innerHTML = I("atualizar") + '<span class="txt-lg">Atualizando…</span>';
   var ids = MC.ORDEM.map(function (l) { return l.chave; }), rel = [], feitos = 0;
   return Promise.all(ids.map(function (id) {
     return carregar(id).then(function () { return atualizarOnline(id); }).then(function (n) {
       rel.push(MC.TODAS[id].nome + ": " + (n ? "+" + n : "ok"));
     }).catch(function () { rel.push(MC.TODAS[id].nome + ": falhou"); }).then(function () {
-      feitos++; bt.textContent = "⏳ " + feitos + "/9";
+      feitos++; bt.innerHTML = I("atualizar") + '<span class="txt-lg">' + feitos + "/9</span>";
     });
   })).then(function () {
-    bt.disabled = false; bt.textContent = "🔄 Atualizar TODAS";
+    bt.disabled = false; bt.innerHTML = I("atualizar") + '<span class="txt-lg">Atualizar todas</span>'; montarUltimos();
     status("Atualização concluída — " + rel.join(" · "));
     render();
   });
@@ -157,6 +191,7 @@ function colunasSS(jogo) {
   }).join("") + "</span>";
 }
 function classeScore(s) { return s >= 75 ? "alto" : s >= 60 ? "medio" : "baixo"; }
+function vazio(icone, txt, extra) { return '<div class="vazio">' + I(icone) + "<div>" + txt + "</div>" + (extra || "") + "</div>"; }
 function kpi(rot, val, sub, peq) {
   return '<div class="kpi"><div class="rot">' + rot + '</div><div class="val' + (peq ? " peq" : "") + '">' + val + "</div>" + (sub ? '<div class="sub">' + sub + "</div>" : "") + "</div>";
 }
@@ -171,7 +206,10 @@ function grafico(rotulos, valores, o) {
   o = o || {};
   var W = o.largura || 900, H = o.altura || 240, pe = 26, pt = 14, pl = 34, n = rotulos.length;
   var v2 = o.valores2, mx = Math.max.apply(null, valores.concat(v2 || [0]).concat([1]));
-  var bw = (W - pl - 6) / n, g = '<svg class="grafico" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(o.titulo || "gráfico") + '">';
+  var bw = (W - pl - 6) / n, g = '<svg class="grafico" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(o.titulo || "gráfico") + '">' +
+    '<defs><linearGradient id="gb1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--lot-viva)"/><stop offset="1" style="stop-color:var(--lot-viva);stop-opacity:.35"/></linearGradient>' +
+    '<linearGradient id="gb2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--ouro2)"/><stop offset="1" style="stop-color:var(--ouro);stop-opacity:.55"/></linearGradient></defs>';
+  var corte = o.destacar ? valores.slice().sort(function (a, b) { return b - a; })[Math.min(o.destacar, n) - 1] : Infinity;
   for (var k = 0; k <= 4; k++) {
     var y = pt + (H - pt - pe) * (1 - k / 4), val = mx * k / 4;
     g += '<line class="eixo" x1="' + pl + '" x2="' + W + '" y1="' + y + '" y2="' + y + '"/>';
@@ -180,7 +218,7 @@ function grafico(rotulos, valores, o) {
   var passo = Math.ceil(n / (o.maxRotulos || 40));
   rotulos.forEach(function (r, i) {
     var x = pl + i * bw, h = (H - pt - pe) * valores[i] / mx, w = v2 ? bw * 0.42 : bw * 0.78;
-    g += '<rect class="b1" x="' + (x + bw * 0.11) + '" y="' + (H - pe - h) + '" width="' + w + '" height="' + h + '" rx="2"><title>' + esc(r) + ": " + fmtN(valores[i]) + "</title></rect>";
+    g += '<rect class="b1' + (valores[i] >= corte ? " top" : "") + '" x="' + (x + bw * 0.11) + '" y="' + (H - pe - h) + '" width="' + w + '" height="' + h + '" rx="' + Math.min(4, w / 3) + '"><title>' + esc(r) + ": " + fmtN(valores[i]) + "</title></rect>";
     if (v2) {
       var h2 = (H - pt - pe) * v2[i] / mx;
       g += '<rect class="b2" x="' + (x + bw * 0.11 + w) + '" y="' + (H - pe - h2) + '" width="' + w + '" height="' + h2 + '" rx="2"><title>' + esc(r) + ": " + fmtN(v2[i]) + "</title></rect>";
@@ -228,9 +266,12 @@ function progresso(el, v) { el.classList.add("on"); el.firstElementChild.style.w
 /* ======================= Navegação ======================= */
 function montarNav() {
   $("#loterias").innerHTML = MC.ORDEM.map(function (l) {
-    return '<button class="chip" type="button" data-id="' + l.chave + '">' + l.emo + " " + esc(l.nome.toUpperCase()) + "</button>";
+    return '<button class="chip" type="button" data-id="' + l.chave + '" style="--c:' + l.cor + '"><span class="ponto"></span><span class="nm">' + esc(l.nome) + '</span><span class="ult" id="ult-' + l.chave + '"></span></button>';
   }).join("");
-  $("#abas").innerHTML = ABAS.map(function (a) { return '<button class="aba" type="button" data-aba="' + a[0] + '">' + a[1] + "</button>"; }).join("");
+  $("#abas").innerHTML = ABAS.map(function (a) { return '<button class="aba" type="button" data-aba="' + a[0] + '">' + I(a[2]) + a[1] + "</button>"; }).join("");
+  $("#bt-menu").onclick = function () { $("#app").classList.toggle("menu-aberto"); };
+  $("#cortina").onclick = function () { $("#app").classList.remove("menu-aberto"); };
+  planoCard();
   $("#loterias").addEventListener("click", function (e) { var b = e.target.closest(".chip"); if (b) ir(b.dataset.id, S.aba); });
   $("#abas").addEventListener("click", function (e) { var b = e.target.closest(".aba"); if (b) ir(S.lot, b.dataset.aba); });
 }
@@ -247,17 +288,22 @@ function render() {
   document.documentElement.style.setProperty("--cor-lot", cfg.cor);
   $$(".chip").forEach(function (b) { b.setAttribute("aria-current", b.dataset.id === S.lot); });
   $$(".aba").forEach(function (b) { b.setAttribute("aria-current", b.dataset.aba === S.aba); });
-  var sel = $('.chip[aria-current="true"]'); if (sel && sel.scrollIntoView) sel.scrollIntoView({block: "nearest", inline: "nearest"});
-  document.title = cfg.nome + " · MegaCover Pro Elite";
+  $("#app").classList.remove("menu-aberto");
+  var nomeAba = ABAS.filter(function (a) { return a[0] === S.aba; })[0][1];
+  document.title = cfg.nome + " · " + nomeAba + " · MegaCover Pro Elite";
   var main = $("#conteudo");
   if (!S.dados[S.lot]) {
-    main.innerHTML = '<p class="carregando">Carregando histórico da ' + esc(cfg.nome) + "…</p>";
+    $("#titulo").innerHTML = '<h1><span class="ponto"></span>' + esc(cfg.nome) + "</h1><p>Carregando histórico…</p>";
+    main.innerHTML = '<div class="carregando"><div class="esqueleto"></div><div class="esqueleto" style="height:260px"></div></div>';
     carregar(S.lot).then(render); return;
   }
-  var cab = '<div class="titulo-lot"><h2>' + cfg.emo + " " + esc(cfg.nome) + '</h2><span class="selo">' + fmtN(cs().length) + " concursos</span></div>" +
-    (cfg.nota && S.aba === "dashboard" ? '<p class="nota">ℹ ' + esc(cfg.nota) + "</p>" : "");
-  main.innerHTML = cab + '<div id="aba"></div>';
+  var c = cs(), u = c[c.length - 1];
+  $("#titulo").innerHTML = '<h1><span class="ponto"></span>' + esc(cfg.nome) + "</h1><p>" +
+    (u ? 'Concurso <span class="mono">' + fmtN(u.concurso) + "</span> · " + esc(u.data) + '<span class="sep"> · <span class="mono">' + fmtN(c.length) + "</span> concursos na base</span>" : "Sem resultados") + "</p>";
+  var ul = $("#ult-" + S.lot); if (ul && u) ul.textContent = "nº " + u.concurso;
+  main.innerHTML = (cfg.nota && S.aba === "dashboard" ? '<p class="nota">' + I("info") + "<span>" + esc(cfg.nota) + "</span></p>" : "") + '<div id="aba" class="entrar"></div>';
   TELAS[S.aba]($("#aba"), cfg);
+  window.scrollTo(0, 0);
 }
 
 /* ======================= Telas ======================= */
@@ -265,40 +311,62 @@ var TELAS = {};
 
 TELAS.dashboard = function (el, cfg) {
   var c = cs(), u = c[c.length - 1];
-  if (!u) { el.innerHTML = '<p class="vazio">Sem resultados. Use a aba 📥 Dados para atualizar ou importar.</p>'; return; }
-  var r = cfg.colunar ? null : MC.ranking(c, cfg, 5), h = '<div class="kpis">';
-  h += kpi("Último concurso", fmtN(u.concurso), esc(u.data));
-  h += kpi("Concursos na base", fmtN(c.length), "desde o nº " + fmtN(c[0].concurso));
+  if (!u) { el.innerHTML = '<div class="card">' + vazio("banco", "Nenhum resultado na base. Use a aba <b>Dados</b> para atualizar ou importar.") + "</div>"; return; }
+  var ant = c[c.length - 2], h = "";
+  /* destaque: último resultado */
+  var sts = cfg.colunar ? [u.dezenas] : MC.sorteiosDe(u, cfg), mini = "";
+  if (!cfg.colunar) {
+    var s0 = sts[0], pi = MC.paresImpares(s0), rep = ant ? MC.util.intersec(s0, MC.sorteiosDe(ant, cfg)[0]) : null;
+    mini = '<div class="kpis mini">' +
+      kpi("Soma", fmtN(MC.soma(s0)), "faixa típica " + MC.limitesSoma(cfg.sorteadas, cfg).join("–")) +
+      kpi("Pares / ímpares", pi[0] + " / " + pi[1]) +
+      (rep != null ? kpi("Repetidas", String(rep), "do concurso anterior") : "") + "</div>";
+  }
+  h += '<div class="grade g-dash"><div class="card destaque"><div class="sobre">Último resultado · concurso ' + fmtN(u.concurso) + " · " + esc(u.data) + "</div>" +
+    sts.map(function (st, i) {
+      return (sts.length > 1 ? '<div class="dica" style="margin:10px 0 6px">' + (i + 1) + "º sorteio</div>" : '<div style="height:10px"></div>') +
+        (cfg.colunar ? '<div class="bolas grandes">' + st.map(function (d, k) { return '<span class="col-ss"><small>C' + (k + 1) + '</small><span class="bola grande">' + d + "</span></span>"; }).join("") + "</div>"
+          : '<div class="bolas grandes">' + st.map(function (d) { return '<span class="bola grande">' + cfg.fmt(d) + "</span>"; }).join("") + "</div>");
+    }).join("") +
+    (u.extra ? '<div style="margin-top:14px"><span class="extra-tag">' + I(cfg.extra_qtd ? "brilho" : "coroa") + esc(cfg.extra_nome) + ": <b>" + esc(u.extra) + "</b></span></div>" : "") + mini + "</div>";
+  h += '<div class="card"><div class="cab"><h3>Consultar concurso</h3></div><div class="form" style="grid-template-columns:auto 1fr auto;gap:8px">' +
+    '<button class="bt icone" id="d-ant" type="button" aria-label="Concurso anterior">‹</button><input id="d-num" type="number" aria-label="Número do concurso" min="' + c[0].concurso + '" max="' + u.concurso + '" value="' + (u.concurso - 1) + '"><button class="bt icone" id="d-prox" type="button" aria-label="Próximo concurso">›</button></div>' +
+    '<div class="linha-bts" style="margin-top:10px"><button class="bt primario" id="d-ok" type="button" style="flex:1">' + I("lupa") + 'Consultar</button></div><div id="d-res" style="margin-top:16px"></div></div></div>';
+  /* indicadores */
+  var r = cfg.colunar ? null : MC.ranking(c, cfg, 10), sy = ls("sync:" + S.lot);
+  h += '<div class="kpis">' + kpi("Concursos analisados", fmtN(c.length), "do nº " + fmtN(c[0].concurso) + " ao " + fmtN(u.concurso));
   if (r) {
-    h += kpi("Mais sorteadas", r.quentes.map(function (x) { return cfg.fmt(x[0]); }).join(" · "), "no histórico completo", true);
-    h += kpi("Mais atrasadas", r.atrasadas.map(function (x) { return cfg.fmt(x[0]); }).join(" · "), "concursos sem sair: " + r.atrasadas.map(function (x) { return x[1]; }).join(", "), true);
+    h += kpi("Mais sorteada", cfg.fmt(r.quentes[0][0]), fmtN(r.quentes[0][1]) + " vezes no histórico");
+    h += kpi("Mais atrasada", cfg.fmt(r.atrasadas[0][0]), r.atrasadas[0][1] + " concursos sem sair");
   }
   if (cfg.extra_nome) {
     var fx = MC.frequenciaExtras(c, cfg);
-    h += kpi(esc(cfg.extra_nome) + " + sorteado", fx.length ? esc(fx[0][0]) : "—", fx.length ? fmtN(fx[0][1]) + " vezes (" + fx[0][2].toFixed(1).replace(".", ",") + "%)" : "sem dados", true);
+    h += kpi(esc(cfg.extra_nome) + " líder", fx.length ? esc(fx[0][0]) : "—", fx.length ? fmtN(fx[0][1]) + " vezes · " + fx[0][2].toFixed(1).replace(".", ",") + "%" : "sem dados", true);
   }
-  var sy = ls("sync:" + S.lot);
-  h += kpi("Base atualizada", sy ? new Date(sy).toLocaleDateString("pt-BR") : (S.meta[S.lot].atualizado ? new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") : "—"), sy ? "online neste navegador" : "arquivo do site", true);
-  h += "</div>";
-  h += '<div class="grade g2"><div class="card"><h3>Último resultado — concurso ' + fmtN(u.concurso) + "</h3>" + bolasConcurso(cfg, u) + "</div>";
-  h += '<div class="card"><h3>Consultar concurso anterior</h3><div class="form"><div class="campo"><label for="d-num">Concurso nº</label><input id="d-num" type="number" min="' + c[0].concurso + '" max="' + u.concurso + '" value="' + (u.concurso - 1) + '"></div><div class="campo"><button class="bt lot" id="d-ok" type="button">Consultar</button></div></div><div id="d-res" style="margin-top:12px"></div></div></div>';
+  h += kpi("Base atualizada", sy ? new Date(sy).toLocaleDateString("pt-BR") : (S.meta[S.lot].atualizado ? new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") : "—"), sy ? "sincronizada neste navegador" : "arquivo do site", true) + "</div>";
   if (cfg.colunar) {
     var tab = MC.porColuna(c, cfg);
-    h += '<div class="card"><h3>Dígito mais sorteado em cada coluna</h3><div class="bolas">' + tab.map(function (f, i) {
+    h += '<div class="card"><div class="cab"><h3>Dígito líder em cada coluna</h3><span class="dica" style="margin:0">frequência no histórico</span></div><div class="bolas grandes">' + tab.map(function (f, i) {
       var best = cfg.dezenas.slice().sort(function (a, b) { return f[b] - f[a]; })[0];
-      return '<span class="col-ss"><small>C' + (i + 1) + "</small>" + bola(cfg, best) + "<small>" + f[best] + "x</small></span>";
+      return '<span class="col-ss"><small>C' + (i + 1) + '</small><span class="bola grande">' + best + '</span><small class="mono">' + f[best] + "×</small></span>";
     }).join("") + "</div></div>";
   } else {
+    h += '<div class="grade g2"><div class="card"><div class="cab"><h3>Mais sorteadas</h3><span class="dica" style="margin:0">top 10 · histórico</span></div>' + bolas(cfg, r.quentes.map(function (x) { return x[0]; }).sort(function (a, b) { return a - b; })) + "</div>" +
+      '<div class="card"><div class="cab"><h3>Mais atrasadas</h3><span class="dica" style="margin:0">top 10 · concursos sem sair</span></div>' + bolas(cfg, r.atrasadas.map(function (x) { return x[0]; }).sort(function (a, b) { return a - b; })) + "</div></div>";
     var fr = MC.frequencias(c, cfg);
-    h += '<div class="card"><h3>Frequência de cada dezena</h3>' + grafico(cfg.dezenas.map(cfg.fmt.bind(cfg)), cfg.dezenas.map(function (d) { return fr[d].abs; }), {titulo: "Frequência", maxRotulos: cfg.dezenas.length > 60 ? 50 : 80}) + "</div>";
+    h += '<div class="card"><div class="cab"><h3>Frequência de cada dezena</h3><div class="legenda" style="margin:0"><span><i style="background:var(--lot-viva)"></i>frequência</span><span><i style="background:var(--ouro)"></i>6 mais sorteadas</span></div></div>' +
+      grafico(cfg.dezenas.map(cfg.fmt.bind(cfg)), cfg.dezenas.map(function (d) { return fr[d].abs; }), {titulo: "Frequência", destacar: 6, maxRotulos: cfg.dezenas.length > 60 ? 50 : 80}) + "</div>";
   }
   el.innerHTML = h;
   function consultar() {
     var n = +$("#d-num").value, achou = c.filter(function (x) { return x.concurso === n; })[0];
-    $("#d-res").innerHTML = achou ? "<p><b>Concurso " + fmtN(n) + "</b> " + esc(achou.data) + "</p>" + bolasConcurso(cfg, achou) : '<p class="vazio">Concurso não encontrado na base.</p>';
+    $("#d-res").innerHTML = achou ? '<div class="sobre">Concurso ' + fmtN(n) + " · " + esc(achou.data) + "</div>" + bolasConcurso(cfg, achou) : '<p class="dica">Concurso não encontrado na base.</p>';
   }
   $("#d-ok").onclick = consultar;
+  $("#d-ant").onclick = function () { $("#d-num").value = Math.max(c[0].concurso, +$("#d-num").value - 1); consultar(); };
+  $("#d-prox").onclick = function () { $("#d-num").value = Math.min(u.concurso, +$("#d-num").value + 1); consultar(); };
   $("#d-num").onkeydown = function (e) { if (e.key === "Enter") consultar(); };
+  consultar();
 };
 
 TELAS.estatisticas = function (el, cfg) {
@@ -423,7 +491,7 @@ function definirJogos(cfg, jogos, estr) {
 function linhasJogos(cfg, g) {
   return g.jogos.map(function (j, i) {
     var l = [i + 1, {h: cfg.colunar ? colunasSS(j) : bolas(cfg, j, null, true), s: i}];
-    if (!cfg.colunar) l.push({h: '<span class="score ' + classeScore(g.scores[i]) + '">' + g.scores[i].toFixed(1).replace(".", ",") + "</span>", s: g.scores[i]}, MC.soma(j), MC.paresImpares(j).join("/"));
+    if (!cfg.colunar) l.push({h: '<span class="score ' + classeScore(g.scores[i]) + '" style="--p:' + g.scores[i] + '%">' + g.scores[i].toFixed(1).replace(".", ",") + "</span>", s: g.scores[i]}, MC.soma(j), MC.paresImpares(j).join("/"));
     else l.push(MC.custoSS(j));
     if (g.extras) l.push({h: '<span class="extra-tag">' + esc(g.extras[i]) + "</span>", s: i});
     return l;
@@ -474,27 +542,28 @@ TELAS.gerador = function (el, cfg) {
   }).join("") + "</div>";
   if (cfg.extra_nome) {
     var rank = MC.frequenciaExtras(cs(), cfg);
-    h += '<div class="form" style="margin-top:10px"><div class="campo"><label for="g-ex">⭐ ' + esc(cfg.extra_nome) + '</label><select id="g-ex">' + opcoes(modosExtra(cfg), g && g.modoExtra) + '</select></div><div class="campo"><span class="rot">Mais sorteados</span><div class="lista-rank">' +
+    h += '<div class="form" style="margin-top:10px"><div class="campo"><label for="g-ex">' + esc(cfg.extra_nome) + '</label><select id="g-ex">' + opcoes(modosExtra(cfg), g && g.modoExtra) + '</select></div><div class="campo"><span class="rot">Mais sorteados</span><div class="lista-rank">' +
       (rank.length ? rank.slice(0, 3).map(function (x) { return "<span><b>" + esc(x[0]) + "</b> " + x[2].toFixed(1).replace(".", ",") + "%</span>"; }).join("") : "<span>sem dados</span>") + "</div></div></div>";
   }
-  h += '<div class="linha-bts"><button class="bt lot" id="g-gerar" type="button">⚡ Gerar jogos</button>';
-  if (!cfg.colunar) h += '<select id="g-met" style="width:auto">' + opcoes(MC.METODOS) + '</select><button class="bt" id="g-otim" type="button">🧠 Otimizar com MegaCover AI</button>';
+  h += '<div class="linha-bts"><button class="bt lot" id="g-gerar" type="button">' + I("raio") + "Gerar jogos</button>";
+  if (!cfg.colunar) h += '<select id="g-met" style="width:auto">' + opcoes(MC.METODOS) + '</select><button class="bt" id="g-otim" type="button">' + I("ia") + "Otimizar com MegaCover AI" + tagPro("ia") + "</button>";
   h += '</div><div class="progresso" id="g-prog"><i></i></div>';
-  if (cfg.colunar) h += '<p class="nota" style="margin-top:12px">ℹ No Super Sete cada coluna é sorteada de forma independente, então não existe otimização de conjunto. Para ampliar a cobertura, marque 2 ou 3 números por coluna (isso multiplica o número de apostas no volante) ou use a aba 🎯 Fechamentos.</p>';
+  if (cfg.colunar) h += '<p class="nota" style="margin-top:14px">' + I("info") + '<span>No Super Sete cada coluna é sorteada de forma independente, então não existe otimização de conjunto. Para ampliar a cobertura, marque 2 ou 3 números por coluna (isso multiplica o número de apostas no volante) ou use a aba Fechamentos.</span></p>';
   h += "</div>";
   h += '<div class="card" id="g-res"></div>';
   el.innerHTML = h;
   function desenharRes() {
     var g = S.ger[S.lot], box = $("#g-res");
-    if (!g || !g.jogos.length) { box.innerHTML = '<h3>Jogos</h3><p class="vazio">Configure e clique em ⚡ Gerar jogos.</p>'; return; }
+    if (!g || !g.jogos.length) { box.innerHTML = '<h3>Seus jogos</h3>' + vazio("raio", "Configure os parâmetros e clique em <b>Gerar jogos</b>."); return; }
     var media = g.scores ? g.scores.reduce(function (a, b) { return a + b; }, 0) / g.scores.length : null;
-    box.innerHTML = "<h3>" + g.jogos.length + " jogos · " + esc(g.estr) + (media != null ? " · MegaScore™ médio " + media.toFixed(1).replace(".", ",") : "") + "</h3>" +
+    box.innerHTML = '<div class="cab"><h3>' + g.jogos.length + ' jogos</h3><span class="dica" style="margin:0">' + esc(g.estr) + (media != null ? ' · MegaScore™ médio <b class="mono">' + media.toFixed(1).replace(".", ",") + "</b>" : "") + "</span></div>" +
       tabela(cabJogos(cfg), linhasJogos(cfg, g), "t-jogos") +
-      '<div class="linha-bts"><button class="bt" data-x="csv" type="button">⬇ Excel (CSV)</button><button class="bt" data-x="txt" type="button">⬇ TXT</button><button class="bt" data-x="copiar" type="button">📋 Copiar</button><button class="bt" data-x="pdf" type="button">🖨 PDF / Imprimir</button><button class="bt" data-x="projeto" type="button">💾 Salvar projeto</button><button class="bt" data-x="sim" type="button">🎲 Simular</button><button class="bt" data-x="conf" type="button">✅ Conferir</button></div>';
+      '<div class="linha-bts"><button class="bt" data-x="csv" type="button">' + I("baixar") + 'Excel' + tagPro("exportar") + '</button><button class="bt" data-x="txt" type="button">' + I("baixar") + 'TXT</button><button class="bt" data-x="pdf" type="button">' + I("imprimir") + 'PDF</button><button class="bt" data-x="projeto" type="button">' + I("salvar") + 'Salvar projeto</button><button class="bt" data-x="copiar" type="button">' + I("copiar") + 'Copiar</button><span style="flex:1"></span><button class="bt" data-x="sim" type="button">' + I("dado") + 'Simular</button><button class="bt primario" data-x="conf" type="button">' + I("check") + 'Conferir</button></div>';
     ativarOrdenacao("t-jogos");
     $$("[data-x]", box).forEach(function (b) {
       b.onclick = function () {
         var x = b.dataset.x;
+        if (["csv", "txt", "pdf", "projeto"].indexOf(x) >= 0 && !pro("exportar")) return;
         if (x === "pdf") window.print();
         else if (x === "sim") ir(S.lot, "simulador");
         else if (x === "conf") ir(S.lot, "conferir");
@@ -524,12 +593,13 @@ TELAS.gerador = function (el, cfg) {
     status(jogos.length < nj ? "Só " + jogos.length + " jogos passaram nos filtros." : jogos.length + " jogos gerados para a " + cfg.nome + ".");
   };
   if ($("#g-otim")) $("#g-otim").onclick = function () {
+    if (!pro("ia")) return;
     var g = S.ger[S.lot];
     if (!g || !g.jogos.length) { status("Gere jogos primeiro."); return; }
     var bt = this, pr = $("#g-prog"), met = $("#g-met").value; bt.disabled = true;
-    MC.otimizar(met, cs(), g.jogos, cfg, function (p, f) { progresso(pr, p); bt.textContent = "🧠 Fitness " + f.toFixed(2); }).then(function (r) {
+    MC.otimizar(met, cs(), g.jogos, cfg, function (p, f) { progresso(pr, p); bt.innerHTML = I("ia") + "Fitness " + f.toFixed(2); }).then(function (r) {
       definirJogos(cfg, r.jogos.map(MC.util.sortN), met);
-      pr.classList.remove("on"); bt.disabled = false; bt.textContent = "🧠 Otimizar com MegaCover AI";
+      pr.classList.remove("on"); bt.disabled = false; bt.innerHTML = I("ia") + "Otimizar com MegaCover AI" + tagPro("ia");
       desenharRes(); status("Otimização concluída — fitness " + r.fit.toFixed(2));
     });
   };
@@ -542,7 +612,7 @@ TELAS.fechamentos = function (el, cfg) {
   var gar = Object.keys(MC.garantias(cfg)), f = S.fech[S.lot];
   var tamPadrao = cfg.aposta_min, baseN = Math.min(cfg.dezenas.length - 1, tamPadrao + (cfg.chave === "lotomania" ? 10 : 4));
   var sel = new Set((ls("base:" + S.lot) || []).filter(function (d) { return d >= cfg.inicio && d <= cfg.universo; }));
-  var h = '<div class="card"><h3>Fechamento inteligente</h3><p class="dica">Escolha a base de dezenas (clique no volante ou digite) e o sistema monta o menor conjunto de jogos que cobre as combinações da faixa-alvo dentro dela.</p>';
+  var h = '<div class="card"><h3>Fechamento inteligente' + tagPro("fechamentos") + '</h3><p class="dica">Escolha a base de dezenas (clique no volante ou digite) e o sistema monta o menor conjunto de jogos que cobre as combinações da faixa-alvo dentro dela.</p>';
   h += '<div class="volante" id="f-vol">' + cfg.dezenas.map(function (d) { return '<button type="button" data-d="' + d + '"' + (sel.has(d) ? ' class="on"' : "") + ">" + cfg.fmt(d) + "</button>"; }).join("") + "</div>";
   h += '<div class="form" style="margin-top:12px"><div class="campo" style="grid-column:1/-1"><label for="f-base">Base (separe por vírgula ou espaço)</label><input id="f-base" type="text" value="' + Array.from(sel).sort(function (a, b) { return a - b; }).join(", ") + '"></div>';
   h += '<div class="campo"><label for="f-bn">Tamanho da base sugerida</label><input id="f-bn" type="number" min="' + (tamPadrao + 1) + '" max="' + cfg.dezenas.length + '" value="' + baseN + '"></div>';
@@ -550,7 +620,7 @@ TELAS.fechamentos = function (el, cfg) {
   h += '<div class="campo"><label for="f-per">Perfil</label><select id="f-per">' + opcoes(MC.PERFIS, "Equilibrado") + "</select></div>";
   h += '<div class="campo"><label for="f-gar">Cobertura-alvo</label><select id="f-gar">' + opcoes(gar) + "</select></div>";
   h += '<div class="campo"><label for="f-max">Máx. de jogos (0 = auto)</label><input id="f-max" type="number" min="0" max="5000" value="0"></div></div>';
-  h += '<div class="linha-bts"><button class="bt" id="f-sug" type="button">✨ Sugerir base (quentes + atrasadas)</button><button class="bt" id="f-limpar" type="button">Limpar</button><button class="bt lot" id="f-ok" type="button">🎯 Gerar fechamento</button><span id="f-cont" class="dica" style="margin:0"></span></div><div class="progresso" id="f-prog"><i></i></div></div>';
+  h += '<div class="linha-bts"><button class="bt" id="f-sug" type="button">' + I("brilho") + 'Sugerir base</button><button class="bt" id="f-limpar" type="button">Limpar</button><button class="bt lot" id="f-ok" type="button">' + I("alvo") + 'Gerar fechamento</button><span id="f-cont" class="dica" style="margin:0"></span></div><div class="progresso" id="f-prog"><i></i></div></div>';
   h += '<div class="card" id="f-res"></div>';
   el.innerHTML = h;
   function lerBase() { return $("#f-base").value.split(/[^0-9]+/).filter(Boolean).map(Number).filter(function (d) { return d >= cfg.inicio && d <= cfg.universo; }); }
@@ -575,7 +645,7 @@ TELAS.fechamentos = function (el, cfg) {
   sync(lerBase());
   function desenhar() {
     var f = S.fech[S.lot], box = $("#f-res");
-    if (!f) { box.innerHTML = '<h3>Resultado</h3><p class="vazio">Monte a base e clique em 🎯 Gerar fechamento.</p>'; return; }
+    if (!f) { box.innerHTML = '<h3>Resultado</h3>' + vazio("alvo", "Monte a base e clique em <b>Gerar fechamento</b>."); return; }
     var i = f.info;
     box.innerHTML = "<h3>" + i.qtd_jogos + " jogos de " + i.tamanho_jogo + " dezenas</h3><div class=\"resumo\">Base de <b>" + i.base.length + "</b> dezenas · perfil <b>" + esc(i.perfil) + "</b> · cobertura interna (" + esc(i.garantia_alvo) + ", calculada em " + i.calculada_em + " dezenas): <b>" + i.cobertura_pct.toLocaleString("pt-BR") + "%</b><br><small>" + esc(i.observacao) + "</small></div><div style=\"margin-top:12px\"></div>" +
       tabela(["#", "Jogo", "Soma"], f.jogos.map(function (j, k) { return [k + 1, {h: bolas(cfg, j, null, true), s: k}, MC.soma(j)]; }), "t-fech") +
@@ -584,22 +654,23 @@ TELAS.fechamentos = function (el, cfg) {
   }
   desenhar();
   $("#f-ok").onclick = function () {
+    if (!pro("fechamentos")) return;
     var base = lerBase(), tam = +$("#f-tam").value;
     if (base.length - tam > 12 && !confirm("A base tem " + base.length + " dezenas para jogos de " + tam + ". O cálculo pode levar alguns segundos e a cobertura será estimada por amostragem. Continuar?")) return;
-    var bt = this, pr = $("#f-prog"); bt.disabled = true; bt.textContent = "⏳ Calculando…";
+    var bt = this, pr = $("#f-prog"); bt.disabled = true; bt.textContent = "Calculando…";
     MC.gerarFechamento(base, cfg, $("#f-per").value, $("#f-gar").value, tam, +$("#f-max").value || null, function (p, n) {
-      progresso(pr, p); bt.textContent = "⏳ " + n + " jogos…";
+      progresso(pr, p); bt.textContent = n + " jogos…";
     }).then(function (r) { S.fech[S.lot] = r; desenhar(); status(r.jogos.length + " jogos no fechamento."); })
       .catch(function (e) { status(e.message); })
-      .then(function () { bt.disabled = false; bt.textContent = "🎯 Gerar fechamento"; pr.classList.remove("on"); });
+      .then(function () { bt.disabled = false; bt.innerHTML = I("alvo") + "Gerar fechamento"; pr.classList.remove("on"); });
   };
 };
 function fechamentoSuperSete(el, cfg) {
-  var h = '<div class="card"><h3>Fechamento Super Sete — desdobramento do volante</h3><div class="form">';
+  var h = '<div class="card"><h3>Fechamento Super Sete' + tagPro("fechamentos") + '</h3><p class="dica">Desdobramento do volante seguindo a regra oficial da CAIXA.</p><div class="form">';
   h += '<div class="campo"><label for="s-tot">Total de números (7 a 21)</label><input id="s-tot" type="number" min="7" max="21" value="' + (ls("ss-tot") || 10) + '"></div>';
   h += '<div class="campo"><label for="s-per">Distribuição</label><select id="s-per">' + opcoes(MC.PERFIS_SS, ls("ss-per") || "Equilibrado") + "</select></div>";
-  h += '<div class="campo"><button class="bt lot" id="s-ok" type="button">🎯 Gerar fechamento</button></div></div>';
-  h += '<p class="nota" style="margin-top:12px"><b>Regra oficial da CAIXA:</b> de 8 a 14 números marcados, cada coluna tem no mínimo 1 e no máximo 2. De 15 a 21 números, no mínimo 2 e no máximo 3 — só é possível marcar o 3º número numa coluna depois que TODAS já tiverem 2. A quantidade de jogos simples é o produto das colunas (ex.: 2 números em três colunas e 1 nas demais = 2×2×2 = 8 jogos).</p><div id="s-prev" class="resumo"></div></div><div class="card" id="s-res"><h3>Resultado</h3><p class="vazio">Escolha o total e clique em 🎯 Gerar fechamento.</p></div>';
+  h += '<div class="campo"><button class="bt lot" id="s-ok" type="button">' + I("alvo") + 'Gerar fechamento</button></div></div>';
+  h += '<p class="nota" style="margin-top:12px"><b>Regra oficial da CAIXA:</b> de 8 a 14 números marcados, cada coluna tem no mínimo 1 e no máximo 2. De 15 a 21 números, no mínimo 2 e no máximo 3 — só é possível marcar o 3º número numa coluna depois que TODAS já tiverem 2. A quantidade de jogos simples é o produto das colunas (ex.: 2 números em três colunas e 1 nas demais = 2×2×2 = 8 jogos).</p><div id="s-prev" class="resumo"></div></div><div class="card" id="s-res"><h3>Resultado</h3>' + vazio("alvo", "Escolha o total e clique em <b>Gerar fechamento</b>.") + '</div>';
   el.innerHTML = h;
   function previa() {
     try {
@@ -609,6 +680,7 @@ function fechamentoSuperSete(el, cfg) {
   }
   $("#s-tot").oninput = previa; previa();
   $("#s-ok").onclick = function () {
+    if (!pro("fechamentos")) return;
     try {
       var t = +$("#s-tot").value, p = $("#s-per").value; ls("ss-tot", t); ls("ss-per", p);
       var r = MC.fechamentoSS(cs(), cfg, t, p);
@@ -625,11 +697,11 @@ function fechamentoSuperSete(el, cfg) {
 TELAS.simulador = function (el, cfg) {
   var g = S.ger[S.lot], h = '<div class="card"><h3>Simulador Monte Carlo</h3>';
   if (!g || !g.jogos.length) {
-    el.innerHTML = h + '<p class="vazio">Gere jogos no ⚡ Gerador (ou use um fechamento) para simular.</p><div class="linha-bts"><button class="bt lot" type="button" id="m-ir">Ir para o Gerador</button></div></div>';
+    el.innerHTML = h + vazio("dado", "Gere jogos no <b>Gerador</b> (ou use um fechamento) para simular.", '<button class="bt primario" type="button" id="m-ir">' + I("raio") + "Ir para o Gerador</button>") + "</div>";
     $("#m-ir").onclick = function () { ir(S.lot, "gerador"); }; return;
   }
   h += '<p class="dica">Sorteia aleatoriamente milhares de concursos e mede o melhor acerto do seu conjunto de ' + g.jogos.length + " jogo(s) em cada um.</p>";
-  h += '<div class="form"><div class="campo"><label for="m-n">Simulações</label><select id="m-n">' + opcoes([[10000, "10 mil"], [100000, "100 mil"], [500000, "500 mil"], [1000000, "1 milhão"]], 100000) + '</select></div><div class="campo"><button class="bt lot" id="m-ok" type="button">🎲 Simular</button></div></div><div class="progresso" id="m-prog"><i></i></div></div><div id="m-res"></div>';
+  h += '<div class="form"><div class="campo"><label for="m-n">Simulações</label><select id="m-n">' + opcoes([[10000, "10 mil"], [100000, "100 mil" + (PL.pro.simulacaoGrande ? " · PRO" : "")], [500000, "500 mil" + (PL.pro.simulacaoGrande ? " · PRO" : "")], [1000000, "1 milhão" + (PL.pro.simulacaoGrande ? " · PRO" : "")]], PL.liberado("simulacaoGrande") ? 100000 : 10000) + '</select></div><div class="campo"><button class="bt lot" id="m-ok" type="button">' + I("dado") + 'Simular</button></div></div><div class="progresso" id="m-prog"><i></i></div></div><div id="m-res"></div>';
   if (!cfg.colunar) {
     var n = g.jogos[0].length;
     h += '<div class="card"><h3>Probabilidade exata de uma aposta de ' + n + " dezenas</h3>" + tabela(["Acertos", "Probabilidade", "1 em"], cfg.premios.slice().reverse().map(function (k) {
@@ -638,6 +710,7 @@ TELAS.simulador = function (el, cfg) {
   }
   el.innerHTML = h;
   $("#m-ok").onclick = function () {
+    if (+$("#m-n").value > 10000 && !pro("simulacaoGrande")) return;
     var bt = this, pr = $("#m-prog"), ns = +$("#m-n").value; bt.disabled = true;
     MC.monteCarlo(g.jogos, cfg, ns, function (p) { progresso(pr, p); }).then(function (r) {
       bt.disabled = false; pr.classList.remove("on");
@@ -671,10 +744,10 @@ TELAS.conferir = function (el, cfg) {
   var txt = ls("conf:" + S.lot) || (g && g.jogos.length ? g.jogos.map(function (j) { return textoJogo(cfg, j); }).join("\n") : "");
   var h = '<div class="card"><h3>Conferir jogos</h3><p class="dica">Um jogo por linha. ' + (cfg.colunar ? "Super Sete: 7 dígitos (ex.: 5267245) ou colunas separadas por | (ex.: 12 | 5 | 67 | …)." : "Números separados por espaço, vírgula ou traço.") + "</p>";
   h += '<textarea id="c-txt" spellcheck="false">' + esc(txt) + "</textarea>";
-  h += '<div class="form" style="margin-top:10px"><div class="campo"><label for="c-num">Concurso</label><input id="c-num" type="number" min="' + (c[0] ? c[0].concurso : 1) + '" max="' + (u ? u.concurso : 1) + '" value="' + (u ? u.concurso : "") + '"></div><div class="campo"><button class="bt lot" id="c-ok" type="button">✅ Conferir no concurso</button></div><div class="campo"><button class="bt" id="c-hist" type="button">📜 Conferir em todo o histórico</button></div>' +
+  h += '<div class="form" style="margin-top:10px"><div class="campo"><label for="c-num">Concurso</label><input id="c-num" type="number" min="' + (c[0] ? c[0].concurso : 1) + '" max="' + (u ? u.concurso : 1) + '" value="' + (u ? u.concurso : "") + '"></div><div class="campo"><button class="bt lot" id="c-ok" type="button">' + I("check") + 'Conferir no concurso</button></div><div class="campo"><button class="bt" id="c-hist" type="button">' + I("historico") + 'Todo o histórico' + tagPro("historico") + '</button></div>' +
     (g && g.jogos.length ? '<div class="campo"><button class="bt" id="c-atuais" type="button">Usar jogos atuais</button></div>' : "") + "</div></div><div class=\"card\" id=\"c-res\"></div>";
   el.innerHTML = h;
-  $("#c-res").innerHTML = '<h3>Resultado</h3><p class="vazio">Cole seus jogos e confira.</p>';
+  $("#c-res").innerHTML = '<h3>Resultado</h3>' + vazio("check", "Cole seus jogos (um por linha) e confira.");
   $("#c-txt").oninput = function () { ls("conf:" + S.lot, this.value); };
   if ($("#c-atuais")) $("#c-atuais").onclick = function () { $("#c-txt").value = g.jogos.map(function (j) { return textoJogo(cfg, j); }).join("\n"); ls("conf:" + S.lot, null); };
   $("#c-ok").onclick = function () {
@@ -685,12 +758,13 @@ TELAS.conferir = function (el, cfg) {
       var hs = MC.conferir(j, con, cfg), best = Math.max.apply(null, hs), pr = cfg.premios.indexOf(best) >= 0;
       if (pr) premiados++;
       var todas = cfg.colunar ? [] : con.dezenas;
-      return [i + 1, {h: cfg.colunar ? colunasSS(j) : bolas(cfg, j, todas, true), s: i}, {h: (pr ? "🏆 " : "") + hs.join(" / "), s: best}];
+      return [i + 1, {h: cfg.colunar ? colunasSS(j) : bolas(cfg, j, todas, true), s: i}, {h: (pr ? I("trofeu") + " " : "") + hs.join(" / "), s: best}];
     });
     $("#c-res").innerHTML = "<h3>Concurso " + fmtN(n) + " · " + premiados + " jogo(s) premiado(s)</h3>" + bolasConcurso(cfg, con) + '<div style="margin-top:12px"></div>' + tabela(["#", "Jogo", cfg.sorteios > 1 ? "Acertos (1º / 2º)" : "Acertos"], linhas, "t-conf");
     ativarOrdenacao("t-conf");
   };
   $("#c-hist").onclick = function () {
+    if (!pro("historico")) return;
     var jogos = lerJogosTexto(cfg, $("#c-txt").value);
     if (!jogos.length) { status("Nenhum jogo válido no texto."); return; }
     var prs = cfg.premios.slice().reverse();
@@ -713,22 +787,22 @@ TELAS.conferir = function (el, cfg) {
 TELAS.dados = function (el, cfg) {
   var c = cs(), add = ls("add:" + S.lot) || [], sy = ls("sync:" + S.lot);
   var nCols = cfg.colunar ? 7 : cfg.sorteadas * cfg.sorteios;
-  var h = '<div class="grade g2"><div class="card"><h3>🔄 Atualizar resultados online</h3><p class="dica">Baixa os concursos novos da base pública de resultados (GitHub eitchtee/loterias.json). Os concursos novos ficam salvos neste navegador.</p>' +
+  var h = '<div class="grade g2"><div class="card"><h3>Atualizar resultados</h3><p class="dica">Baixa os concursos novos da base pública de resultados (GitHub eitchtee/loterias.json). Os concursos novos ficam salvos neste navegador.</p>' +
     '<div class="resumo">Base do site: até o concurso <b>' + fmtN(S.meta[S.lot].ultimoBase || 0) + "</b>" + (S.meta[S.lot].atualizado ? " (" + new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") + ")" : "") +
     "<br>Salvos neste navegador: <b>" + fmtN(add.length) + "</b> concurso(s)" + (sy ? " · última sincronização " + new Date(sy).toLocaleString("pt-BR") : "") + "</div>" +
-    '<div class="linha-bts"><button class="bt lot" id="x-on" type="button">🔄 Atualizar ' + esc(cfg.nome) + '</button><button class="bt perigo" id="x-limpar" type="button">Apagar dados locais</button></div></div>';
-  h += '<div class="card"><h3>✍ Adicionar concurso manualmente</h3><div class="form"><div class="campo"><label for="x-n">Concurso</label><input id="x-n" type="number" min="1" value="' + ((c.length ? c[c.length - 1].concurso : 0) + 1) + '"></div><div class="campo"><label for="x-d">Data</label><input id="x-d" type="text" placeholder="dd/mm/aaaa"></div></div>' +
+    '<div class="linha-bts"><button class="bt lot" id="x-on" type="button">' + I("atualizar") + 'Atualizar ' + esc(cfg.nome) + '</button><button class="bt perigo" id="x-limpar" type="button">' + I("lixo") + 'Apagar dados locais</button></div></div>';
+  h += '<div class="card"><h3>Adicionar concurso</h3><div class="form"><div class="campo"><label for="x-n">Concurso</label><input id="x-n" type="number" min="1" value="' + ((c.length ? c[c.length - 1].concurso : 0) + 1) + '"></div><div class="campo"><label for="x-d">Data</label><input id="x-d" type="text" placeholder="dd/mm/aaaa"></div></div>' +
     '<div class="form" style="margin-top:10px"><div class="campo" style="grid-column:1/-1"><label for="x-dz">' + nCols + " número(s)" + (cfg.sorteios > 1 ? " (1º sorteio seguido do 2º)" : cfg.colunar ? " (coluna 1 a 7)" : "") + '</label><input id="x-dz" type="text" placeholder="ex.: 04 05 30 33 41 52"></div>' +
     (cfg.extra_nome ? '<div class="campo" style="grid-column:1/-1"><label for="x-ex">' + esc(cfg.extra_nome) + (cfg.extra_qtd > 1 ? " (ex.: 2,5)" : "") + '</label><input id="x-ex" type="text"></div>' : "") +
     '</div><div class="linha-bts"><button class="bt lot" id="x-add" type="button">Adicionar</button></div></div></div>';
-  h += '<div class="grade g2"><div class="card"><h3>📥 Importar CSV</h3><p class="dica">Formato do MegaCover desktop: <code>Concurso;Data;Bola1;…;BolaN' + (cfg.extra_nome ? ";" + esc(cfg.extra_nome) : "") + "</code> (separador ; ou ,). A primeira linha pode ser o cabeçalho.</p>" +
-    '<input type="file" id="x-arq" accept=".csv,.txt"><div class="linha-bts"><button class="bt" id="x-exp" type="button">⬇ Exportar histórico (CSV)</button></div><div id="x-log" class="dica" style="margin-top:8px"></div></div>';
-  h += '<div class="card"><h3>💾 Projetos (.megacover)</h3><p class="dica">Abra um projeto salvo no ⚡ Gerador para recuperar os jogos.</p><input type="file" id="x-proj" accept=".megacover,.json"><div id="x-plog" class="dica" style="margin-top:8px"></div></div></div>';
+  h += '<div class="grade g2"><div class="card"><h3>Importar CSV</h3><p class="dica">Formato do MegaCover desktop: <code>Concurso;Data;Bola1;…;BolaN' + (cfg.extra_nome ? ";" + esc(cfg.extra_nome) : "") + "</code> (separador ; ou ,). A primeira linha pode ser o cabeçalho.</p>" +
+    '<input type="file" id="x-arq" accept=".csv,.txt"><div class="linha-bts"><button class="bt" id="x-exp" type="button">' + I("baixar") + 'Exportar histórico (CSV)</button></div><div id="x-log" class="dica" style="margin-top:8px"></div></div>';
+  h += '<div class="card"><h3>Projetos .megacover</h3><p class="dica">Abra um projeto salvo no Gerador para recuperar os jogos.</p><input type="file" id="x-proj" accept=".megacover,.json"><div id="x-plog" class="dica" style="margin-top:8px"></div></div></div>';
   el.innerHTML = h;
   $("#x-on").onclick = function () {
-    var bt = this; bt.disabled = true; bt.textContent = "⏳ Baixando…";
+    var bt = this; bt.disabled = true; bt.textContent = "Baixando…";
     atualizarOnline(S.lot).then(function (n) { status(n ? n + " concurso(s) novo(s) da " + cfg.nome + "." : cfg.nome + " já está atualizada."); render(); })
-      .catch(function (e) { status("Não foi possível conectar (" + e.message + ")."); bt.disabled = false; bt.textContent = "🔄 Atualizar " + cfg.nome; });
+      .catch(function (e) { status("Não foi possível conectar (" + e.message + ")."); bt.disabled = false; bt.innerHTML = I("atualizar") + "Atualizar " + esc(cfg.nome); });
   };
   $("#x-limpar").onclick = function () {
     if (!confirm("Apagar os concursos salvos neste navegador para a " + cfg.nome + "? A base do site continua.")) return;
@@ -809,12 +883,59 @@ function tema() {
     var novo = escuro ? "light" : "dark"; document.documentElement.setAttribute("data-theme", novo); ls("tema", novo);
   };
 }
+/* ======================= Plano / Beta ======================= */
+function planoCard() {
+  var el = $("#plano-card"); if (!el) return;
+  el.innerHTML = PL.beta()
+    ? '<span class="tag"><i></i>Acesso Beta</span><p>Todos os recursos PRO liberados grátis durante o período de testes.</p><button class="bt" type="button" id="bt-plano" style="width:100%">' + I("coroa") + "Conhecer o PRO</button>"
+    : '<span class="tag">Plano gratuito</span><p>Desbloqueie IA, fechamentos e simulações ilimitadas.</p><button class="bt primario" type="button" id="bt-plano" style="width:100%">' + I("coroa") + "Assinar PRO</button>";
+  $("#bt-plano").onclick = function () { modalPlano(); };
+}
+function abrirModal(html) {
+  var m = $("#modal"); $("#modal-caixa").innerHTML = html; m.hidden = false;
+  m.onclick = function (e) { if (e.target === m || e.target.closest("[data-fechar]")) fecharModal(); };
+  var f = $("#modal-caixa button, #modal-caixa input"); if (f) f.focus();
+}
+function fecharModal() { $("#modal").hidden = true; }
+document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#modal").hidden && !$("#modal-caixa [data-obrigatorio]")) fecharModal(); });
+function listaPro() { return Object.keys(PL.pro || {}).map(function (k) { return "<li>" + I("check") + "<span>" + esc(PL.pro[k]) + "</span></li>"; }).join(""); }
+function modalPlano(recurso) {
+  var link = PL.linkAssinatura, contato = PL.contatoUrl();
+  var acao = PL.beta()
+    ? (contato ? '<a class="bt primario" href="' + esc(contato) + '" target="_blank" rel="noopener">Entrar na lista de espera</a>' : "") + '<button class="bt" type="button" data-fechar>Continuar no Beta</button>'
+    : (link ? '<a class="bt primario" href="' + esc(link) + '" target="_blank" rel="noopener">Assinar agora' + (PL.precoMensal ? " · " + esc(PL.precoMensal) + "/mês" : "") + "</a>" : '<button class="bt primario" type="button" disabled>Assinaturas em breve</button>') + '<button class="bt" type="button" data-fechar>Agora não</button>';
+  abrirModal('<div class="sobre">' + (PL.beta() ? "Período de testes" : "MegaCover PRO") + '</div><h2 id="modal-titulo">' +
+    (recurso && !PL.beta() ? esc(PL.pro[recurso]) + " é um recurso PRO" : PL.beta() ? "Você está no Beta — tudo liberado" : "Conheça o MegaCover PRO") + "</h2>" +
+    "<p>" + (PL.beta() ? "Durante o período de testes você usa gratuitamente todos os recursos que farão parte da assinatura PRO:" : "A assinatura PRO inclui:") + "</p><ul>" + listaPro() + "</ul>" +
+    (PL.beta() ? '<p style="font-size:13px">Quando as assinaturas abrirem, os participantes do Beta serão avisados com antecedência.</p>' : "") +
+    '<div class="linha-bts">' + acao + '<a class="bt fantasma" href="index.html#planos">Ver planos</a></div>');
+}
+function boasVindas() {
+  if (ls("aceite")) return;
+  abrirModal('<div class="sobre">Bem-vindo(a)</div><h2 id="modal-titulo">MegaCover Pro Elite <span class="pro">BETA</span></h2>' +
+    "<p>Estatística, combinatória e simulação para as 9 loterias CAIXA — tudo processado no seu navegador.</p><ul>" +
+    "<li>" + I("barras") + "<span>Histórico completo desde o 1º concurso de cada loteria</span></li>" +
+    "<li>" + I("ia") + "<span>Gerador com MegaScore™ e MegaCover AI</span></li>" +
+    "<li>" + I("coroa") + "<span>Recursos PRO liberados grátis durante o Beta</span></li></ul>" +
+    '<label class="aceite"><input type="checkbox" id="aceite-ck" data-obrigatorio> <span>Tenho 18 anos ou mais e entendo que esta é uma ferramenta estatística: <b>não prevê resultados nem garante prêmios</b>.</span></label>' +
+    '<div class="linha-bts"><button class="bt primario grande" type="button" id="aceite-ok" disabled>Começar a usar</button></div>');
+  $("#modal").onclick = null;
+  $("#aceite-ck").onchange = function () { $("#aceite-ok").disabled = !this.checked; };
+  $("#aceite-ok").onclick = function () { ls("aceite", Date.now()); fecharModal(); };
+}
+
+function montarUltimos() {
+  MC.ORDEM.forEach(function (l) {
+    carregar(l.chave).then(function (c) { var el = $("#ult-" + l.chave); if (el && c.length) el.textContent = "nº " + c[c.length - 1].concurso; });
+  });
+}
 function iniciar() {
-  tema(); montarNav();
+  tema(); montarNav(); boasVindas();
   $("#bt-atualizar-todas").onclick = atualizarTodas;
   var h = location.hash.replace("#", "").split("/"), u = ls("ultima") || [];
   window.addEventListener("hashchange", function () { var p = location.hash.replace("#", "").split("/"); if (p[0] !== S.lot || p[1] !== S.aba) ir(p[0], p[1]); });
   ir(h[0] || u[0] || "megasena", h[1] || u[1] || "dashboard");
+  setTimeout(montarUltimos, 600);
 }
 iniciar();
 })();
