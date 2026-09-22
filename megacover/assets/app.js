@@ -227,9 +227,12 @@ function grafico(rotulos, valores, o) {
   });
   return g + "</svg>";
 }
+function ehNum(c) { return typeof c === "number" || !!(c && typeof c === "object" && (typeof c.h === "number" || c.num)); }
 function tabela(cab, linhas, id) {
+  /* o cabeçalho segue o alinhamento da coluna: números à direita */
+  var numCol = cab.map(function (_, i) { return linhas.length > 0 && linhas.every(function (l) { return ehNum(l[i]); }); });
   return '<div class="tabela-wrap"><table' + (id ? ' id="' + id + '"' : "") + "><thead><tr>" + cab.map(function (c, i) {
-    return '<th class="' + (id ? "ord" : "") + '" data-i="' + i + '">' + c + "</th>";
+    return '<th class="' + (id ? "ord" : "") + (numCol[i] ? " num" : "") + '" data-i="' + i + '">' + c + "</th>";
   }).join("") + "</tr></thead><tbody>" + linhas.map(function (l) {
     return "<tr>" + l.map(function (c) {
       var v = c && typeof c === "object" ? c : {h: c};
@@ -390,7 +393,7 @@ TELAS.estatisticas = function (el, cfg) {
     el.innerHTML = h; ativarOrdenacao("t-ss"); ativarOrdenacao("t-ss2"); return;
   }
   var fr = MC.frequencias(c, cfg), at2 = MC.atrasos(c, cfg), td = MC.tendencia(c, cfg, jan);
-  h += '<div class="card"><h3>Frequência, atraso e tendência</h3><div class="form" style="margin-bottom:12px"><div class="campo"><label for="e-jan">Janela da tendência (concursos)</label><select id="e-jan">' + opcoes([10, 20, 30, 50, 100], jan) + '</select></div></div><p class="dica">Clique no cabeçalho para ordenar.</p>';
+  h += '<div class="card"><h3>Frequência, atraso e tendência</h3><div class="form" style="margin-bottom:14px;max-width:260px"><div class="campo"><label for="e-jan">Janela da tendência (concursos)</label><select id="e-jan">' + opcoes([10, 20, 30, 50, 100], jan) + '</select></div></div><p class="dica">Clique no cabeçalho para ordenar.</p>';
   h += tabela(["Dezena", "Frequência", "%", "Atraso atual", "Maior atraso", "Últimos " + jan], cfg.dezenas.map(function (d) {
     return [{h: bola(cfg, d, false, true), s: d}, fr[d].abs, {h: fr[d].pct.toFixed(2).replace(".", ","), s: fr[d].pct, num: 1}, at2.atual[d], at2.maior[d], td[d]];
   }), "t-est") + "</div>";
@@ -558,7 +561,7 @@ TELAS.gerador = function (el, cfg) {
     var media = g.scores ? g.scores.reduce(function (a, b) { return a + b; }, 0) / g.scores.length : null;
     box.innerHTML = '<div class="cab"><h3>' + g.jogos.length + ' jogos</h3><span class="dica" style="margin:0">' + esc(g.estr) + (media != null ? ' · MegaScore™ médio <b class="mono">' + media.toFixed(1).replace(".", ",") + "</b>" : "") + "</span></div>" +
       tabela(cabJogos(cfg), linhasJogos(cfg, g), "t-jogos") +
-      '<div class="linha-bts"><button class="bt" data-x="csv" type="button">' + I("baixar") + 'Excel' + tagPro("exportar") + '</button><button class="bt" data-x="txt" type="button">' + I("baixar") + 'TXT</button><button class="bt" data-x="pdf" type="button">' + I("imprimir") + 'PDF</button><button class="bt" data-x="projeto" type="button">' + I("salvar") + 'Salvar projeto</button><button class="bt" data-x="copiar" type="button">' + I("copiar") + 'Copiar</button><span style="flex:1"></span><button class="bt" data-x="sim" type="button">' + I("dado") + 'Simular</button><button class="bt primario" data-x="conf" type="button">' + I("check") + 'Conferir</button></div>';
+      '<div class="linha-bts"><button class="bt" data-x="csv" type="button">' + I("baixar") + 'Excel' + tagPro("exportar") + '</button><button class="bt" data-x="txt" type="button">' + I("baixar") + 'TXT</button><button class="bt" data-x="pdf" type="button">' + I("imprimir") + 'PDF</button><button class="bt" data-x="projeto" type="button">' + I("salvar") + 'Salvar projeto</button><button class="bt" data-x="copiar" type="button">' + I("copiar") + 'Copiar</button><span style="flex:1"></span><button class="bt" data-x="sim" type="button">' + I("dado") + 'Simular</button><button class="bt" data-x="conf" type="button">' + I("check") + 'Conferir</button><button class="bt primario" data-x="volante" type="button">' + I("imprimir") + 'Imprimir no volante</button></div>';
     ativarOrdenacao("t-jogos");
     $$("[data-x]", box).forEach(function (b) {
       b.onclick = function () {
@@ -567,6 +570,7 @@ TELAS.gerador = function (el, cfg) {
         if (x === "pdf") window.print();
         else if (x === "sim") ir(S.lot, "simulador");
         else if (x === "conf") ir(S.lot, "conferir");
+        else if (x === "volante") imprimirVolante(cfg, g.jogos, g.extras);
         else exportarJogos(cfg, g, x);
       };
     });
@@ -605,6 +609,13 @@ TELAS.gerador = function (el, cfg) {
   };
 };
 function range(a, b) { var o = []; for (var i = a; i <= b; i++) o.push(i); return o; }
+
+/* leva os jogos para a página de impressão no volante */
+function imprimirVolante(cfg, jogos, extras) {
+  if (!jogos || !jogos.length) { status("Gere jogos primeiro."); return; }
+  ls("imprimir", {lot: cfg.chave, jogos: jogos, extras: extras || null, criado: Date.now()});
+  location.href = "volante.html";
+}
 
 /* ---------- Fechamentos ---------- */
 TELAS.fechamentos = function (el, cfg) {

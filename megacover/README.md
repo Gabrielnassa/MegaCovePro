@@ -59,6 +59,23 @@ Tudo o que é comercial fica em **`assets/plano.js`**:
 5. (Opcional) Em **Settings → Actions → General → Workflow permissions**, marque
    **Read and write permissions** para o robô conseguir salvar os resultados novos.
 
+## Imprimir no volante oficial
+
+No Gerador, o botão **Imprimir no volante** abre `volante.html`, que imprime só
+as marcas, em milímetros reais, no volante da CAIXA, pronto para passar na
+máquina da lotérica.
+
+1. **Calibre uma vez:** escolha *Folha de calibração*, imprima em papel comum
+   (escala 100%, margens "nenhuma"), sobreponha ao volante contra a luz e ajuste
+   posição do 1º número, distância entre números, jogos por volante etc.
+2. **Imprima:** volte para *Imprimir marcas*, coloque o volante na alimentação
+   manual da impressora e imprima. Se a impressora não aceita papel estreito, use
+   *Papel: folha A4 com o volante colado*.
+3. A calibração fica salva no navegador e pode ser **exportada/importada**
+   (útil para usar a mesma em outros computadores).
+
+Os moldes iniciais são aproximados: confira sempre o primeiro volante impresso.
+
 ## Atualização dos resultados
 
 - **Automática (GitHub Actions):** `.github/workflows/atualizar.yml` roda todo dia,
@@ -86,8 +103,10 @@ python3 -m http.server 8000
 ```
 index.html              página de apresentação (landing)
 app.html                painel (as 8 ferramentas)
+volante.html            impressão das marcas no volante oficial (com calibração)
 assets/plano.js         fase Beta/assinatura, preços e links  ← edite aqui
 assets/site.css         estilos da página de apresentação
+assets/volante.js       moldes e desenho do volante em milímetros
 assets/engine.js        motor: estatísticas, gerador, MegaScore, IA, fechamentos, Monte Carlo
 assets/app.js           interface (abas, gráficos, exportação)
 assets/style.css        design system do painel (tema claro/escuro, celular)
