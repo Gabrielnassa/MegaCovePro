@@ -25,7 +25,14 @@
   #previa{position:sticky;top:14px;background:repeating-conic-gradient(var(--painel2) 0 25%,var(--painel) 0 50%) 0 0/18px 18px;border:1px solid var(--borda);border-radius:var(--raio);padding:12px;max-height:calc(100vh - 28px);overflow:auto}
   #folhas{zoom:var(--z,1);display:flex;flex-direction:column;align-items:flex-start;gap:14px}
   .folha{position:relative;background:#fff;box-shadow:0 6px 24px -8px rgba(0,0,0,.45);overflow:hidden;flex:none}
-  .area{position:absolute}
+  .area{position:absolute;transform-origin:0 0}
+  .folha.virada{transform:rotate(180deg)}
+  .regua{position:absolute;border:0 solid #c0392b;font:600 2mm/1 var(--f-num);color:#c0392b}
+  .regua.h{border-bottom-width:.3mm;height:3mm;background:repeating-linear-gradient(90deg,#c0392b 0 .25mm,transparent .25mm 10mm)}
+  .regua.h span{position:absolute;top:3.4mm;transform:translateX(-50%)}
+  .regua.v{border-left-width:.3mm;width:3mm;background:repeating-linear-gradient(180deg,#c0392b 0 .25mm,transparent .25mm 10mm)}
+  .regua.v span{position:absolute;left:3.6mm;top:-1mm;white-space:nowrap}
+  .mira{position:absolute;width:4mm;height:4mm;background:linear-gradient(#c0392b,#c0392b) 50% 0/.3mm 100% no-repeat,linear-gradient(#c0392b,#c0392b) 0 50%/100% .3mm no-repeat}
   .contorno{position:absolute;inset:0;border:.3mm dashed #c0392b;border-radius:2mm}
   .contorno span{position:absolute;left:2mm;top:1.5mm;font:600 2.6mm/1 var(--f-texto);color:#c0392b}
   .mk{position:absolute;background:#000;border-radius:.3mm;print-color-adjust:exact;-webkit-print-color-adjust:exact}
@@ -72,7 +79,8 @@
         <h3>Primeira vez? Calibre em 3 passos</h3>
         <ol class="passos-vol">
           <li>Escolha <b>Folha de calibração</b> e imprima em <b>papel comum</b> (escala 100%, margens "nenhuma").</li>
-          <li>Coloque a folha sobre o volante <b>contra a luz</b> e ajuste abaixo até cada quadradinho azul cair em cima do número certo. Meça com régua o centro do 1º número e a distância entre números.</li>
+          <li><b>Meça a régua vermelha</b> impressa: tem de dar exatamente 60 mm. Se der menos ou mais, a impressora está redimensionando — desligue "ajustar à página" no diálogo de impressão ou corrija em <b>Escala</b>.</li>
+          <li>Coloque a folha sobre o volante <b>contra a luz</b>. Se a grade inteira estiver girada, use <b>Inclinação</b> (décimos de grau bastam). Depois ajuste posição do 1º número e distância entre números até cada quadradinho azul cair em cima do número certo.</li>
           <li>Volte para <b>Imprimir marcas</b>, coloque o volante na <b>alimentação manual</b> da impressora e imprima. A calibração fica salva.</li>
         </ol>
         <p class="dica" style="margin:12px 0 0">Os valores iniciais são aproximados: cada modelo de volante e cada impressora desloca alguns milímetros. Sempre confira o primeiro volante antes de imprimir vários.</p>

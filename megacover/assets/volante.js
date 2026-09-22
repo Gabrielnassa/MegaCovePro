@@ -13,7 +13,8 @@ function base(o) {
   var d = {largura: 82, altura: 190, jogos: 1, dirJogos: "vertical", distJogos: 60,
     x: 12, y: 42, passoX: 6.4, passoY: 5.2, ordem: "linha", zeroNoFim: false,
     marcaL: 4, marcaA: 2.4, formato: "retangulo",
-    extra: null, papel: "volante", papelX: 10, papelY: 10, ajusteX: 0, ajusteY: 0};
+    extra: null, papel: "volante", papelX: 10, papelY: 10, ajusteX: 0, ajusteY: 0,
+    rotacao: 0, escalaX: 100, escalaY: 100, virar: "nao"};
   for (var k in o) d[k] = o[k];
   return d;
 }
@@ -36,14 +37,17 @@ var CAMPOS = [
     ["linhas", "Linhas", 1, "int"], ["colunas", "Colunas", 1, "int"], ["ordem", "Numeração corre", 0, "ordem"]]],
   ["Marca", [["marcaL", "Largura da marca", 0.1], ["marcaA", "Altura da marca", 0.1], ["formato", "Formato", 0, "formato"]]],
   ["Impressora", [["papel", "Papel", 0, "papel"], ["papelX", "Volante colado a (esq.)", 0.5], ["papelY", "Volante colado a (topo)", 0.5],
-    ["ajusteX", "Ajuste fino horizontal", 0.1], ["ajusteY", "Ajuste fino vertical", 0.1]]]
+    ["ajusteX", "Ajuste fino horizontal", 0.1], ["ajusteY", "Ajuste fino vertical", 0.1]]],
+  ["Correção de inclinação e escala", [["rotacao", "Inclinação (graus, + gira no sentido horário)", 0.1, "num"],
+    ["escalaX", "Escala horizontal (%)", 0.5, "num"], ["escalaY", "Escala vertical (%)", 0.5, "num"], ["virar", "Volante entra na impressora", 0, "virar"]]]
 ];
 var EXTRA = [["x", "Centro do 1º item · da esquerda", 0.1], ["y", "Centro do 1º item · do topo", 0.1], ["passoX", "Distância entre colunas", 0.05],
   ["passoY", "Distância entre linhas", 0.05], ["linhas", "Linhas", 1, "int"], ["colunas", "Colunas", 1, "int"]];
 var OPC = {dir: [["vertical", "um abaixo do outro"], ["horizontal", "lado a lado"]],
   ordem: [["linha", "por linha (01, 02, 03… →)"], ["coluna", "por coluna (01, 02, 03… ↓)"]],
   formato: [["retangulo", "retângulo cheio"], ["elipse", "oval cheio"], ["x", "traço (X)"]],
-  papel: [["volante", "o próprio volante (alimentação manual)"], ["a4", "folha A4 com o volante colado"]]};
+  papel: [["volante", "o próprio volante (alimentação manual)"], ["a4", "folha A4 com o volante colado"]],
+  virar: [["nao", "com o topo para dentro (normal)"], ["sim", "de cabeça para baixo (girar 180°)"]]};
 
 var $ = function (s) { return document.querySelector(s); };
 function ls(k, v) {
@@ -106,8 +110,16 @@ function marcaHTML(m, p) {
   return '<i class="mk ' + m.formato + '" style="' + st + '"></i>';
 }
 /* folha de calibração: contorno do volante + todas as casas numeradas */
+function reguaHTML(m) {
+  var h = '<div class="regua h" style="left:6mm;top:' + (m.altura - 14) + 'mm;width:60mm"><span>0</span><span style="left:30mm">30</span><span style="left:60mm">60 mm</span></div>' +
+    '<div class="regua v" style="left:6mm;top:' + (m.altura - 74) + 'mm;height:60mm"><span>60 mm</span></div>';
+  [[0, 0], [1, 0], [0, 1], [1, 1]].forEach(function (q) {
+    h += '<div class="mira" style="left:' + (q[0] ? m.largura - 8 : 4) + "mm;top:" + (q[1] ? m.altura - 8 : 4) + 'mm"></div>';
+  });
+  return h;
+}
 function guiaHTML(c, m) {
-  var h = "", ordem = ordemNumeros(c, m), total = c.colunar ? m.linhas * m.colunas : ordem.length;
+  var h = reguaHTML(m), ordem = ordemNumeros(c, m), total = c.colunar ? m.linhas * m.colunas : ordem.length;
   for (var j = 0; j < m.jogos; j++) {
     for (var i = 0; i < total; i++) {
       var p = celula(m, i, j), rot = c.colunar ? (m.ordem === "coluna" ? i % m.linhas : Math.floor(i / m.colunas)) : c.fmt(ordem[i]);
@@ -138,7 +150,8 @@ function folhas() {
       return marcasDoJogo(c, m, jogo, S.extras ? S.extras[pg.ini + j] : null, j).map(function (p) { return marcaHTML(m, p); }).join("");
     }).join("");
     var contorno = pg.guia ? '<div class="contorno" style="width:' + m.largura + "mm;height:" + m.altura + 'mm"><span>' + esc(c.nome) + " · " + m.largura + " × " + m.altura + " mm · calibração</span></div>" : "";
-    return '<div class="folha" style="width:' + W + "mm;height:" + H + 'mm"><div class="area" style="left:' + offX + "mm;top:" + offY + "mm;width:" + m.largura + "mm;height:" + m.altura + 'mm">' + contorno + dentro + "</div>" +
+    var tr = "rotate(" + (+m.rotacao || 0) + "deg) scale(" + ((+m.escalaX || 100) / 100) + "," + ((+m.escalaY || 100) / 100) + ")";
+    return '<div class="folha' + (m.virar === "sim" ? " virada" : "") + '" style="width:' + W + "mm;height:" + H + 'mm"><div class="area" style="left:' + offX + "mm;top:" + offY + "mm;width:" + m.largura + "mm;height:" + m.altura + "mm;transform:" + tr + '">' + contorno + dentro + "</div>" +
       '<div class="rot-folha no-print">' + (pg.guia ? "Folha de calibração" : "Volante " + (k + 1) + " de " + paginas.length + " · jogos " + (pg.ini + 1) + "–" + (pg.ini + pg.jogos.length)) + "</div></div>";
   }).join("");
 }
@@ -161,7 +174,7 @@ function campo(chave, rot, passo, tipo, alvo) {
   var obj = alvo === "extra" ? S.m.extra : S.m, v = obj[chave], id = "c-" + (alvo || "m") + "-" + chave;
   if (tipo && OPC[tipo]) return '<label class="campo"><span class="rot">' + rot + '</span><select id="' + id + '" data-k="' + chave + '" data-a="' + (alvo || "") + '">' +
     OPC[tipo].map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === v ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select></label>";
-  return '<label class="campo"><span class="rot">' + rot + (tipo === "int" ? "" : " <small>mm</small>") + '</span><input type="number" id="' + id + '" data-k="' + chave + '" data-a="' + (alvo || "") + '" step="' + passo + '" value="' + v + '"' + (tipo === "int" ? ' min="1"' : "") + "></label>";
+  return '<label class="campo"><span class="rot">' + rot + (tipo === "int" || tipo === "num" ? "" : " <small>mm</small>") + '</span><input type="number" id="' + id + '" data-k="' + chave + '" data-a="' + (alvo || "") + '" step="' + passo + '" value="' + v + '"' + (tipo === "int" ? ' min="1"' : "") + "></label>";
 }
 function montarControles() {
   var c = cfg(), h = "";
