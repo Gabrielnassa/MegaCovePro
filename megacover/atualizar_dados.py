@@ -22,6 +22,9 @@ APIS_MES = ["https://loteriascaixa-api.vercel.app/api/diadesorte/{n}",
             "https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/{n}",
             "https://api.guidi.dev.br/loteria/diadesorte/{n}"]
 MAX_MESES_POR_RODADA = 400
+# APIs que leem a CAIXA em tempo real: cobrem os concursos que a base do GitHub ainda não tem
+APIS = ["https://loteriascaixa-api.vercel.app/api/{id}/{n}", "https://api.guidi.dev.br/loteria/{id}/{n}"]
+MAX_API_POR_RODADA = 60
 
 # id, arquivo no GitHub, tipo do campo extra
 JOGOS = [
@@ -42,6 +45,72 @@ def baixar(nome):
                                  headers={"User-Agent": "MegaCoverWeb"})
     with urllib.request.urlopen(req, timeout=90) as r:
         return json.loads(r.read())
+
+
+def api_json(url):
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        j = json.loads(r.read())
+    return j[0] if isinstance(j, list) and j else j
+
+
+def api_row(jid, tipo, j):
+    """Converte a resposta de uma API no formato das linhas de data/."""
+    if not isinstance(j, dict):
+        return None
+    n = int(j.get("concurso") or j.get("numero") or 0)
+    dez = [int(x) for x in (j.get("dezenas") or j.get("listaDezenas") or [])]
+    if not n or not dez:
+        return None
+    data = str(j.get("data") or j.get("dataApuracao") or "")[:10]
+    if len(data) == 10 and data[4] == "-":
+        data = "/".join(reversed(data.split("-")))
+    ncols = 7 if jid == "supersete" else {"megasena": 6, "lotofacil": 15, "quina": 5, "lotomania": 20,
+                                           "duplasena": 6, "timemania": 7, "diadesorte": 7, "maismilionaria": 6}[jid]
+    row = [n, data, dez[:ncols]]
+    if tipo == "dupla":
+        row.append([int(x) for x in (j.get("dezenas2") or j.get("listaDezenasSegundoSorteio") or dez[ncols:])])
+    elif tipo == "trevos":
+        row.append([int(x) for x in (j.get("trevos") or j.get("trevosSorteados") or [])])
+    elif tipo == "time":
+        row.append(str(j.get("timeCoracao") or j.get("nomeTimeCoracaoMesSorte") or "").strip())
+    elif tipo == "mes":
+        row.append(str(j.get("mesSorte") or j.get("nomeTimeCoracaoMesSorte") or "").strip().capitalize())
+    return row
+
+
+def api_concurso(jid, tipo, n):
+    for i, url in enumerate(APIS):
+        alvo = ("ultimo" if i == 1 else "latest") if n == "latest" else n
+        try:
+            row = api_row(jid, tipo, api_json(url.format(id=jid, n=alvo)))
+            if row:
+                return row
+        except Exception:
+            continue
+    return None
+
+
+def completar_pela_api(jid, tipo, atuais):
+    """Baixa pela API os concursos mais novos que a base do GitHub ainda não trouxe."""
+    ult = api_concurso(jid, tipo, "latest")
+    if not ult:
+        print(f"    API indisponível para {jid}")
+        return
+    local = max(atuais) if atuais else 0
+    novos = 0
+    for n in range(local + 1, ult[0]):
+        if novos >= MAX_API_POR_RODADA:
+            break
+        row = api_concurso(jid, tipo, n)
+        if row:
+            atuais[n] = row
+            novos += 1
+    if ult[0] > local:
+        atuais[ult[0]] = ult
+        novos += 1
+    if novos:
+        print(f"    +{novos} concurso(s) pela API (até o {ult[0]})")
 
 
 def mes_online(n):
@@ -71,7 +140,6 @@ def completar_meses(atuais):
         if mes:
             atuais[n] = atuais[n][:3] + [mes]
             ok += 1
-            falhas = 0
         else:
             falhas += 1
             if falhas >= 5:   # fontes fora do ar: tenta de novo na próxima rodada
@@ -102,15 +170,13 @@ def carregar(jid):
 
 def main():
     os.makedirs(DATA, exist_ok=True)
-    falhas = 0
     for jid, gh, tipo in JOGOS:
         atuais = carregar(jid)
         try:
             lista = baixar(gh)
-        except Exception as e:  # rede fora: mantém o que já existe
-            print(f"  ! {jid}: {e}")
-            falhas += 1
-            continue
+        except Exception as e:  # base do GitHub fora: segue só com a API
+            print(f"  ! {jid}: GitHub indisponível ({e})")
+            lista = []
         for x in lista:
             try:
                 n = int(x["concurso"])
@@ -127,6 +193,7 @@ def main():
                     ex = antigo[3]          # não perde um extra que já tínhamos
                 row.append(ex if ex is not None else "")
             atuais[n] = row
+        completar_pela_api(jid, tipo, atuais)
         if tipo == "mes":
             completar_meses(atuais)
         rows = [atuais[k] for k in sorted(atuais)]
@@ -136,8 +203,6 @@ def main():
         with open(os.path.join(DATA, jid + ".json"), "w", encoding="utf-8") as f:
             json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
         print(f"  ✓ {jid}: {len(rows)} concursos (último {rows[-1][0] if rows else '-'})")
-    if falhas == len(JOGOS):
-        sys.exit(1)
 
 
 if __name__ == "__main__":

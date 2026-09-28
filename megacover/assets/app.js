@@ -45,7 +45,7 @@ function tagPro(recurso) { return PL.pro && PL.pro[recurso] ? ' <span class="pro
 /* true se o recurso está liberado; senão abre o convite de assinatura */
 function pro(recurso) { if (PL.liberado(recurso)) return true; modalPlano(recurso); return false; }
 
-var S = {lot: "megasena", aba: "dashboard", dados: {}, meta: {}, ger: {}, fech: {}, carregando: {}, ordem: {}};
+var S = {lot: "megasena", aba: "dashboard", dados: {}, meta: {}, ger: {}, fech: {}, carregando: {}, sync: {}, ordem: {}};
 var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 function cfgAtual() { return MC.TODAS[S.lot]; }
@@ -140,24 +140,85 @@ function carregar(id) {
     var add = ls("add:" + id);
     if (add && add.length) mesclar(id, add, false);
     delete S.carregando[id];
+    setTimeout(function () { sincronizar(id); }, 50);   /* busca concursos novos sem travar a tela */
     return S.dados[id];
   });
   return S.carregando[id];
 }
+/* ---------- fontes online ----------
+   1ª) API pública que lê a CAIXA em tempo real (concurso a concurso)
+   2ª) base do GitHub eitchtee/loterias.json (histórico completo, atrasa alguns dias) */
+var APIS = ["https://loteriascaixa-api.vercel.app/api/{id}/{n}", "https://api.guidi.dev.br/loteria/{id}/{n}"];
+var SYNC_INTERVALO = 2 * 60 * 60 * 1000;   /* volta a checar a cada 2 h */
+function apiParaRow(cfg, j) {
+  if (!j || typeof j !== "object") return null;
+  if (Array.isArray(j)) j = j[0];
+  var n = +(j.concurso || j.numero || j.numeroConcurso || 0); if (!n) return null;
+  var dz = (j.dezenas || j.listaDezenas || j.dezenasSorteadasOrdemSorteio || []).map(Number).filter(function (x) { return !isNaN(x); });
+  if (!dz.length) return null;
+  var data = String(j.data || j.dataApuracao || "").slice(0, 10);
+  if (/^\d{4}-\d{2}-\d{2}/.test(data)) data = data.split("-").reverse().join("/");
+  var row = [n, data, cfg.colunar ? dz.slice(0, cfg.colunas) : dz.slice(0, cfg.sorteadas)];
+  if (cfg.sorteios > 1) row.push((j.dezenas2 || j.listaDezenasSegundoSorteio || j.dezenasSegundoSorteio || dz.slice(cfg.sorteadas)).map(Number));
+  else if (cfg.extra_qtd > 1) row.push((j.trevos || j.trevosSorteados || []).map(Number));
+  else if (cfg.chave === "timemania") row.push(String(j.timeCoracao || j.nomeTimeCoracaoMesSorte || j.timeDoCoracao || ""));
+  else if (cfg.chave === "diadesorte") row.push(String(j.mesSorte || j.nomeTimeCoracaoMesSorte || j.mesDaSorte || ""));
+  return row;
+}
+function apiConcurso(id, n) {           /* tenta cada API; n = "latest" ou número */
+  var cfg = MC.TODAS[id], i = 0;
+  return new Promise(function (res, rej) {
+    (function prox() {
+      if (i >= APIS.length) { rej(new Error("APIs indisponíveis")); return; }
+      var url = APIS[i++].replace("{id}", id).replace("{n}", n === "latest" && i === 2 ? "ultimo" : n);
+      getJSON(url, 8000).then(function (j) { var r = apiParaRow(cfg, j); if (r) res(r); else prox(); }).catch(prox);
+    })();
+  });
+}
+function ultimoLocal(id) { var c = S.dados[id] || []; return c.length ? c[c.length - 1].concurso : 0; }
+/* baixa os concursos que faltam pela API; se ela falhar ou faltar demais, usa a base do GitHub */
 function atualizarOnline(id, silencioso) {
   var cfg = MC.TODAS[id];
-  return getJSON(GH + GH_NOME[id] + ".json", 60000).then(function (lista) {
-    var rows = lista.map(function (x) { return ghParaRow(cfg, x); }).filter(Boolean);
+  return apiConcurso(id, "latest").then(function (ult) {
+    var local = ultimoLocal(id), faltam = [];
+    for (var n = local + 1; n < ult[0]; n++) faltam.push(n);
+    if (faltam.length > 80) throw new Error("muitos concursos");   /* histórico grande: GitHub é mais eficiente */
+    var rows = [ult];
+    return (function lote(i) {
+      if (i >= faltam.length) return Promise.resolve();
+      return Promise.all(faltam.slice(i, i + 6).map(function (n) { return apiConcurso(id, n).then(function (r) { rows.push(r); }, function () {}); }))
+        .then(function () { return lote(i + 6); });
+    })(0).then(function () { return rows; });
+  }).catch(function () {
+    return getJSON(GH + GH_NOME[id] + ".json", 60000).then(function (lista) {
+      return lista.map(function (x) { return ghParaRow(cfg, x); }).filter(Boolean);
+    });
+  }).then(function (rows) {
     var n = mesclar(id, rows, true);
     ls("sync:" + id, Date.now());
     return n;
   }).catch(function (e) { if (!silencioso) throw e; return 0; });
 }
+/* sincronização automática em segundo plano (ao abrir e a cada 2 h) */
+function sincronizar(id) {
+  var t = ls("sync:" + id);
+  if (t && Date.now() - t < SYNC_INTERVALO) return Promise.resolve(0);
+  if (S.sync[id]) return S.sync[id];
+  S.sync[id] = atualizarOnline(id, true).then(function (n) {
+    delete S.sync[id];
+    if (n) {
+      var el = $("#ult-" + id), c = S.dados[id]; if (el && c.length) el.textContent = "nº " + c[c.length - 1].concurso;
+      if (id === S.lot) { render(); status(MC.TODAS[id].nome + ": " + n + " concurso(s) novo(s) baixado(s)."); }
+    }
+    return n;
+  });
+  return S.sync[id];
+}
 function atualizarTodas() {
   var bt = $("#bt-atualizar-todas"); bt.disabled = true; bt.innerHTML = I("atualizar") + '<span class="txt-lg">Atualizando…</span>';
   var ids = MC.ORDEM.map(function (l) { return l.chave; }), rel = [], feitos = 0;
   return Promise.all(ids.map(function (id) {
-    return carregar(id).then(function () { return atualizarOnline(id); }).then(function (n) {
+    return carregar(id).then(function () { ls("sync:" + id, null); return atualizarOnline(id); }).then(function (n) {
       rel.push(MC.TODAS[id].nome + ": " + (n ? "+" + n : "ok"));
     }).catch(function () { rel.push(MC.TODAS[id].nome + ": falhou"); }).then(function () {
       feitos++; bt.innerHTML = I("atualizar") + '<span class="txt-lg">' + feitos + "/9</span>";
@@ -346,7 +407,7 @@ TELAS.dashboard = function (el, cfg) {
     var fx = MC.frequenciaExtras(c, cfg);
     h += kpi(esc(cfg.extra_nome) + " líder", fx.length ? esc(fx[0][0]) : "—", fx.length ? fmtN(fx[0][1]) + " vezes · " + fx[0][2].toFixed(1).replace(".", ",") + "%" : "sem dados", true);
   }
-  h += kpi("Base atualizada", sy ? new Date(sy).toLocaleDateString("pt-BR") : (S.meta[S.lot].atualizado ? new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") : "—"), sy ? "sincronizada neste navegador" : "arquivo do site", true) + "</div>";
+  h += kpi("Última sincronização", sy ? new Date(sy).toLocaleString("pt-BR", {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"}) : (S.meta[S.lot].atualizado ? new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") : "—"), sy ? "automática · checa a cada 2 h" : "arquivo do site", true) + "</div>";
   if (cfg.colunar) {
     var tab = MC.porColuna(c, cfg);
     h += '<div class="card"><div class="cab"><h3>Dígito líder em cada coluna</h3><span class="dica" style="margin:0">frequência no histórico</span></div><div class="bolas grandes">' + tab.map(function (f, i) {
@@ -798,7 +859,7 @@ TELAS.conferir = function (el, cfg) {
 TELAS.dados = function (el, cfg) {
   var c = cs(), add = ls("add:" + S.lot) || [], sy = ls("sync:" + S.lot);
   var nCols = cfg.colunar ? 7 : cfg.sorteadas * cfg.sorteios;
-  var h = '<div class="grade g2"><div class="card"><h3>Atualizar resultados</h3><p class="dica">Baixa os concursos novos da base pública de resultados (GitHub eitchtee/loterias.json). Os concursos novos ficam salvos neste navegador.</p>' +
+  var h = '<div class="grade g2"><div class="card"><h3>Atualizar resultados</h3><p class="dica">O painel sincroniza sozinho ao abrir e a cada 2 horas: primeiro pela API pública que lê a CAIXA em tempo real, depois pela base do GitHub (eitchtee/loterias.json) como reserva. Os concursos novos ficam salvos neste navegador. Use o botão para forçar agora.</p>' +
     '<div class="resumo">Base do site: até o concurso <b>' + fmtN(S.meta[S.lot].ultimoBase || 0) + "</b>" + (S.meta[S.lot].atualizado ? " (" + new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") + ")" : "") +
     "<br>Salvos neste navegador: <b>" + fmtN(add.length) + "</b> concurso(s)" + (sy ? " · última sincronização " + new Date(sy).toLocaleString("pt-BR") : "") + "</div>" +
     '<div class="linha-bts"><button class="bt lot" id="x-on" type="button">' + I("atualizar") + 'Atualizar ' + esc(cfg.nome) + '</button><button class="bt perigo" id="x-limpar" type="button">' + I("lixo") + 'Apagar dados locais</button></div></div>';
@@ -812,6 +873,7 @@ TELAS.dados = function (el, cfg) {
   el.innerHTML = h;
   $("#x-on").onclick = function () {
     var bt = this; bt.disabled = true; bt.textContent = "Baixando…";
+    ls("sync:" + S.lot, null);
     atualizarOnline(S.lot).then(function (n) { status(n ? n + " concurso(s) novo(s) da " + cfg.nome + "." : cfg.nome + " já está atualizada."); render(); })
       .catch(function (e) { status("Não foi possível conectar (" + e.message + ")."); bt.disabled = false; bt.innerHTML = I("atualizar") + "Atualizar " + esc(cfg.nome); });
   };
