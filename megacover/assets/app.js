@@ -680,7 +680,7 @@ function range(a, b) { var o = []; for (var i = a; i <= b; i++) o.push(i); retur
 function imprimirVolante(cfg, jogos, extras) {
   if (!jogos || !jogos.length) { status("Gere jogos primeiro."); return; }
   ls("imprimir", {lot: cfg.chave, jogos: jogos, extras: extras || null, criado: Date.now()});
-  location.href = "volante.html";
+  location.href = "volante.html?modo=virtual&imprimir=1";
 }
 
 /* ---------- Fechamentos ---------- */
