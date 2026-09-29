@@ -16,7 +16,7 @@ function base(o) {
     extra: null, papel: "volante", papelX: 10, papelY: 10, ajusteX: 0, ajusteY: 0,
     rotacao: 0, escalaX: 100, escalaY: 100, virar: "nao",
     /* volante virtual em A4 (sulfite): até 4 jogos por folha, com cabeçalho e marcas de relógio */
-    v: {jogos: 3, porFolha: 2, gapV: 8, largura: 82, altura: 245, recorteX: 10, recorteY: 10, x: 14, y: 32, gapY: 8,
+    v: {jogos: 3, porFolha: 3, orientacao: "paisagem", gapV: 8, largura: 82, altura: 205, recorteX: 8, recorteY: 2.5, x: 14, y: 32, gapY: 8,
         relogioX: 5, relogioL: 3.4, relogioA: 1.8, topoN: 2, topoX: 5, topoPasso: 5, topoY: 0, relogioFim: "",
         qtdMin: 0, qtdY: 0, qtdX: 0, qtdPasso: 5.5, arquivo: "MegaCover", recorte: "sim", lista: "sim"}};
   for (var k in o) d[k] = o[k];
@@ -27,7 +27,7 @@ var MOLDES = {
   /* Lotofácil (medido na foto do volante): colunas de 5 números correndo de cima para baixo,
      da direita para a esquerda; fileira de 6 marcas no topo; campo "quantos números" abaixo dos blocos */
   lotofacil: base({linhas: 5, colunas: 5, passoX: 13.2, passoY: 5.25, ordem: "colunaDir", marcaL: 3.6, marcaA: 2.4,
-    v: {jogos: 3, porFolha: 2, gapV: 8, largura: 82, altura: 205, recorteX: 10, recorteY: 10, x: 25, y: 52, gapY: 3.8,
+    v: {jogos: 3, porFolha: 3, orientacao: "paisagem", gapV: 8, largura: 82, altura: 205, recorteX: 8, recorteY: 2.5, x: 25, y: 52, gapY: 3.8,
         relogioX: 9.5, relogioL: 2.6, relogioA: 2.2, topoN: 6, topoX: 25, topoPasso: 5.3, topoY: 45, relogioFim: "135.5,145,154.5,161,166.3,169.5,172.7",
         qtdMin: 15, qtdY: 135.5, qtdX: 15, qtdPasso: 5.5, arquivo: "MegaCover", recorte: "sim", lista: "sim"}}),
   quina: base({linhas: 8, colunas: 10, passoY: 4.6}),
@@ -38,7 +38,7 @@ var MOLDES = {
   supersete: base({linhas: 10, colunas: 7, passoX: 8.5, passoY: 4.8, x: 14, ordem: "coluna"}),
   maismilionaria: base({linhas: 5, colunas: 10, extra: {nome: "Trevos", linhas: 1, colunas: 6, x: 20, y: 74, passoX: 7, passoY: 5.2}})
 };
-var CAMPOS_V = [["porFolha", "Volantes por folha A4", 0, "porFolha"], ["gapV", "Espaço entre os volantes", 0.5], ["jogos", "Jogos por volante (1 a 4)", 1, "int"], ["arquivo", "Nome no cabeçalho", 0, "texto"],
+var CAMPOS_V = [["orientacao", "Folha A4", 0, "orientacao"], ["porFolha", "Volantes por folha", 0, "porFolha"], ["gapV", "Espaço entre os volantes", 0.5], ["jogos", "Jogos por volante (1 a 4)", 1, "int"], ["arquivo", "Nome no cabeçalho", 0, "texto"],
   ["largura", "Largura do volante (recorte)", 0.5], ["altura", "Altura do volante (recorte)", 0.5],
   ["recorteX", "Recorte · da borda esquerda da folha", 0.5], ["recorteY", "Recorte · da borda de cima da folha", 0.5],
   ["x", "1º número · da esquerda do recorte", 0.1], ["y", "1º número · do topo do recorte", 0.1], ["gapY", "Espaço entre jogos", 0.5],
@@ -67,7 +67,8 @@ var OPC = {dir: [["vertical", "um abaixo do outro"], ["horizontal", "lado a lado
   papel: [["volante", "o próprio volante (alimentação manual)"], ["a4", "folha A4 com o volante colado"]],
   virar: [["nao", "com o topo para dentro (normal)"], ["sim", "de cabeça para baixo (girar 180°)"]],
   simnao: [["sim", "sim"], ["nao", "não"]],
-  porFolha: [[1, "1 volante"], [2, "2 volantes lado a lado (economiza papel)"]]};
+  porFolha: [[1, "1 volante"], [2, "2 volantes lado a lado"], [3, "3 volantes lado a lado (A4 deitada)"]],
+  orientacao: [["paisagem", "deitada (paisagem) — cabem 3 volantes"], ["retrato", "em pé (retrato) — cabem 2 volantes"]]};
 
 var $ = function (s) { return document.querySelector(s); };
 function ls(k, v) {
@@ -244,12 +245,14 @@ function folhasVirtual() {
   var guia = S.modo === "guiav" || !S.jogos.length, volantes = [];
   if (guia) volantes.push({guia: true, ini: 0, jogos: []});
   else for (var i = 0; i < S.jogos.length; i += ar.n) volantes.push({guia: false, ini: i, jogos: S.jogos.slice(i, i + ar.n)});
-  /* quantos volantes de tamanho real cabem lado a lado na A4 (nunca encolhe) */
-  var pf = Math.max(1, Math.min(+v.porFolha || 1, Math.floor((A4.w - v.recorteX + v.gapV) / (v.largura + v.gapV))));
+  /* quantos volantes de tamanho real cabem lado a lado na folha (nunca encolhe) */
+  var pais = v.orientacao !== "retrato", W = pais ? A4.h : A4.w, H = pais ? A4.w : A4.h;
+  var pf = Math.max(1, Math.min(+v.porFolha || 1, Math.floor((W - v.recorteX + v.gapV) / (v.largura + v.gapV))));
   var paginas = []; for (i = 0; i < volantes.length; i += pf) paginas.push(volantes.slice(i, i + pf));
-  $("#estilo-pagina").textContent = "@page{size:210mm 297mm;margin:0}";
+  $("#estilo-pagina").textContent = "@page{size:" + W + "mm " + H + "mm;margin:0}";
   var tr = "rotate(" + (+m.rotacao || 0) + "deg) scale(" + ((+m.escalaX || 100) / 100) + "," + ((+m.escalaY || 100) / 100) + ")";
-  var offX = (+v.recorteX || 0) + (+m.ajusteX || 0), offY = (+v.recorteY || 0) + (+m.ajusteY || 0);
+  /* o recorte nunca sai da folha: se o volante for alto demais para a orientação, encosta na borda de cima */
+  var offX = (+v.recorteX || 0) + (+m.ajusteX || 0), offY = Math.max(0, Math.min(+v.recorteY || 0, H - v.altura - 1)) + (+m.ajusteY || 0);
   function volanteHTML(pg, k) {
     var rel = relogioHTML(c, m, ar), dentro = rel.html + cabecalhoHTML(c, m, ar, pg.ini);
     if (pg.guia) dentro += guiaVirtualHTML(c, m, ar);
@@ -265,7 +268,7 @@ function folhasVirtual() {
   }
   return paginas.map(function (vs, k) {
     var ini = vs[0].ini + 1, fim = vs[vs.length - 1].ini + vs[vs.length - 1].jogos.length;
-    return '<div class="folha' + (m.virar === "sim" ? " virada" : "") + '" style="width:210mm;height:297mm">' + vs.map(volanteHTML).join("") +
+    return '<div class="folha' + (m.virar === "sim" ? " virada" : "") + '" style="width:' + W + "mm;height:" + H + 'mm">' + vs.map(volanteHTML).join("") +
       '<div class="rot-folha no-print">' + (vs[0].guia ? "Guia do volante virtual" : "Folha " + (k + 1) + " de " + paginas.length + " · " + vs.length + " volante(s) · jogos " + ini + "–" + fim) + "</div></div>";
   }).join("");
 }
