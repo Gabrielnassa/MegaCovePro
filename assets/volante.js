@@ -272,6 +272,16 @@ function guiaVirtualHTML(c, m, ar) {
   }
   return h;
 }
+/* Gira o conteúdo do volante 90° anti-horário sem usar transform na caixa inteira: na impressão o Chrome
+   pagina pela caixa sem girar (82 × 205 mm) e quebra o desenho. Marcas viram caixas trocadas; textos giram um a um
+   (caixas pequenas, sempre dentro da página). (x, y) na vertical vira (y, largura − x). */
+function girarHTML(html, W) {
+  return html.replace(/(class="([^"]*)" style=")left:(-?[\d.]+)(?:mm)?;top:(-?[\d.]+)(?:mm)?(;width:(-?[\d.]+)mm)?(;height:(-?[\d.]+)mm)?/g, function (t, ini, cls, L, T, _w, w, _h, h) {
+    L = +L; T = +T;
+    if (/\bmk\b/.test(cls)) return ini + "left:" + T + "mm;top:" + (W - L - (+w)) + "mm;width:" + h + "mm;height:" + w + "mm";
+    return ini + "left:" + T + "mm;top:" + (W - L) + "mm" + (w != null ? ";width:" + w + "mm" : "") + (h != null ? ";height:" + h + "mm" : "") + ";transform:rotate(-90deg)";
+  });
+}
 function folhasVirtual() {
   var c = cfg(), m = S.m, v = m.v, ar = arranjoVirtual(c, m), paginas = [];
   var guia = S.modo === "guiav" || !S.jogos.length, volantes = [];
@@ -294,14 +304,18 @@ function folhasVirtual() {
   function posicao(k) {
     if (natural) return "left:" + offX + "mm;top:" + (offY + k * (v.altura + v.gapV)) + "mm;transform:" + tr;
     if (!deitado) return "left:" + (offX + k * (v.largura + v.gapV)) + "mm;top:" + offY + "mm;transform:" + tr;
-    /* girado 90° anti-horário: o topo do volante fica à esquerda da folha (texto lido de baixo para cima) */
-    return "left:" + offY + "mm;top:" + (offX + k * (v.largura + v.gapV) + v.largura) + "mm;transform:rotate(-90deg) " + tr;
+    /* volante deitado: a caixa já nasce girada (altura × largura); o conteúdo é girado elemento a elemento em girarHTML */
+    return "left:" + offY + "mm;top:" + (offX + k * (v.largura + v.gapV)) + "mm;transform:" + tr;
+  }
+  function areaHTML(k, dentro) {
+    var w = deitado ? v.altura : v.largura, h = deitado ? v.largura : v.altura;
+    return '<div class="area' + (v.recorte === "nao" ? "" : " recorte") + (deitado ? " girado" : "") + '" style="' + posicao(k) + ";width:" + w + "mm;height:" + h + 'mm">' + (deitado ? girarHTML(dentro, v.largura) : dentro) + "</div>";
   }
   function volanteHTML(pg, k) {
     var e = EXATO[c.chave], rel, dentro;
     if (e) {
       dentro = volanteExatoHTML(e, c, m, pg) + rodapeHTML(c, m, pg, Math.max.apply(null, e.relogio) + 2);
-      return '<div class="area' + (v.recorte === "nao" ? "" : " recorte") + '" style="' + posicao(k) + ";width:" + v.largura + "mm;height:" + v.altura + 'mm">' + dentro + "</div>";
+      return areaHTML(k, dentro);
     }
     rel = relogioHTML(c, m, ar); dentro = rel.html + cabecalhoHTML(c, m, ar, pg.ini);
     if (pg.guia) dentro += guiaVirtualHTML(c, m, ar);
@@ -313,7 +327,7 @@ function folhasVirtual() {
       dentro += marcaHTML(m, {x: v.qtdX + (q - v.qtdMin) * v.qtdPasso + m.marcaL / 2, y: v.qtdY + m.marcaA / 2});
     }
     dentro += rodapeHTML(c, m, pg, rel.yFim);
-    return '<div class="area' + (v.recorte === "nao" ? "" : " recorte") + '" style="' + posicao(k) + ";width:" + v.largura + "mm;height:" + v.altura + 'mm">' + dentro + "</div>";
+    return areaHTML(k, dentro);
   }
   return paginas.map(function (vs, k) {
     var ini = vs[0].ini + 1, fim = vs[vs.length - 1].ini + vs[vs.length - 1].jogos.length;
