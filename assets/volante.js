@@ -85,7 +85,7 @@ function ls(k, v) {
 function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
-var S = {lot: "megasena", jogos: [], extras: null, modo: "marcas", m: null};
+var S = {lot: "megasena", jogos: [], extras: null, modo: "virtual", m: null};
 function cfg() { return MC.TODAS[S.lot]; }
 /* Versão dos moldes: quando muda, a calibração salva de versões antigas é descartada
    (só os ajustes da impressora são mantidos), para valores velhos não estragarem o desenho. */
@@ -446,22 +446,21 @@ function campo(chave, rot, passo, tipo, alvo) {
     OPC[tipo].map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === v ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select></label>";
   return '<label class="campo"><span class="rot">' + rot + (tipo === "int" || tipo === "num" ? "" : " <small>mm</small>") + '</span><input type="number" id="' + id + '" data-k="' + chave + '" data-a="' + (alvo || "") + '" step="' + passo + '" value="' + v + '"' + (tipo === "int" ? ' min="1"' : "") + "></label>";
 }
+/* Só os ajustes que valem para o volante virtual: impressora (ajuste fino, inclinação, escala) e a folha A4. */
+var CAMPOS_AJUSTE = [
+  ["Impressora", [["ajusteX", "Ajuste fino horizontal", 0.1], ["ajusteY", "Ajuste fino vertical", 0.1],
+    ["rotacao", "Inclinação (graus, + gira no sentido horário)", 0.1, "num"], ["escalaX", "Escala horizontal (%)", 0.5, "num"], ["escalaY", "Escala vertical (%)", 0.5, "num"]]]
+];
 function montarControles() {
   var c = cfg(), h = "";
-  CAMPOS.forEach(function (g) {
-    if (EXATO[c.chave] && ["Volante", "Jogos por volante", "Grade de números", "Marca"].indexOf(g[0]) >= 0) return;
-    h += "<fieldset><legend>" + g[0] + '</legend><div class="form">' + g[1].map(function (f) {
-      if ((f[0] === "papelX" || f[0] === "papelY") && S.m.papel !== "a4") return "";
-      if (c.colunar && (f[0] === "linhas" || f[0] === "colunas")) return "";
-      return campo(f[0], f[1], f[2], f[3]);
-    }).join("") + "</div></fieldset>";
+  CAMPOS_AJUSTE.forEach(function (g) {
+    h += "<fieldset><legend>" + g[0] + '</legend><div class="form">' + g[1].map(function (f) { return campo(f[0], f[1], f[2], f[3]); }).join("") + "</div></fieldset>";
   });
   var exato = !!EXATO[c.chave], soV = ["orientacao", "porFolha", "gapV", "arquivo", "largura", "altura", "recorteX", "recorteY", "recorte", "lista"];
   h += '<fieldset><legend>Volante virtual (folha A4)</legend>' + (exato ? '<p class="dica" style="margin:4px 0 10px">Geometria <b>medida</b> em scans de volantes impressos e conferida com jogos conhecidos: as posições dos números são fixas. Ajustes de impressora (inclinação, escala, ajuste fino) continuam valendo.</p>' : "") +
     '<div class="form">' + CAMPOS_V.filter(function (f) { return !exato || soV.indexOf(f[0]) >= 0; }).map(function (f) { return campo(f[0], f[1], f[2], f[3], "v"); }).join("") + "</div></fieldset>";
-  if (S.m.extra) h += "<fieldset><legend>" + esc(S.m.extra.nome) + '</legend><div class="form">' + EXTRA.map(function (f) { return campo(f[0], f[1], f[2], f[3], "extra"); }).join("") + "</div></fieldset>";
-  if (c.chave === "lotomania") h += '<label class="chk"><input type="checkbox" id="c-zero"' + (S.m.zeroNoFim ? " checked" : "") + "> O 00 fica no fim do volante (depois do 99)</label>";
-  if (c.chave === "timemania") h += '<p class="dica">O Time do Coração tem 80 opções no verso/lateral do volante: marque-o à caneta.</p>';
+  if (c.chave === "timemania") h += '<p class="dica">O Time do Coração não é marcado: marque-o à caneta ou informe na lotérica.</p>';
+  if (c.chave === "diadesorte") h += '<p class="dica">O Mês da Sorte não é marcado: marque-o à caneta ou informe na lotérica.</p>';
   $("#controles").innerHTML = h;
   $("#controles").oninput = function (e) {
     var t = e.target; if (!t.dataset.k && t.id !== "c-zero") return;
@@ -508,7 +507,9 @@ function iniciar() {
   if (p && MC.TODAS[p.lot]) { S.jogos = p.jogos || []; S.extras = p.extras || null; S.lot = p.lot; }
   $("#lot").value = S.lot;
   var q = new URLSearchParams(location.search);
-  S.modo = q.get("modo") || ls("vol-modo") || "virtual"; $("#modo").value = S.modo;
+  S.modo = q.get("modo") || ls("vol-modo") || "virtual";
+  if (S.modo !== "virtual" && S.modo !== "guiav") S.modo = "virtual";   /* só o volante virtual: modos antigos (volante oficial) foram retirados */
+  $("#modo").value = S.modo;
   trocarLoteria(S.lot, true);
   $("#lot").onchange = function () { trocarLoteria(this.value, false); };
   $("#modo").onchange = function () { S.modo = this.value; ls("vol-modo", S.modo); desenhar(); };
