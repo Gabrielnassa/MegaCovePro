@@ -82,7 +82,7 @@ Os moldes iniciais são aproximados: confira sempre o primeiro volante impresso.
   executa `atualizar_dados.py` e grava os concursos novos em `data/` (base do GitHub
   + API em tempo real para os concursos mais recentes).
   Também dá para rodar na hora em **Actions → Atualizar resultados → Run workflow**.
-- **No navegador (automática):** ao abrir o painel, e a cada 2 horas, ele busca os
+- **No navegador (automática):** ao abrir o painel, e a cada 15 minutos, ele busca os
   concursos novos sozinho — primeiro pela API pública que lê a CAIXA em tempo real
   (loteriascaixa-api.vercel.app, com api.guidi.dev.br de reserva) e, se falhar,
   pela base [eitchtee/loterias.json](https://github.com/eitchtee/loterias.json).

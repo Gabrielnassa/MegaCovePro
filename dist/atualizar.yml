@@ -1,0 +1,34 @@
+# Atualiza sozinho os resultados em data/*.json todos os dias.
+# Funciona quando o conteúdo desta pasta está na RAIZ do repositório.
+name: Atualizar resultados
+
+on:
+  schedule:
+    - cron: "15 4 * * *"    # 01:15 (Brasília), depois dos sorteios da noite
+    - cron: "15 13 * * *"   # 10:15 (Brasília), repescagem
+  workflow_dispatch: {}     # botão "Run workflow" na aba Actions
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Baixar resultados
+        run: python3 atualizar_dados.py
+      - name: Salvar no repositório
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898900+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "Sem concursos novos."
+          else
+            git commit -m "Resultados atualizados em $(date -u +%Y-%m-%d)"
+            git push
+          fi
