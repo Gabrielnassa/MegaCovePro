@@ -331,7 +331,8 @@ function folhasVirtual() {
   }
   return paginas.map(function (vs, k) {
     var ini = vs[0].ini + 1, fim = vs[vs.length - 1].ini + vs[vs.length - 1].jogos.length;
-    return '<div class="folha' + (m.virar === "sim" ? " virada" : "") + '" style="width:' + W + "mm;height:" + H + 'mm">' + vs.map(volanteHTML).join("") +
+    var fundo = natural ? offY + vs.length * (v.altura + v.gapV) - v.gapV : deitado ? offX + vs.length * (v.largura + v.gapV) - v.gapV : offY + v.altura;
+    return '<div class="folha' + (m.virar === "sim" ? " virada" : "") + '" style="width:' + W + "mm;height:" + H + "mm;--h:" + Math.min(H, Math.ceil(fundo + 3)) + 'mm">' + vs.map(volanteHTML).join("") +
       '<div class="rot-folha no-print">' + (vs[0].guia ? "Guia do volante virtual" : "Folha " + (k + 1) + " de " + paginas.length + " · " + vs.length + " volante(s) · jogos " + ini + "–" + fim) + "</div></div>";
   }).join("");
 }
@@ -400,6 +401,68 @@ function volanteExatoHTML(e, c, m, pg) {
     }
   }
   return h;
+}
+
+/* ======================= PDF em milímetros exatos =======================
+   Lê as folhas já desenhadas (marcas e textos em mm) e gera um PDF vetorial. É o caminho certo no
+   celular: o Safari do iPhone acrescenta margens e cabeçalho ao imprimir a página e encolhe a folha,
+   o que tiraria as marcas do lugar. O PDF impresso em 100% sai igual ao desenho. */
+function mmStyle(el, k) { var v = parseFloat(el.style[k]); return isNaN(v) ? 0 : v; }
+function gerarPDF() {
+  if (!window.jspdf || !window.jspdf.jsPDF) { alert("Gerador de PDF não carregou. Recarregue a página."); return null; }
+  var fs = $("#folhas"), zAntes = fs.style.getPropertyValue("--z");
+  fs.style.setProperty("--z", 1);                       /* mede sem o zoom da prévia */
+  var PX = 25.4 / 96, doc = null, folhas = fs.querySelectorAll(".folha");
+  try {
+    Array.prototype.forEach.call(folhas, function (folha, fi) {
+      var W = mmStyle(folha, "width"), H = mmStyle(folha, "height");
+      if (!doc) doc = new window.jspdf.jsPDF({unit: "mm", format: [W, H], orientation: W > H ? "landscape" : "portrait", compress: true});
+      else doc.addPage([W, H], W > H ? "landscape" : "portrait");
+      Array.prototype.forEach.call(folha.querySelectorAll(".area"), function (area) {
+        var ax = mmStyle(area, "left"), ay = mmStyle(area, "top"), aw = mmStyle(area, "width"), ah = mmStyle(area, "height");
+        if (area.classList.contains("recorte")) { doc.setDrawColor(221, 34, 34); doc.setLineWidth(0.2); doc.setLineDashPattern([1, 1], 0); doc.rect(ax, ay, aw, ah); doc.setLineDashPattern([], 0); }
+        Array.prototype.forEach.call(area.children, function (el) {
+          var L = mmStyle(el, "left"), T = mmStyle(el, "top");
+          if (el.classList.contains("mk")) { doc.setFillColor(0, 0, 0); doc.rect(ax + L, ay + T, mmStyle(el, "width"), mmStyle(el, "height"), "F"); return; }
+          if (el.classList.contains("no-print")) return;
+          var rot = /rotate\(-90deg\)/.test(el.style.transform);
+          function ponto(xl, yl) { return rot ? {x: ax + L + yl, y: ay + T - xl} : {x: ax + L + xl, y: ay + T + yl}; }
+          var folhasEl = el.querySelectorAll("*"), leafs = [];
+          if (!folhasEl.length) leafs.push(el);
+          else Array.prototype.forEach.call(folhasEl, function (c) { if (!c.children.length && c.textContent.trim()) leafs.push(c); });
+          /* caixas com borda (guia): contorno */
+          if (el.classList.contains("casa") || el.classList.contains("bloco-v")) {
+            var cs0 = getComputedStyle(el), cor = el.classList.contains("casa") ? (el.classList.contains("ex") ? [143, 106, 28] : [31, 95, 191]) : [217, 198, 90];
+            doc.setDrawColor(cor[0], cor[1], cor[2]); doc.setLineWidth(0.25);
+            var bw = mmStyle(el, "width") || el.offsetWidth * PX, bh = mmStyle(el, "height") || el.offsetHeight * PX;
+            if (rot) doc.rect(ax + L, ay + T - bw, bh, bw); else doc.rect(ax + L, ay + T, bw, bh);
+          }
+          leafs.forEach(function (c) {
+            var txt = c.textContent.trim(); if (!txt) return;
+            var cs = getComputedStyle(c), fpx = parseFloat(cs.fontSize), bold = parseInt(cs.fontWeight, 10) >= 600;
+            var x0 = 0, y0 = 0, n = c; while (n && n !== el) { x0 += n.offsetLeft; y0 += n.offsetTop; n = n.offsetParent; }
+            var bw2 = c.offsetWidth * PX, bh2 = c.offsetHeight * PX; x0 *= PX; y0 *= PX;
+            doc.setFont("helvetica", bold ? "bold" : "normal"); doc.setFontSize(fpx * 0.75); doc.setTextColor(0, 0, 0);
+            var tw = doc.getTextWidth(txt), lh = parseFloat(cs.lineHeight) * PX || fpx * PX * 1.2, nl = Math.max(1, Math.round(bh2 / lh));
+            if (nl > 1) return;                       /* textos longos quebrados não existem no molde (rodapé usa nowrap) */
+            var xl = x0 + (cs.textAlign === "center" ? (bw2 - tw) / 2 : cs.textAlign === "right" ? bw2 - tw : 0);
+            var yb = y0 + (bh2 - fpx * PX) / 2 + fpx * PX * 0.78;
+            var pt = ponto(xl, yb);
+            doc.text(txt, pt.x, pt.y, rot ? {angle: 90} : undefined);
+          });
+        });
+      });
+    });
+  } finally { fs.style.setProperty("--z", zAntes); }
+  return doc;
+}
+window.MC_PDF = gerarPDF;   /* usado pelos testes automáticos */
+function nomePDF() { return "MegaCover-" + cfg().chave + "-" + (S.jogos.length || 0) + "-jogos.pdf"; }
+var IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+function baixarPDF() {
+  var doc = gerarPDF(); if (!doc) return;
+  if (IOS) { var url = doc.output("bloburl"); window.open(url, "_blank") || (location.href = url); }
+  else doc.save(nomePDF());
 }
 
 /* ======================= Desenho ======================= */
@@ -514,8 +577,13 @@ function iniciar() {
   $("#lot").onchange = function () { trocarLoteria(this.value, false); };
   $("#modo").onchange = function () { S.modo = this.value; ls("vol-modo", S.modo); desenhar(); };
   $("#txt").oninput = function () { S.jogos = lerTexto(this.value); S.extras = null; desenhar(); };
+  $("#bt-pdf").onclick = function () {
+    if (S.modo !== "guiav" && !S.jogos.length) { alert("Nenhum jogo para imprimir."); return; }
+    baixarPDF();
+  };
   $("#bt-imprimir").onclick = function () {
     if (S.modo !== "guia" && S.modo !== "guiav" && !S.jogos.length) { alert("Nenhum jogo para imprimir."); return; }
+    if (IOS) { baixarPDF(); return; }      /* no iPhone/iPad a impressão da página encolhe a folha: vai pelo PDF */
     window.print();
   };
   $("#bt-padrao").onclick = function () {
@@ -542,7 +610,8 @@ function iniciar() {
   /* veio do Gerador: já abre a janela de impressão com o molde pronto */
   if (q.get("imprimir") === "1" && S.jogos.length) {
     history.replaceState(null, "", "volante.html");
-    setTimeout(function () { window.print(); }, 600);
+    if (IOS) $("#aviso-ios").hidden = false;
+    else setTimeout(function () { window.print(); }, 600);
   }
 }
 iniciar();

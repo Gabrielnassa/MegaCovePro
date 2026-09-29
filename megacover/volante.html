@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600&family=JetBrains+Mono:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=20260929n">
+<link rel="stylesheet" href="assets/style.css?v=20260929o">
 <style id="estilo-pagina"></style>
 <style>
   .vol{max-width:1320px;margin:0 auto;padding:22px 24px 48px}
@@ -68,7 +68,7 @@
     .vol-grade{display:block}
     #previa{position:static;border:0;padding:0;background:none;max-height:none;overflow:visible}
     #folhas{zoom:1;gap:0;display:block}
-    .folha{box-shadow:none;page-break-after:always;break-after:page}
+    .folha{box-shadow:none;page-break-after:always;break-after:page;height:var(--h,auto)!important}
     .folha:last-child{page-break-after:auto;break-after:auto}
   }
 </style>
@@ -79,9 +79,11 @@
     <a class="bt icone" href="app.html" aria-label="Voltar ao painel" title="Voltar ao painel"><svg class="ic" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></a>
     <h1>Imprimir volante</h1>
     <select id="modo" style="width:auto"><option value="virtual">Volante virtual · folha A4 (sulfite)</option><option value="guiav">Guia do volante virtual (com números)</option></select>
+    <button class="bt" id="bt-pdf" type="button" title="PDF em tamanho exato: no celular, imprima por ele"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3h16v-3"/></svg>Baixar PDF</button>
     <button class="bt primario" id="bt-imprimir" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6h-3M7 14h10v7H7z"/></svg>Imprimir</button>
   </div>
 
+  <div class="card no-print" id="aviso-ios" hidden style="margin-bottom:18px"><h3>No iPhone/iPad, imprima pelo PDF</h3><p class="dica">A impressão direta da página no Safari acrescenta margens e encolhe a folha, tirando as marcas do lugar. Toque em <b>Baixar PDF</b>, abra o PDF e imprima por ele em <b>100%</b> (sem "ajustar à página").</p><div class="linha-bts"><button class="bt primario" type="button" onclick="document.getElementById('bt-pdf').click()">Baixar PDF</button></div></div>
   <div class="vol-grade">
     <div class="painel-vol">
       <div class="card">
@@ -110,8 +112,9 @@
     <div id="previa" aria-label="Pré-visualização em tamanho real"><div id="folhas"></div></div>
   </div>
 </div>
-<script src="assets/engine.js?v=20260929n"></script>
-<script src="assets/volante.js?v=20260929n"></script>
+<script src="assets/engine.js?v=20260929o"></script>
+<script src="assets/vendor/jspdf.min.js"></script>
+<script src="assets/volante.js?v=20260929o"></script>
 <script>
   (function () { var s = document.getElementById("lot"); function n() { document.getElementById("nome-cal").textContent = s.options[s.selectedIndex] ? s.options[s.selectedIndex].text : ""; } s.addEventListener("change", n); setTimeout(n, 0); })();
 </script>
