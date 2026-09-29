@@ -1,0 +1,23 @@
+# Testa, de dentro do GitHub, quais fontes de resultados respondem.
+name: Diagnóstico das fontes
+on:
+  workflow_dispatch: {}
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar fontes
+        run: |
+          H='-H "Accept: application/json, text/plain, */*" -H "Origin: https://loterias.caixa.gov.br" -H "Referer: https://loterias.caixa.gov.br/" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"'
+          for u in \
+            https://servicebus2.caixa.gov.br/portaldeloterias/api/megasena \
+            https://servicebus2.caixa.gov.br/portaldeloterias/api/megasena/3063 \
+            https://servicebus2.caixa.gov.br/portaldeloterias/api/lotofacil \
+            https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte \
+            https://loteriascaixa-api.vercel.app/api/megasena/latest \
+            https://api.guidi.dev.br/loteria/megasena/ultimo \
+            https://loteriascaixa-api.vercel.app/api/lotofacil/latest ; do
+            echo "=== $u"
+            eval curl -sS -m 25 $H -o /tmp/r -w '"HTTP %{http_code} · %{size_download} bytes · CORS=%header{access-control-allow-origin}\n"' "$u" || echo "falhou"
+            head -c 400 /tmp/r; echo
+          done
