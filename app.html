@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painel · MegaCover Pro Elite</title>
+<meta name="description" content="Painel do MegaCover Pro Elite: estatísticas, gerador com IA, fechamentos e simulação para as 9 loterias CAIXA.">
+<meta name="theme-color" content="#090b0f">
+<link rel="icon" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<script>try{var t=localStorage.getItem("mc:tema");if(t)document.documentElement.setAttribute("data-theme",JSON.parse(t))}catch(e){}</script>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="lateral" id="lateral" aria-label="Loterias">
+    <a class="marca" href="index.html" title="Página inicial">
+      <img src="assets/icon.png" alt="">
+      <span><b>MegaCover</b><small>Pro Elite</small></span>
+    </a>
+    <div class="rot-secao">Loterias</div>
+    <nav class="loterias" id="loterias"></nav>
+    <div class="plano-card" id="plano-card"></div>
+  </aside>
+  <div class="cortina" id="cortina"></div>
+
+  <div class="principal">
+    <header class="barra">
+      <button class="bt icone menu" id="bt-menu" type="button" aria-label="Abrir menu de loterias"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
+      <div class="titulo" id="titulo"><h1>Carregando…</h1></div>
+      <div class="acoes">
+        <button id="bt-atualizar-todas" class="bt" type="button" title="Baixar os concursos novos das 9 loterias"><svg class="ic" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg><span class="txt-lg">Atualizar todas</span></button>
+        <button id="bt-tema" class="bt icone" type="button" title="Alternar tema claro/escuro" aria-label="Alternar tema"><svg class="ic" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+      </div>
+    </header>
+    <nav class="abas" id="abas" aria-label="Módulos"></nav>
+
+    <main id="conteudo" class="conteudo"><div class="carregando"><div class="esqueleto"></div><div class="esqueleto"></div></div></main>
+
+    <footer class="rodape">
+      <p><strong>Aviso legal:</strong> ferramenta estatística e combinatória. Não prevê resultados nem garante prêmios. Cada sorteio é aleatório e independente. Jogue com responsabilidade — proibido para menores de 18 anos.</p>
+      <p>MegaCover Pro Elite · NassaTech · Não é afiliado à CAIXA. Resultados oficiais em <a href="https://loterias.caixa.gov.br" target="_blank" rel="noopener">loterias.caixa.gov.br</a> · <a href="index.html#planos">Planos</a> · <a href="index.html#faq">Dúvidas</a></p>
+    </footer>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-titulo"><div class="caixa" id="modal-caixa"></div></div>
+<div id="status" class="status" role="status" aria-live="polite"></div>
+
+<script src="assets/plano.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

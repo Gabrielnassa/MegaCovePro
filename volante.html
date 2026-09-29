@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imprimir no volante · MegaCover Pro Elite</title>
+<meta name="theme-color" content="#090b0f">
+<link rel="icon" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600&family=JetBrains+Mono:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<style id="estilo-pagina"></style>
+<style>
+  .vol{max-width:1320px;margin:0 auto;padding:22px 24px 48px}
+  .vol-topo{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .vol-topo h1{font-family:var(--f-titulo);font-weight:600;font-size:28px;letter-spacing:-.02em;flex:1;min-width:220px}
+  .vol-grade{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:18px;align-items:start}
+  fieldset{border:1px solid var(--borda);border-radius:12px;padding:12px 14px 14px;margin:0 0 12px}
+  legend{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--ouro);padding:0 6px}
+  fieldset .form{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+  .campo small{color:var(--txt3);font-weight:500}
+  .chk{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--txt2);margin:4px 0 12px}
+  .chk input{accent-color:var(--ouro)}
+  #previa{position:sticky;top:14px;background:repeating-conic-gradient(var(--painel2) 0 25%,var(--painel) 0 50%) 0 0/18px 18px;border:1px solid var(--borda);border-radius:var(--raio);padding:12px;max-height:calc(100vh - 28px);overflow:auto}
+  #folhas{zoom:var(--z,1);display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+  .folha{position:relative;background:#fff;box-shadow:0 6px 24px -8px rgba(0,0,0,.45);overflow:hidden;flex:none}
+  .area{position:absolute;transform-origin:0 0}
+  .folha.virada{transform:rotate(180deg)}
+  .regua{position:absolute;border:0 solid #c0392b;font:600 2mm/1 var(--f-num);color:#c0392b}
+  .regua.h{border-bottom-width:.3mm;height:3mm;background:repeating-linear-gradient(90deg,#c0392b 0 .25mm,transparent .25mm 10mm)}
+  .regua.h span{position:absolute;top:3.4mm;transform:translateX(-50%)}
+  .regua.v{border-left-width:.3mm;width:3mm;background:repeating-linear-gradient(180deg,#c0392b 0 .25mm,transparent .25mm 10mm)}
+  .regua.v span{position:absolute;left:3.6mm;top:-1mm;white-space:nowrap}
+  .mira{position:absolute;width:4mm;height:4mm;background:linear-gradient(#c0392b,#c0392b) 50% 0/.3mm 100% no-repeat,linear-gradient(#c0392b,#c0392b) 0 50%/100% .3mm no-repeat}
+  .contorno{position:absolute;inset:0;border:.3mm dashed #c0392b;border-radius:2mm}
+  .contorno span{position:absolute;left:2mm;top:1.5mm;font:600 2.6mm/1 var(--f-texto);color:#c0392b}
+  .mk{position:absolute;background:#000;border-radius:.3mm;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .mk.elipse{border-radius:50%}
+  .mk.x{background:linear-gradient(45deg,transparent 42%,#000 42% 58%,transparent 58%),linear-gradient(-45deg,transparent 42%,#000 42% 58%,transparent 58%)}
+  .casa{position:absolute;display:flex;align-items:center;justify-content:center;border:.25mm solid #1f5fbf;border-radius:.4mm;font:700 1.9mm/1 var(--f-num);color:#1f5fbf}
+  .casa.ex{border-color:#8f6a1c;color:#8f6a1c}
+  .rot-folha{position:absolute;right:2mm;bottom:1.5mm;font:600 2.4mm/1 var(--f-texto);color:#999}
+  .passos-vol{margin:0;padding-left:18px;color:var(--txt2);font-size:14px;display:grid;gap:6px}
+  .passos-vol b{color:var(--txt)}
+  @media (max-width:900px){.vol-grade{grid-template-columns:1fr}#previa{position:static;max-height:none}.vol{padding:16px}}
+  @media print{
+    body,html{background:#fff!important;margin:0}
+    body::before{display:none}
+    .vol-topo,.painel-vol,.no-print{display:none!important}
+    .vol{padding:0;max-width:none}
+    .vol-grade{display:block}
+    #previa{position:static;border:0;padding:0;background:none;max-height:none;overflow:visible}
+    #folhas{zoom:1;gap:0;display:block}
+    .folha{box-shadow:none;page-break-after:always;break-after:page}
+    .folha:last-child{page-break-after:auto;break-after:auto}
+  }
+</style>
+</head>
+<body>
+<div class="vol">
+  <div class="vol-topo">
+    <a class="bt icone" href="app.html" aria-label="Voltar ao painel" title="Voltar ao painel"><svg class="ic" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></a>
+    <h1>Imprimir no volante</h1>
+    <select id="modo" style="width:auto"><option value="marcas">Imprimir marcas no volante</option><option value="guia">Folha de calibração (papel comum)</option></select>
+    <button class="bt primario" id="bt-imprimir" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6h-3M7 14h10v7H7z"/></svg>Imprimir</button>
+  </div>
+
+  <div class="vol-grade">
+    <div class="painel-vol">
+      <div class="card">
+        <h3>Jogos</h3>
+        <div class="form" style="grid-template-columns:1fr"><label class="campo"><span class="rot">Loteria</span><select id="lot"></select></label></div>
+        <label class="campo" style="margin-top:12px"><span class="rot">Um jogo por linha</span><textarea id="txt" spellcheck="false"></textarea></label>
+        <div id="resumo" class="resumo"></div>
+      </div>
+
+      <div class="card">
+        <h3>Primeira vez? Calibre em 3 passos</h3>
+        <ol class="passos-vol">
+          <li>Escolha <b>Folha de calibração</b> e imprima em <b>papel comum</b> (escala 100%, margens "nenhuma").</li>
+          <li><b>Meça a régua vermelha</b> impressa: tem de dar exatamente 60 mm. Se der menos ou mais, a impressora está redimensionando — desligue "ajustar à página" no diálogo de impressão ou corrija em <b>Escala</b>.</li>
+          <li>Coloque a folha sobre o volante <b>contra a luz</b>. Se a grade inteira estiver girada, use <b>Inclinação</b> (décimos de grau bastam). Depois ajuste posição do 1º número e distância entre números até cada quadradinho azul cair em cima do número certo.</li>
+          <li>Volte para <b>Imprimir marcas</b>, coloque o volante na <b>alimentação manual</b> da impressora e imprima. A calibração fica salva.</li>
+        </ol>
+        <p class="dica" style="margin:12px 0 0">Os valores iniciais são aproximados: cada modelo de volante e cada impressora desloca alguns milímetros. Sempre confira o primeiro volante antes de imprimir vários.</p>
+      </div>
+
+      <div class="card">
+        <h3>Calibração · <span id="nome-cal"></span></h3>
+        <div id="controles"></div>
+        <div class="linha-bts">
+          <button class="bt" id="bt-exportar" type="button">Exportar calibração</button>
+          <label class="bt" style="cursor:pointer">Importar<input type="file" id="arq-cal" accept=".json" hidden></label>
+          <button class="bt perigo" id="bt-padrao" type="button">Restaurar padrão</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="previa" aria-label="Pré-visualização em tamanho real"><div id="folhas"></div></div>
+  </div>
+</div>
+<script src="assets/engine.js"></script>
+<script src="assets/volante.js"></script>
+<script>
+  (function () { var s = document.getElementById("lot"); function n() { document.getElementById("nome-cal").textContent = s.options[s.selectedIndex] ? s.options[s.selectedIndex].text : ""; } s.addEventListener("change", n); setTimeout(n, 0); })();
+</script>
+</body>
+</html>
