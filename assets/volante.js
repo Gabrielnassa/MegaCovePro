@@ -348,10 +348,10 @@ function iniciar() {
   var p = ls("imprimir");
   if (p && MC.TODAS[p.lot]) { S.jogos = p.jogos || []; S.extras = p.extras || null; S.lot = p.lot; }
   $("#lot").value = S.lot;
-  trocarLoteria(S.lot, true);
-  $("#lot").onchange = function () { trocarLoteria(this.value, false); };
   var q = new URLSearchParams(location.search);
   S.modo = q.get("modo") || ls("vol-modo") || "virtual"; $("#modo").value = S.modo;
+  trocarLoteria(S.lot, true);
+  $("#lot").onchange = function () { trocarLoteria(this.value, false); };
   $("#modo").onchange = function () { S.modo = this.value; ls("vol-modo", S.modo); desenhar(); };
   $("#txt").oninput = function () { S.jogos = lerTexto(this.value); S.extras = null; desenhar(); };
   $("#bt-imprimir").onclick = function () {
