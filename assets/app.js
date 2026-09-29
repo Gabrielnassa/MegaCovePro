@@ -149,7 +149,7 @@ function carregar(id) {
    1ª) API pública que lê a CAIXA em tempo real (concurso a concurso)
    2ª) base do GitHub eitchtee/loterias.json (histórico completo, atrasa alguns dias) */
 var APIS = ["https://loteriascaixa-api.vercel.app/api/{id}/{n}", "https://api.guidi.dev.br/loteria/{id}/{n}"];
-var SYNC_INTERVALO = 2 * 60 * 60 * 1000;   /* volta a checar a cada 2 h */
+var SYNC_INTERVALO = 15 * 60 * 1000;   /* volta a checar a cada 15 min (só 1 requisição "último" por loteria) */
 function apiParaRow(cfg, j) {
   if (!j || typeof j !== "object") return null;
   if (Array.isArray(j)) j = j[0];
@@ -407,7 +407,7 @@ TELAS.dashboard = function (el, cfg) {
     var fx = MC.frequenciaExtras(c, cfg);
     h += kpi(esc(cfg.extra_nome) + " líder", fx.length ? esc(fx[0][0]) : "—", fx.length ? fmtN(fx[0][1]) + " vezes · " + fx[0][2].toFixed(1).replace(".", ",") + "%" : "sem dados", true);
   }
-  h += kpi("Última sincronização", sy ? new Date(sy).toLocaleString("pt-BR", {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"}) : (S.meta[S.lot].atualizado ? new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") : "—"), sy ? "automática · checa a cada 2 h" : "arquivo do site", true) + "</div>";
+  h += kpi("Última sincronização", sy ? new Date(sy).toLocaleString("pt-BR", {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"}) : (S.meta[S.lot].atualizado ? new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") : "—"), sy ? "automática · checa a cada 15 min" : "arquivo do site", true) + "</div>";
   if (cfg.colunar) {
     var tab = MC.porColuna(c, cfg);
     h += '<div class="card"><div class="cab"><h3>Dígito líder em cada coluna</h3><span class="dica" style="margin:0">frequência no histórico</span></div><div class="bolas grandes">' + tab.map(function (f, i) {
@@ -859,7 +859,7 @@ TELAS.conferir = function (el, cfg) {
 TELAS.dados = function (el, cfg) {
   var c = cs(), add = ls("add:" + S.lot) || [], sy = ls("sync:" + S.lot);
   var nCols = cfg.colunar ? 7 : cfg.sorteadas * cfg.sorteios;
-  var h = '<div class="grade g2"><div class="card"><h3>Atualizar resultados</h3><p class="dica">O painel sincroniza sozinho ao abrir e a cada 2 horas: primeiro pela API pública que lê a CAIXA em tempo real, depois pela base do GitHub (eitchtee/loterias.json) como reserva. Os concursos novos ficam salvos neste navegador. Use o botão para forçar agora.</p>' +
+  var h = '<div class="grade g2"><div class="card"><h3>Atualizar resultados</h3><p class="dica">O painel sincroniza sozinho ao abrir e a cada 15 minutos: primeiro pela API pública que lê a CAIXA em tempo real, depois pela base do GitHub (eitchtee/loterias.json) como reserva. Os concursos novos ficam salvos neste navegador. Use o botão para forçar agora.</p>' +
     '<div class="resumo">Base do site: até o concurso <b>' + fmtN(S.meta[S.lot].ultimoBase || 0) + "</b>" + (S.meta[S.lot].atualizado ? " (" + new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") + ")" : "") +
     "<br>Salvos neste navegador: <b>" + fmtN(add.length) + "</b> concurso(s)" + (sy ? " · última sincronização " + new Date(sy).toLocaleString("pt-BR") : "") + "</div>" +
     '<div class="linha-bts"><button class="bt lot" id="x-on" type="button">' + I("atualizar") + 'Atualizar ' + esc(cfg.nome) + '</button><button class="bt perigo" id="x-limpar" type="button">' + I("lixo") + 'Apagar dados locais</button></div></div>';
