@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600&family=JetBrains+Mono:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=20260929b">
+<link rel="stylesheet" href="assets/style.css?v=20260929c">
 <style id="estilo-pagina"></style>
 <style>
   .vol{max-width:1320px;margin:0 auto;padding:22px 24px 48px}
@@ -34,6 +34,8 @@
   .regua.v span{position:absolute;left:3.6mm;top:-1mm;white-space:nowrap}
   .mira{position:absolute;width:4mm;height:4mm;background:linear-gradient(#c0392b,#c0392b) 50% 0/.3mm 100% no-repeat,linear-gradient(#c0392b,#c0392b) 0 50%/100% .3mm no-repeat}
   .contorno{position:absolute;inset:0;border:.3mm dashed #c0392b;border-radius:2mm}
+  .contorno.leve{inset:auto;border-color:#9ab}
+  .cab-v{position:absolute;font:700 4mm/1 Arial,Helvetica,sans-serif;color:#000;white-space:nowrap}
   .contorno span{position:absolute;left:2mm;top:1.5mm;font:600 2.6mm/1 var(--f-texto);color:#c0392b}
   .mk{position:absolute;background:#000;border-radius:.3mm;print-color-adjust:exact;-webkit-print-color-adjust:exact}
   .mk.elipse{border-radius:50%}
@@ -62,7 +64,7 @@
   <div class="vol-topo">
     <a class="bt icone" href="app.html" aria-label="Voltar ao painel" title="Voltar ao painel"><svg class="ic" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></a>
     <h1>Imprimir no volante</h1>
-    <select id="modo" style="width:auto"><option value="marcas">Imprimir marcas no volante</option><option value="guia">Folha de calibração (papel comum)</option></select>
+    <select id="modo" style="width:auto"><option value="virtual">Volante virtual · folha A4 (sulfite)</option><option value="guiav">Guia do volante virtual (com números)</option><option value="marcas">Marcas no volante oficial</option><option value="guia">Calibração do volante oficial</option></select>
     <button class="bt primario" id="bt-imprimir" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6h-3M7 14h10v7H7z"/></svg>Imprimir</button>
   </div>
 
@@ -76,7 +78,12 @@
       </div>
 
       <div class="card">
-        <h3>Primeira vez? Calibre em 3 passos</h3>
+        <h3>Volante virtual (folha A4)</h3>
+        <p class="dica">Imprime em papel sulfite comum uma folha no formato que o leitor da lotérica aceita: os jogos marcados, o cabeçalho e as marcas de relógio na borda. Até 4 jogos por folha. <b>As medidas iniciais são aproximadas</b>: confira a primeira folha na lotérica e ajuste em "Volante virtual" abaixo. Use a <b>Guia</b> para ver onde cada número cai.</p>
+      </div>
+
+      <div class="card">
+        <h3>Volante oficial: calibre em 3 passos</h3>
         <ol class="passos-vol">
           <li>Escolha <b>Folha de calibração</b> e imprima em <b>papel comum</b> (escala 100%, margens "nenhuma").</li>
           <li><b>Meça a régua vermelha</b> impressa: tem de dar exatamente 60 mm. Se der menos ou mais, a impressora está redimensionando — desligue "ajustar à página" no diálogo de impressão ou corrija em <b>Escala</b>.</li>
@@ -100,8 +107,8 @@
     <div id="previa" aria-label="Pré-visualização em tamanho real"><div id="folhas"></div></div>
   </div>
 </div>
-<script src="assets/engine.js?v=20260929b"></script>
-<script src="assets/volante.js?v=20260929b"></script>
+<script src="assets/engine.js?v=20260929c"></script>
+<script src="assets/volante.js?v=20260929c"></script>
 <script>
   (function () { var s = document.getElementById("lot"); function n() { document.getElementById("nome-cal").textContent = s.options[s.selectedIndex] ? s.options[s.selectedIndex].text : ""; } s.addEventListener("change", n); setTimeout(n, 0); })();
 </script>
