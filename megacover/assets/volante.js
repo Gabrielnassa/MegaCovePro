@@ -16,7 +16,7 @@ function base(o) {
     extra: null, papel: "volante", papelX: 10, papelY: 10, ajusteX: 0, ajusteY: 0,
     rotacao: 0, escalaX: 100, escalaY: 100, virar: "nao",
     /* volante virtual em A4 (sulfite): até 4 jogos por folha, com cabeçalho e marcas de relógio */
-    v: {jogos: 3, largura: 82, altura: 245, recorteX: 10, recorteY: 10, x: 14, y: 32, gapY: 8,
+    v: {jogos: 3, porFolha: 2, gapV: 8, largura: 82, altura: 245, recorteX: 10, recorteY: 10, x: 14, y: 32, gapY: 8,
         relogioX: 5, relogioL: 3.4, relogioA: 1.8, arquivo: "MegaCover", recorte: "sim", lista: "sim"}};
   for (var k in o) d[k] = o[k];
   return d;
@@ -32,7 +32,7 @@ var MOLDES = {
   supersete: base({linhas: 10, colunas: 7, passoX: 8.5, passoY: 4.8, x: 14, ordem: "coluna"}),
   maismilionaria: base({linhas: 5, colunas: 10, extra: {nome: "Trevos", linhas: 1, colunas: 6, x: 20, y: 74, passoX: 7, passoY: 5.2}})
 };
-var CAMPOS_V = [["jogos", "Jogos por folha (1 a 4)", 1, "int"], ["arquivo", "Nome no cabeçalho", 0, "texto"],
+var CAMPOS_V = [["porFolha", "Volantes por folha A4", 0, "porFolha"], ["gapV", "Espaço entre os volantes", 0.5], ["jogos", "Jogos por volante (1 a 4)", 1, "int"], ["arquivo", "Nome no cabeçalho", 0, "texto"],
   ["largura", "Largura do volante (recorte)", 0.5], ["altura", "Altura do volante (recorte)", 0.5],
   ["recorteX", "Recorte · da borda esquerda da folha", 0.5], ["recorteY", "Recorte · da borda de cima da folha", 0.5],
   ["x", "1º número · da esquerda do recorte", 0.1], ["y", "1º número · do topo do recorte", 0.1], ["gapY", "Espaço entre jogos", 0.5],
@@ -57,7 +57,8 @@ var OPC = {dir: [["vertical", "um abaixo do outro"], ["horizontal", "lado a lado
   formato: [["retangulo", "retângulo cheio"], ["elipse", "oval cheio"], ["x", "traço (X)"]],
   papel: [["volante", "o próprio volante (alimentação manual)"], ["a4", "folha A4 com o volante colado"]],
   virar: [["nao", "com o topo para dentro (normal)"], ["sim", "de cabeça para baixo (girar 180°)"]],
-  simnao: [["sim", "sim"], ["nao", "não"]]};
+  simnao: [["sim", "sim"], ["nao", "não"]],
+  porFolha: [[1, "1 volante"], [2, "2 volantes lado a lado (economiza papel)"]]};
 
 var $ = function (s) { return document.querySelector(s); };
 function ls(k, v) {
@@ -228,21 +229,28 @@ function guiaVirtualHTML(c, m, ar) {
 }
 function folhasVirtual() {
   var c = cfg(), m = S.m, v = m.v, ar = arranjoVirtual(c, m), paginas = [];
-  var guia = S.modo === "guiav" || !S.jogos.length;
-  if (guia) paginas.push({guia: true, ini: 0, jogos: []});
-  else for (var i = 0; i < S.jogos.length; i += ar.n) paginas.push({guia: false, ini: i, jogos: S.jogos.slice(i, i + ar.n)});
+  var guia = S.modo === "guiav" || !S.jogos.length, volantes = [];
+  if (guia) volantes.push({guia: true, ini: 0, jogos: []});
+  else for (var i = 0; i < S.jogos.length; i += ar.n) volantes.push({guia: false, ini: i, jogos: S.jogos.slice(i, i + ar.n)});
+  /* quantos volantes de tamanho real cabem lado a lado na A4 (nunca encolhe) */
+  var pf = Math.max(1, Math.min(+v.porFolha || 1, Math.floor((A4.w - v.recorteX + v.gapV) / (v.largura + v.gapV))));
+  var paginas = []; for (i = 0; i < volantes.length; i += pf) paginas.push(volantes.slice(i, i + pf));
   $("#estilo-pagina").textContent = "@page{size:210mm 297mm;margin:0}";
   var tr = "rotate(" + (+m.rotacao || 0) + "deg) scale(" + ((+m.escalaX || 100) / 100) + "," + ((+m.escalaY || 100) / 100) + ")";
   var offX = (+v.recorteX || 0) + (+m.ajusteX || 0), offY = (+v.recorteY || 0) + (+m.ajusteY || 0);
-  return paginas.map(function (pg, k) {
+  function volanteHTML(pg, k) {
     var rel = relogioHTML(c, m, ar), dentro = rel.html + cabecalhoHTML(c, m, ar, pg.ini);
     if (pg.guia) dentro += guiaVirtualHTML(c, m, ar);
     else pg.jogos.forEach(function (jogo, j) {
       dentro += marcasVirtual(c, m, jogo, S.extras ? S.extras[pg.ini + j] : null, origemJogo(m, ar, j)).map(function (p) { return marcaHTML(m, {x: p.x + m.marcaL / 2, y: p.y + m.marcaA / 2}); }).join("");
     });
     dentro += rodapeHTML(c, m, pg, rel.yFim);
-    return '<div class="folha' + (m.virar === "sim" ? " virada" : "") + '" style="width:210mm;height:297mm"><div class="area' + (v.recorte === "nao" ? "" : " recorte") + '" style="left:' + offX + "mm;top:" + offY + "mm;width:" + v.largura + "mm;height:" + v.altura + "mm;transform:" + tr + '">' + dentro + "</div>" +
-      '<div class="rot-folha no-print">' + (pg.guia ? "Guia do volante virtual" : "Folha " + (k + 1) + " de " + paginas.length + " · jogos " + (pg.ini + 1) + "–" + (pg.ini + pg.jogos.length)) + "</div></div>";
+    return '<div class="area' + (v.recorte === "nao" ? "" : " recorte") + '" style="left:' + (offX + k * (v.largura + v.gapV)) + "mm;top:" + offY + "mm;width:" + v.largura + "mm;height:" + v.altura + "mm;transform:" + tr + '">' + dentro + "</div>";
+  }
+  return paginas.map(function (vs, k) {
+    var ini = vs[0].ini + 1, fim = vs[vs.length - 1].ini + vs[vs.length - 1].jogos.length;
+    return '<div class="folha' + (m.virar === "sim" ? " virada" : "") + '" style="width:210mm;height:297mm">' + vs.map(volanteHTML).join("") +
+      '<div class="rot-folha no-print">' + (vs[0].guia ? "Guia do volante virtual" : "Folha " + (k + 1) + " de " + paginas.length + " · " + vs.length + " volante(s) · jogos " + ini + "–" + fim) + "</div></div>";
   }).join("");
 }
 
@@ -271,7 +279,7 @@ function desenhar() {
   var virt = S.modo === "virtual" || S.modo === "guiav", ar = virt ? arranjoVirtual(cfg(), S.m) : null;
   $("#resumo").innerHTML = S.modo === "guia" ? "Folha de calibração: imprima em papel comum e compare com o volante contra a luz."
     : S.modo === "guiav" ? "Guia do volante virtual: mostra onde cada número cai no recorte (" + ar.n + " jogos por volante)."
-    : virt ? (S.jogos.length ? "<b>" + S.jogos.length + "</b> jogo(s) em <b>" + n + "</b> folha(s) A4 · " + ar.n + " por volante." : "Nenhum jogo carregado — gere jogos no painel ou cole abaixo.")
+    : virt ? (S.jogos.length ? "<b>" + S.jogos.length + "</b> jogo(s) · <b>" + Math.ceil(S.jogos.length / ar.n) + "</b> volante(s) em <b>" + n + "</b> folha(s) A4 · " + ar.n + " jogos por volante." : "Nenhum jogo carregado — gere jogos no painel ou cole abaixo.")
     : S.jogos.length ? "<b>" + S.jogos.length + "</b> jogo(s) em <b>" + n + "</b> volante(s) · " + S.m.jogos + " por volante." : "Nenhum jogo carregado — gere jogos no painel ou cole abaixo.";
   escala();
 }
