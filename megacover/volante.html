@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Imprimir no volante · MegaCover Pro Elite</title>
+<title>Imprimir volante · MegaCover Pro Elite</title>
 <meta name="theme-color" content="#090b0f">
 <link rel="icon" href="assets/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600&family=JetBrains+Mono:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=20260929m">
+<link rel="stylesheet" href="assets/style.css?v=20260929n">
 <style id="estilo-pagina"></style>
 <style>
   .vol{max-width:1320px;margin:0 auto;padding:22px 24px 48px}
@@ -77,8 +77,8 @@
 <div class="vol">
   <div class="vol-topo">
     <a class="bt icone" href="app.html" aria-label="Voltar ao painel" title="Voltar ao painel"><svg class="ic" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></a>
-    <h1>Imprimir no volante</h1>
-    <select id="modo" style="width:auto"><option value="virtual">Volante virtual · folha A4 (sulfite)</option><option value="guiav">Guia do volante virtual (com números)</option><option value="marcas">Marcas no volante oficial</option><option value="guia">Calibração do volante oficial</option></select>
+    <h1>Imprimir volante</h1>
+    <select id="modo" style="width:auto"><option value="virtual">Volante virtual · folha A4 (sulfite)</option><option value="guiav">Guia do volante virtual (com números)</option></select>
     <button class="bt primario" id="bt-imprimir" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6h-3M7 14h10v7H7z"/></svg>Imprimir</button>
   </div>
 
@@ -97,21 +97,10 @@
       </div>
 
       <div class="card">
-        <h3>Volante oficial: calibre em 3 passos</h3>
-        <ol class="passos-vol">
-          <li>Escolha <b>Folha de calibração</b> e imprima em <b>papel comum</b> (escala 100%, margens "nenhuma").</li>
-          <li><b>Meça a régua vermelha</b> impressa: tem de dar exatamente 60 mm. Se der menos ou mais, a impressora está redimensionando — desligue "ajustar à página" no diálogo de impressão ou corrija em <b>Escala</b>.</li>
-          <li>Coloque a folha sobre o volante <b>contra a luz</b>. Se a grade inteira estiver girada, use <b>Inclinação</b> (décimos de grau bastam). Depois ajuste posição do 1º número e distância entre números até cada quadradinho azul cair em cima do número certo.</li>
-          <li>Volte para <b>Imprimir marcas</b>, coloque o volante na <b>alimentação manual</b> da impressora e imprima. A calibração fica salva.</li>
-        </ol>
-        <p class="dica" style="margin:12px 0 0">Os valores iniciais são aproximados: cada modelo de volante e cada impressora desloca alguns milímetros. Sempre confira o primeiro volante antes de imprimir vários.</p>
-      </div>
-
-      <div class="card">
-        <h3>Calibração · <span id="nome-cal"></span></h3>
+        <h3>Ajustes · <span id="nome-cal"></span></h3>
         <div id="controles"></div>
         <div class="linha-bts">
-          <button class="bt" id="bt-exportar" type="button">Exportar calibração</button>
+          <button class="bt" id="bt-exportar" type="button">Exportar ajustes</button>
           <label class="bt" style="cursor:pointer">Importar<input type="file" id="arq-cal" accept=".json" hidden></label>
           <button class="bt perigo" id="bt-padrao" type="button">Restaurar padrão</button>
         </div>
@@ -121,8 +110,8 @@
     <div id="previa" aria-label="Pré-visualização em tamanho real"><div id="folhas"></div></div>
   </div>
 </div>
-<script src="assets/engine.js?v=20260929m"></script>
-<script src="assets/volante.js?v=20260929m"></script>
+<script src="assets/engine.js?v=20260929n"></script>
+<script src="assets/volante.js?v=20260929n"></script>
 <script>
   (function () { var s = document.getElementById("lot"); function n() { document.getElementById("nome-cal").textContent = s.options[s.selectedIndex] ? s.options[s.selectedIndex].text : ""; } s.addEventListener("change", n); setTimeout(n, 0); })();
 </script>
