@@ -82,16 +82,23 @@ function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
 var S = {lot: "megasena", jogos: [], extras: null, modo: "marcas", m: null};
 function cfg() { return MC.TODAS[S.lot]; }
+/* Versão dos moldes: quando muda, a calibração salva de versões antigas é descartada
+   (só os ajustes da impressora são mantidos), para valores velhos não estragarem o desenho. */
+var MOLDE_VERSAO = 3;
+var CAMPOS_IMPRESSORA = ["ajusteX", "ajusteY", "rotacao", "escalaX", "escalaY", "virar", "papel", "papelX", "papelY"];
 function molde(lot) {
-  var m = clone(MOLDES[lot]), salvo = ls("vol:" + lot);
-  if (salvo) {
-    for (var k in salvo) if (k !== "extra" && k !== "v") m[k] = salvo[k];
-    if (salvo.extra && m.extra) for (k in salvo.extra) m.extra[k] = salvo.extra[k];
-    if (salvo.v) for (k in salvo.v) m.v[k] = salvo.v[k];
+  var m = clone(MOLDES[lot]), salvo = ls("vol:" + lot), k;
+  if (!salvo) return m;
+  if (salvo._v !== MOLDE_VERSAO) {
+    CAMPOS_IMPRESSORA.forEach(function (c) { if (salvo[c] != null) m[c] = salvo[c]; });
+    return m;
   }
+  for (k in salvo) if (k !== "extra" && k !== "v" && k !== "_v") m[k] = salvo[k];
+  if (salvo.extra && m.extra) for (k in salvo.extra) m.extra[k] = salvo.extra[k];
+  if (salvo.v) for (k in salvo.v) m.v[k] = salvo.v[k];
   return m;
 }
-function salvar() { ls("vol:" + S.lot, S.m); }
+function salvar() { S.m._v = MOLDE_VERSAO; ls("vol:" + S.lot, S.m); }
 
 /* linha e coluna da casa nº idx conforme a ordem de numeração do volante */
 function linCol(m, idx) {
@@ -228,10 +235,12 @@ function guiaVirtualHTML(c, m, ar) {
   var h = "", ordem = ordemNumeros(c, m), total = c.colunar ? m.linhas * m.colunas : ordem.length;
   for (var j = 0; j < ar.n; j++) {
     var o = origemJogo(m, ar, j);
+    h += '<div class="bloco-v" style="left:' + (o.x - 1.2) + "mm;top:" + (o.y - 1.2) + "mm;width:" + ((m.colunas - 1) * m.passoX + m.marcaL + 2.4) + "mm;height:" + (ar.th + 2.4) + 'mm"><i>Jogo ' + (j + 1) + "</i></div>";
     for (var i = 0; i < total; i++) {
       var lc = linCol(m, i), lin = lc[0], col = lc[1];
       h += '<b class="casa" style="left:' + (o.x + col * m.passoX) + "mm;top:" + (o.y + lin * m.passoY) + "mm;width:" + m.marcaL + "mm;height:" + m.marcaA + 'mm">' + (c.colunar ? lin : c.fmt(ordem[i])) + "</b>";
     }
+    if (j === 0 && m.v.qtdMin > 0) h += '<i class="rot-v" style="left:' + m.v.qtdX + "mm;top:" + (m.v.qtdY - 3.2) + 'mm">quantos números por jogo</i>';
     if (j === 0 && m.v.qtdMin > 0) for (var q = 0; q < 6; q++) h += '<b class="casa ex" style="left:' + (m.v.qtdX + q * m.v.qtdPasso) + "mm;top:" + m.v.qtdY + "mm;width:" + m.marcaL + "mm;height:" + m.marcaA + 'mm">' + (m.v.qtdMin + q) + "</b>";
     if (m.extra) {
       var e = m.extra, ey = o.y + (m.linhas - 1) * m.passoY + m.marcaA + 4;
