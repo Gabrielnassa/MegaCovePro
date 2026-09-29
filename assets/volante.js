@@ -7,7 +7,7 @@
 
 /* Geometria exata dos volantes virtuais (mm, relativa ao canto superior esquerdo do recorte de 82 mm),
    medida em scans de volantes impressos e conferida com jogos conhecidos. */
-var EXATO = {"lotofacil":{"esquema":"colunaDir","colunas":[14.7,30.44,46.18,61.92,77.66],"blocos":[[26.81,32.28,37.55,42.98,48.35],[56.96,62.34,67.76,73.18,78.55],[87.42,92.85,98.22,103.64,109.01]],"relogioX":2.79,"relogio":[20.73,26.81,32.28,37.55,42.98,48.35,56.96,62.34,67.76,73.18,78.55,87.42,92.85,98.22,103.64,109.01,118.24,127.76,137.6,144.54,149.35],"topoY":20.73,"topoX":[23.41,31.02,69.33],"marca":[4.05,2.74],"qtd":{"y":118.3,"x0":15.8,"passo":5.5,"min":15},"extra":null,"linhas":5,"jogos":3},"megasena":{"esquema":"linha","colunas":[13.9,21.06,28.22,35.38,42.54,49.7,56.86,64.02,71.18,78.34],"blocos":[[20.78,24.49,27.95,31.6,35.12,38.96],[49.11,52.67,56.23,59.79,63.4,67.24],[77.02,80.62,84.14,87.74,91.35,95.19]],"relogioX":1.9,"relogio":[15.8,20.78,24.49,27.95,31.6,35.12,38.96,42.85,49.11,52.67,56.23,59.79,63.4,67.24,71.09,77.02,80.62,84.14,87.74,91.35,95.19,98.99,107.39,117.73,129.41,138.94,142.46,146.06],"topoY":15.8,"topoX":[7.64,42.95,57.18],"marca":[4.08,1.71],"qtd":{"y":107.4,"x0":13.9,"passo":7.16,"min":6},"extra":null,"linhas":6,"jogos":3},"quina":{"esquema":"linha","colunas":[12.5,19.02,25.54,32.06,38.58,45.1,51.62,58.14,64.66,71.18],"blocos":[[19.98,23.31,26.51,29.84,33.0,36.55,40.05,43.59],[52.24,55.57,58.78,62.06,65.31,68.81,72.36,75.82],[84.98,88.31,91.51,94.89,98.05,101.64,105.14,108.64]],"relogioX":1.77,"relogio":[15.96,19.98,23.31,26.51,29.84,33.0,36.55,40.05,43.59,46.84,52.24,55.57,58.78,62.06,65.31,68.81,72.36,75.82,79.36,84.98,88.31,91.51,94.89,98.05,101.64,105.14,108.64,112.14,119.45,128.45,137.06,143.54,147.65],"topoY":15.96,"topoX":[12.8,51.81,71.27],"marca":[3.72,1.56],"qtd":{"y":119.4,"x0":12.5,"passo":6.52,"min":5},"extra":null,"linhas":8,"jogos":3},"lotomania":{"esquema":"linhaZeroFim","colunas":[14.0,20.62,27.24,33.86,40.48,47.1,53.72,60.34,66.96,73.58],"blocos":[[31.7,36.66,41.61,46.48,51.7,56.74,61.65,66.61,71.26,76.21]],"relogioX":2.94,"relogio":[27.06,31.7,36.66,41.61,46.48,51.7,56.74,61.65,66.61,71.26,76.21,93.84,112.21],"topoY":27.06,"topoX":[27.1,33.68,40.25,46.83],"marca":[3.86,1.84],"qtd":null,"extra":null,"linhas":10,"jogos":1},"duplasena":{"esquema":"linha","colunas":[13.9,21.1,28.3,35.5,42.7,49.9,57.1,64.3,71.5,78.7],"blocos":[[22.24,25.92,29.41,32.99,36.81],[47.13,50.61,54.2,57.68,61.55],[73.14,76.63,80.21,83.7,87.51]],"relogioX":2.21,"relogio":[17.34,22.24,25.92,29.41,32.99,36.81,40.34,47.13,50.61,54.2,57.68,61.55,65.41,73.14,76.63,80.21,83.7,87.51,91.38,100.61,111.78,123.28,134.88,138.93],"topoY":17.34,"topoX":[8.58,58.11,72.34],"marca":[4.05,1.79],"qtd":{"y":100.7,"x0":13.9,"passo":7.2,"min":6},"extra":null,"linhas":5,"jogos":3},"timemania":{"esquema":"linha","colunas":[13.4,20.76,28.12,35.48,42.84,50.2,57.56,64.92,72.28,79.64],"blocos":[[22.63,26.66,30.55,34.72,38.52,42.55,46.72,50.79]],"relogioX":1.55,"relogio":[18.51,22.63,26.66,30.55,34.72,38.52,42.55,46.72,50.79,62.84,66.96,71.04,75.16,79.28,82.98,87.15,91.32,95.49,99.48,103.37,107.44,111.61,115.64,119.77,123.89,127.64,131.53,135.65,139.82,143.9,147.97,152.05,156.22,160.02,164.14,167.98,176.18,180.31],"topoY":18.51,"topoX":[15.09,35.94,43.2,64.62],"marca":[3.28,2.53],"qtd":null,"extra":null,"linhas":8,"jogos":1},"supersete":{"esquema":"digito","colunas":[18.7,26.35,34.0,41.65,49.3,56.95,64.6],"blocos":[[45.03,49.62,54.11,58.44,62.88,67.47,71.95,76.34,80.83,85.31]],"relogioX":4.23,"relogio":[27.95,45.03,49.62,54.11,58.44,62.88,67.47,71.95,76.34,80.83,85.31,89.8,97.5,102.3,112.8,123.36,131.87,136.41,140.54],"topoY":27.95,"topoX":[18.87,34.22,49.47,64.76],"marca":[4.49,2.35],"qtd":null,"extra":null,"linhas":10,"jogos":1},"diadesorte":{"esquema":"diadesorte","colunas":[7.5,14.57,21.64,28.71,35.78,42.85,49.92,56.99,64.06,71.13],"blocos":[[23.19,27.13,30.6,34.2],[59.0,62.9,66.4,70.0],[94.6,98.4,102.0,105.4]],"relogioX":1.92,"relogio":[15.93,23.19,27.13,30.6,34.21,40.91,44.75,48.5,59.04,62.88,66.44,69.96,76.71,80.5,84.3,94.6,98.4,101.96,105.43,112.22,116.02,119.81,127.73,137.48,146.85,153.6,158.05],"topoY":15.93,"topoX":[7.5,28.4,35.7,42.7,71.1],"marca":[4.12,1.97],"qtd":null,"extra":null,"linhas":4,"jogos":3}};
+var EXATO = {"lotofacil":{"esquema":"colunaDir","colunas":[14.7,30.44,46.18,61.92,77.66],"blocos":[[26.81,32.28,37.55,42.98,48.35],[56.96,62.34,67.76,73.18,78.55],[87.42,92.85,98.22,103.64,109.01]],"relogioX":2.79,"relogio":[20.73,26.81,32.28,37.55,42.98,48.35,56.96,62.34,67.76,73.18,78.55,87.42,92.85,98.22,103.64,109.01,118.24,127.76,137.6,144.54,149.35],"topoY":20.73,"topoX":[23.41,31.02,69.33],"marca":[4.05,2.74],"qtd":{"y":118.3,"x0":15.8,"passo":5.5,"min":15},"extra":null,"linhas":5,"jogos":3},"megasena":{"esquema":"linha","colunas":[13.9,21.06,28.22,35.38,42.54,49.7,56.86,64.02,71.18,78.34],"blocos":[[20.78,24.49,27.95,31.6,35.12,38.96],[49.11,52.67,56.23,59.79,63.4,67.24],[77.02,80.62,84.14,87.74,91.35,95.19]],"relogioX":1.9,"relogio":[15.8,20.78,24.49,27.95,31.6,35.12,38.96,42.85,49.11,52.67,56.23,59.79,63.4,67.24,71.09,77.02,80.62,84.14,87.74,91.35,95.19,98.99,107.39,117.73,129.41,138.94,142.46,146.06],"topoY":15.8,"topoX":[7.64,42.95,57.18],"marca":[4.08,1.71],"qtd":{"y":107.4,"x0":13.9,"passo":7.16,"min":6},"extra":null,"linhas":6,"jogos":3},"quina":{"esquema":"linha","colunas":[12.5,19.02,25.54,32.06,38.58,45.1,51.62,58.14,64.66,71.18],"blocos":[[19.98,23.31,26.51,29.84,33.0,36.55,40.05,43.59],[52.24,55.57,58.78,62.06,65.31,68.81,72.36,75.82],[84.98,88.31,91.51,94.89,98.05,101.64,105.14,108.64]],"relogioX":1.77,"relogio":[15.96,19.98,23.31,26.51,29.84,33.0,36.55,40.05,43.59,46.84,52.24,55.57,58.78,62.06,65.31,68.81,72.36,75.82,79.36,84.98,88.31,91.51,94.89,98.05,101.64,105.14,108.64,112.14,119.45,128.45,137.06,143.54,147.65],"topoY":15.96,"topoX":[12.8,51.81,71.27],"marca":[3.72,1.56],"qtd":{"y":119.4,"x0":12.5,"passo":6.52,"min":5},"extra":null,"linhas":8,"jogos":3},"lotomania":{"esquema":"linhaZeroFim","colunas":[14.0,20.62,27.24,33.86,40.48,47.1,53.72,60.34,66.96,73.58],"blocos":[[31.7,36.66,41.61,46.48,51.7,56.74,61.65,66.61,71.26,76.21]],"relogioX":2.94,"relogio":[27.06,31.7,36.66,41.61,46.48,51.7,56.74,61.65,66.61,71.26,76.21,93.84,112.21],"topoY":27.06,"topoX":[27.1,33.68,40.25,46.83],"marca":[3.86,1.84],"qtd":null,"extra":null,"linhas":10,"jogos":1},"duplasena":{"esquema":"linha","colunas":[13.9,21.1,28.3,35.5,42.7,49.9,57.1,64.3,71.5,78.7],"blocos":[[22.24,25.92,29.41,32.99,36.81],[47.13,50.61,54.2,57.68,61.55],[73.14,76.63,80.21,83.7,87.51]],"relogioX":2.21,"relogio":[17.34,22.24,25.92,29.41,32.99,36.81,40.34,47.13,50.61,54.2,57.68,61.55,65.41,73.14,76.63,80.21,83.7,87.51,91.38,100.61,111.78,123.28,134.88,138.93],"topoY":17.34,"topoX":[8.58,58.11,72.34],"marca":[4.05,1.79],"qtd":{"y":100.7,"x0":13.9,"passo":7.2,"min":6},"extra":null,"linhas":5,"jogos":3},"timemania":{"esquema":"linha","colunas":[13.4,20.76,28.12,35.48,42.84,50.2,57.56,64.92,72.28,79.64],"blocos":[[22.63,26.66,30.55,34.72,38.52,42.55,46.72,50.79]],"relogioX":1.55,"relogio":[18.51,22.63,26.66,30.55,34.72,38.52,42.55,46.72,50.79,62.84,66.96,71.04,75.16,79.28,82.98,87.15,91.32,95.49,99.48,103.37,107.44,111.61,115.64,119.77,123.89,127.64,131.53,135.65,139.82,143.9,147.97,152.05,156.22,160.02,164.14,167.98,176.18,180.31],"topoY":18.51,"topoX":[15.09,35.94,43.2,64.62],"marca":[3.28,2.53],"qtd":null,"extra":null,"linhas":8,"jogos":1},"supersete":{"esquema":"digito","colunas":[18.7,26.35,34.0,41.65,49.3,56.95,64.6],"blocos":[[45.03,49.62,54.11,58.44,62.88,67.47,71.95,76.34,80.83,85.31]],"relogioX":4.23,"relogio":[27.95,45.03,49.62,54.11,58.44,62.88,67.47,71.95,76.34,80.83,85.31,89.8,97.5,102.3,112.8,123.36,131.87,136.41,140.54],"topoY":27.95,"topoX":[18.87,34.22,49.47,64.76],"marca":[4.49,2.35],"qtd":null,"extra":null,"linhas":10,"jogos":1},"diadesorte":{"esquema":"diadesorte","colunas":[7.5,14.57,21.64,28.71,35.78,42.85,49.92,56.99,64.06,71.13],"blocos":[[23.19,27.13,30.6,34.2],[59.0,62.9,66.4,70.0],[94.6,98.4,102.0,105.4]],"relogioX":1.92,"relogio":[15.93,23.19,27.13,30.6,34.21,40.91,44.75,48.5,59.04,62.88,66.44,69.96,76.71,80.5,84.3,94.6,98.4,101.96,105.43,112.22,116.02,119.81,127.73,137.48,146.85,153.6,158.05],"topoY":15.93,"topoX":[7.5,28.4,35.7,42.7,71.1],"marca":[4.12,1.97],"qtd":null,"extra":null,"linhas":4,"jogos":3},"maismilionaria":{"esquema":"linha","deitado":true,"colunas":[12.15,17.91,23.67,29.43,35.19],"deslocX":[0,34.4,68.8,103.2],"blocos":[[33.3,35.87,38.44,41.01,43.58,46.15,48.72,51.29,53.86,56.43],[33.3,35.87,38.44,41.01,43.58,46.15,48.72,51.29,53.86,56.43],[33.3,35.87,38.44,41.01,43.58,46.15,48.72,51.29,53.86,56.43],[33.3,35.87,38.44,41.01,43.58,46.15,48.72,51.29,53.86,56.43]],"relogioX":3.94,"relogio":[22.02,33.19,36.07,38.61,41.24,43.69,46.06,48.77,51.65,53.94,56.4,65.37,71.3,77.14,90.01,92.64,100.77,103.14,106.19],"topoY":21.93,"topoX":[17.32,23.08,29.34],"marca":[3.1,1.5],"qtd":{"y":89.9,"x0":17.57,"passo":5.76,"min":6},"qtd2":{"y":92.5,"x0":17.57,"passo":5.76,"min":2},"trevos":{"linhas":[65.3,71.35],"colunas":[17.91,23.67,29.43],"marca":[3.4,2.0]},"lista":{"y":23.6,"x":[43.1,111.1],"largura":66},"extra":null,"linhas":10,"jogos":4}};
 var MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 /* Moldes iniciais (aproximados). Medidas em mm a partir do canto superior
@@ -19,9 +19,9 @@ function base(o) {
     extra: null, papel: "volante", papelX: 10, papelY: 10, ajusteX: 0, ajusteY: 0,
     rotacao: 0, escalaX: 100, escalaY: 100, virar: "nao",
     /* volante virtual em A4 (sulfite): até 4 jogos por folha, com cabeçalho e marcas de relógio */
-    v: {jogos: 3, porFolha: 3, orientacao: "paisagem", gapV: 8, largura: 82, altura: 205, recorteX: 8, recorteY: 2.5, x: 14, y: 32, gapY: 8,
+    v: {jogos: 3, porFolha: 3, orientacao: "retrato", gapV: 2, largura: 82, altura: 205, recorteX: 8, recorteY: 2.5, x: 14, y: 32, gapY: 8,
         relogioX: 5, relogioL: 3.4, relogioA: 1.8, topoN: 2, topoX: 5, topoPasso: 5, topoY: 0, relogioFim: "",
-        qtdMin: 0, qtdY: 0, qtdX: 0, qtdPasso: 5.5, arquivo: "MegaCover", recorte: "sim", lista: "sim"}};
+        qtdMin: 0, qtdY: 0, qtdX: 0, qtdPasso: 5.5, arquivo: "", recorte: "sim", lista: "sim"}};
   for (var k in o) d[k] = o[k];
   return d;
 }
@@ -30,9 +30,9 @@ var MOLDES = {
   /* Lotofácil (medido na foto do volante): colunas de 5 números correndo de cima para baixo,
      da direita para a esquerda; fileira de 6 marcas no topo; campo "quantos números" abaixo dos blocos */
   lotofacil: base({linhas: 5, colunas: 5, passoX: 13.2, passoY: 5.25, ordem: "colunaDir", marcaL: 3.6, marcaA: 2.4,
-    v: {jogos: 3, porFolha: 3, orientacao: "paisagem", gapV: 8, largura: 82, altura: 205, recorteX: 8, recorteY: 2.5, x: 25, y: 52, gapY: 3.8,
+    v: {jogos: 3, porFolha: 3, orientacao: "retrato", gapV: 2, largura: 82, altura: 205, recorteX: 8, recorteY: 2.5, x: 25, y: 52, gapY: 3.8,
         relogioX: 9.5, relogioL: 2.6, relogioA: 2.2, topoN: 6, topoX: 25, topoPasso: 5.3, topoY: 45, relogioFim: "135.5,145,154.5,161,166.3,169.5,172.7",
-        qtdMin: 15, qtdY: 135.5, qtdX: 15, qtdPasso: 5.5, arquivo: "MegaCover", recorte: "sim", lista: "sim"}}),
+        qtdMin: 15, qtdY: 135.5, qtdX: 15, qtdPasso: 5.5, arquivo: "", recorte: "sim", lista: "sim"}}),
   quina: base({linhas: 8, colunas: 10, passoY: 4.6}),
   lotomania: base({linhas: 10, colunas: 10, passoY: 4.4, zeroNoFim: true}),
   duplasena: base({linhas: 5, colunas: 10}),
@@ -41,7 +41,9 @@ var MOLDES = {
   supersete: base({linhas: 10, colunas: 7, passoX: 8.5, passoY: 4.8, x: 14, ordem: "coluna"}),
   maismilionaria: base({linhas: 5, colunas: 10, extra: {nome: "Trevos", linhas: 1, colunas: 6, x: 20, y: 74, passoX: 7, passoY: 5.2}})
 };
-var CAMPOS_V = [["orientacao", "Folha A4", 0, "orientacao"], ["porFolha", "Volantes por folha", 0, "porFolha"], ["gapV", "Espaço entre os volantes", 0.5], ["jogos", "Jogos por volante (1 a 4)", 1, "int"], ["arquivo", "Nome no cabeçalho", 0, "texto"],
+/* +Milionária: volante deitado (185,8 × 111,2 mm), 4 jogos lado a lado, 2 volantes por folha A4 em pé */
+(function (v) { v.largura = 185.8; v.altura = 111.2; v.recorteX = 6.9; v.recorteY = 0; v.gapV = 0; v.porFolha = 2; v.jogos = 4; })(MOLDES.maismilionaria.v);
+var CAMPOS_V = [["orientacao", "Folha A4", 0, "orientacao"], ["porFolha", "Volantes por folha", 0, "porFolha"], ["gapV", "Espaço entre os volantes", 0.5], ["jogos", "Jogos por volante (1 a 4)", 1, "int"], ["arquivo", "Nome no cabeçalho (vazio = loteria e nº de apostas)", 0, "texto"],
   ["largura", "Largura do volante (recorte)", 0.5], ["altura", "Altura do volante (recorte)", 0.5],
   ["recorteX", "Recorte · da borda esquerda da folha", 0.5], ["recorteY", "Recorte · da borda de cima da folha", 0.5],
   ["x", "1º número · da esquerda do recorte", 0.1], ["y", "1º número · do topo do recorte", 0.1], ["gapY", "Espaço entre jogos", 0.5],
@@ -70,8 +72,8 @@ var OPC = {dir: [["vertical", "um abaixo do outro"], ["horizontal", "lado a lado
   papel: [["volante", "o próprio volante (alimentação manual)"], ["a4", "folha A4 com o volante colado"]],
   virar: [["nao", "com o topo para dentro (normal)"], ["sim", "de cabeça para baixo (girar 180°)"]],
   simnao: [["sim", "sim"], ["nao", "não"]],
-  porFolha: [[1, "1 volante"], [2, "2 volantes lado a lado"], [3, "3 volantes lado a lado (A4 deitada)"]],
-  orientacao: [["paisagem", "deitada (paisagem) — cabem 3 volantes"], ["retrato", "em pé (retrato) — cabem 2 volantes"]]};
+  porFolha: [[1, "1 volante"], [2, "2 volantes"], [3, "3 volantes"]],
+  orientacao: [["retrato", "em pé, volantes deitados (igual ao LoteriaSoft/NetSorte)"], ["paisagem", "deitada, volantes em pé"]]};
 
 var $ = function (s) { return document.querySelector(s); };
 function ls(k, v) {
@@ -87,7 +89,7 @@ var S = {lot: "megasena", jogos: [], extras: null, modo: "marcas", m: null};
 function cfg() { return MC.TODAS[S.lot]; }
 /* Versão dos moldes: quando muda, a calibração salva de versões antigas é descartada
    (só os ajustes da impressora são mantidos), para valores velhos não estragarem o desenho. */
-var MOLDE_VERSAO = 3;
+var MOLDE_VERSAO = 4;
 var CAMPOS_IMPRESSORA = ["ajusteX", "ajusteY", "rotacao", "escalaX", "escalaY", "virar", "papel", "papelX", "papelY"];
 function molde(lot) {
   var m = clone(MOLDES[lot]), salvo = ls("vol:" + lot), k;
@@ -179,7 +181,7 @@ function guiaHTML(c, m) {
 /* Reproduz o volante oficial em folha sulfite, no formato dos programas de impressão:
    recorte vermelho do tamanho do volante, cabeçalho, coluna de relógio, jogos empilhados,
    lista dos jogos e assinatura MegaCover no rodapé. Coordenadas relativas ao recorte. */
-var A4 = {w: 210, h: 297};
+var A4 = {w: 210, h: 297}, SITE_URL = "gabrielnassa.github.io/MegaCovePro";
 function alturaJogo(m) {
   var h = (m.linhas - 1) * m.passoY + m.marcaA;
   if (m.extra) h += 4 + (m.extra.linhas - 1) * m.extra.passoY + m.marcaA;
@@ -220,9 +222,14 @@ function relogioHTML(c, m, ar) {
   extras.forEach(function (y) { h += marcaHTML(rl, {x: v.relogioX, y: y}); });
   return {html: h, yFim: Math.max.apply(null, extras.concat([yFim]))};
 }
+function tituloCab(c, m) {
+  if (m.v.arquivo) return m.v.arquivo;
+  var n = S.jogos.length || 0;
+  return c.nome.toUpperCase() + (n ? " - " + n + (n === 1 ? " Aposta" : " Apostas") : "");
+}
 function cabecalhoHTML(c, m, ar, ini) {
   var nums = []; for (var i = 0; i < ar.n; i++) nums.push(ini + i + 1);
-  return '<div class="cab-v" style="left:0;top:' + (m.v.y - m.passoY * 3.6) + "mm;width:" + m.v.largura + 'mm"><span>' + esc(m.v.arquivo || "MegaCover") + "</span><b>" + nums.join("-") + "</b></div>";
+  return '<div class="cab-v" style="left:0;top:' + (m.v.y - m.passoY * 3.6) + "mm;width:" + m.v.largura + 'mm"><span>' + esc(tituloCab(c, m)) + "</span><b>" + nums.join("-") + "</b></div>";
 }
 function rodapeHTML(c, m, pg, yIni) {
   if (m.v.lista === "nao") return "";
@@ -230,11 +237,22 @@ function rodapeHTML(c, m, pg, yIni) {
   var nj = EXATO[c.chave] ? EXATO[c.chave].jogos : m.v.jogos;
   for (var i = 0; i < nj; i++) {
     var j = pg.jogos[i];
-    linhas.push("Jogo " + (pg.ini + i + 1) + ": " + (j ? (c.colunar ? j.map(function (x) { return x.join(""); }).join(" | ") : j.map(c.fmt.bind(c)).join(",")) + (S.extras && S.extras[pg.ini + i] ? " [" + esc(S.extras[pg.ini + i]) + "]" : "") : ""));
+    if (!j) continue;
+    linhas.push("Jogo " + (pg.ini + i + 1) + ": " + (c.colunar ? j.map(function (x) { return x.join(""); }).join(",") : j.map(c.fmt.bind(c)).join(",")) + (S.extras && S.extras[pg.ini + i] ? "#" + S.extras[pg.ini + i] : ""));
   }
-  var x0 = m.v.relogioX + m.v.relogioL + 3, largo = m.v.largura - x0 - 3, longo = linhas.some(function (l) { return l.length > 34; });
-  var altura = linhas.length * (longo ? 3.2 : 4.3) + 7, top = Math.min(yIni + 3, m.v.altura - altura - 2);
-  return '<div class="rod-v' + (longo ? " peq" : "") + '" style="left:' + x0 + "mm;top:" + top + "mm;width:" + largo + 'mm">' + linhas.map(function (l) { return "<div>" + esc(l) + "</div>"; }).join("") + '<div class="marca-v">MegaCover Pro Elite</div></div>';
+  var e0 = EXATO[c.chave];
+  if (e0 && e0.lista) {   /* volante deitado: lista em duas colunas entre as marcas do topo e a grade (modelo NetSorte) */
+    var met = Math.ceil(linhas.length / 2), h2 = "";
+    [linhas.slice(0, met), linhas.slice(met)].forEach(function (col, k) {
+      h2 += '<div class="rod-v peq" style="left:' + e0.lista.x[k] + "mm;top:" + e0.lista.y + "mm;width:" + e0.lista.largura + 'mm">' + col.map(function (l) { return "<div>" + esc(l) + "</div>"; }).join("") + "</div>";
+    });
+    return h2;
+  }
+  var x0 = m.v.relogioX + m.v.relogioL + 3, largo = m.v.largura - x0 - 2, longo = linhas.some(function (l) { return l.length > 40; });
+  var altura = (linhas.length + 1) * (longo ? 3 : 3.8) + 9, top = Math.min(yIni + 3, m.v.altura - altura - 2);
+  var rotulo = c.colunar ? "Números:" : c.chave === "diadesorte" ? "Apostas:" : "Dezenas:";
+  return '<div class="rod-v' + (longo ? " peq" : "") + '" style="left:' + x0 + "mm;top:" + top + "mm;width:" + largo + 'mm"><b>' + rotulo + "</b>" +
+    linhas.map(function (l) { return "<div>" + esc(l) + "</div>"; }).join("") + '<div class="marca-v"><b>MegaCover Pro Elite</b><span>' + esc(SITE_URL) + "</span></div></div>";
 }
 function guiaVirtualHTML(c, m, ar) {
   var h = "", ordem = ordemNumeros(c, m), total = c.colunar ? m.linhas * m.colunas : ordem.length;
@@ -259,19 +277,31 @@ function folhasVirtual() {
   var guia = S.modo === "guiav" || !S.jogos.length, volantes = [];
   if (guia) volantes.push({guia: true, ini: 0, jogos: []});
   else for (var i = 0; i < S.jogos.length; i += ar.n) volantes.push({guia: false, ini: i, jogos: S.jogos.slice(i, i + ar.n)});
-  /* quantos volantes de tamanho real cabem lado a lado na folha (nunca encolhe) */
-  var pais = v.orientacao !== "retrato", W = pais ? A4.h : A4.w, H = pais ? A4.w : A4.h;
-  var pf = Math.max(1, Math.min(+v.porFolha || 1, Math.floor((W - v.recorteX + v.gapV) / (v.largura + v.gapV))));
+  /* Folha em pé com os volantes deitados (como o LoteriaSoft/NetSorte imprime) ou deitada com os volantes em pé.
+     Nunca encolhe: cabem tantos volantes de tamanho real quantos a folha permitir. */
+  var natural = v.largura > v.altura;      /* +Milionária: o próprio volante é deitado */
+  var deitado = !natural && v.orientacao !== "paisagem", W = A4.w, H = A4.h;
+  if (!deitado && !natural) { W = A4.h; H = A4.w; }
+  var espaco = (deitado || natural) ? H : W;
+  var tam = natural ? v.altura : v.largura, marg = natural ? v.recorteY : v.recorteX;
+  var pf = Math.max(1, Math.min(+v.porFolha || 1, Math.floor((espaco - marg + v.gapV) / (tam + v.gapV))));
   var paginas = []; for (i = 0; i < volantes.length; i += pf) paginas.push(volantes.slice(i, i + pf));
   $("#estilo-pagina").textContent = "@page{size:" + W + "mm " + H + "mm;margin:0}";
   var tr = "rotate(" + (+m.rotacao || 0) + "deg) scale(" + ((+m.escalaX || 100) / 100) + "," + ((+m.escalaY || 100) / 100) + ")";
-  /* o recorte nunca sai da folha: se o volante for alto demais para a orientação, encosta na borda de cima */
-  var offX = (+v.recorteX || 0) + (+m.ajusteX || 0), offY = Math.max(0, Math.min(+v.recorteY || 0, H - v.altura - 1)) + (+m.ajusteY || 0);
+  /* o recorte nunca sai da folha: se o volante for alto demais, encosta na borda */
+  var limite = deitado ? W : H;
+  var offX = (+v.recorteX || 0) + (+m.ajusteX || 0), offY = Math.max(0, Math.min(+v.recorteY || 0, limite - v.altura - 1)) + (+m.ajusteY || 0);
+  function posicao(k) {
+    if (natural) return "left:" + offX + "mm;top:" + (offY + k * (v.altura + v.gapV)) + "mm;transform:" + tr;
+    if (!deitado) return "left:" + (offX + k * (v.largura + v.gapV)) + "mm;top:" + offY + "mm;transform:" + tr;
+    /* girado 90° anti-horário: o topo do volante fica à esquerda da folha (texto lido de baixo para cima) */
+    return "left:" + offY + "mm;top:" + (offX + k * (v.largura + v.gapV) + v.largura) + "mm;transform:rotate(-90deg) " + tr;
+  }
   function volanteHTML(pg, k) {
     var e = EXATO[c.chave], rel, dentro;
     if (e) {
       dentro = volanteExatoHTML(e, c, m, pg) + rodapeHTML(c, m, pg, Math.max.apply(null, e.relogio) + 2);
-      return '<div class="area' + (v.recorte === "nao" ? "" : " recorte") + '" style="left:' + (offX + k * (v.largura + v.gapV)) + "mm;top:" + offY + "mm;width:" + v.largura + "mm;height:" + v.altura + "mm;transform:" + tr + '">' + dentro + "</div>";
+      return '<div class="area' + (v.recorte === "nao" ? "" : " recorte") + '" style="' + posicao(k) + ";width:" + v.largura + "mm;height:" + v.altura + 'mm">' + dentro + "</div>";
     }
     rel = relogioHTML(c, m, ar); dentro = rel.html + cabecalhoHTML(c, m, ar, pg.ini);
     if (pg.guia) dentro += guiaVirtualHTML(c, m, ar);
@@ -283,7 +313,7 @@ function folhasVirtual() {
       dentro += marcaHTML(m, {x: v.qtdX + (q - v.qtdMin) * v.qtdPasso + m.marcaL / 2, y: v.qtdY + m.marcaA / 2});
     }
     dentro += rodapeHTML(c, m, pg, rel.yFim);
-    return '<div class="area' + (v.recorte === "nao" ? "" : " recorte") + '" style="left:' + (offX + k * (v.largura + v.gapV)) + "mm;top:" + offY + "mm;width:" + v.largura + "mm;height:" + v.altura + "mm;transform:" + tr + '">' + dentro + "</div>";
+    return '<div class="area' + (v.recorte === "nao" ? "" : " recorte") + '" style="' + posicao(k) + ";width:" + v.largura + "mm;height:" + v.altura + 'mm">' + dentro + "</div>";
   }
   return paginas.map(function (vs, k) {
     var ini = vs[0].ini + 1, fim = vs[vs.length - 1].ini + vs[vs.length - 1].jogos.length;
@@ -300,7 +330,14 @@ function celulaExato(e, n, g) {
   else if (e.esquema === "diadesorte") { if (n === 31) { r = 3; c = 0; } else { r = Math.floor((n - 1) / 10); c = (n - 1) % 10; } }
   else { idx = n - 1; r = Math.floor(idx / C); c = idx % C; }
   if (r == null || r >= rows.length || c < 0 || c >= C) return null;
-  return {x: e.colunas[c], y: rows[r]};
+  return {x: e.colunas[c] + (e.deslocX ? e.deslocX[g] : 0), y: rows[r]};
+}
+function trevosExato(e, extra, g) {
+  var out = [], dx = e.deslocX ? e.deslocX[g] : 0;
+  String(extra == null ? "" : extra).split(/[^0-9]+/).filter(Boolean).forEach(function (t) {
+    var n = +t; if (n >= 1 && n <= 6) out.push({x: e.trevos.colunas[(n - 1) % 3] + dx, y: e.trevos.linhas[Math.floor((n - 1) / 3)]});
+  });
+  return out;
 }
 function marcasExato(e, c, jogo, g) {
   var out = [];
@@ -313,7 +350,7 @@ function volanteExatoHTML(e, c, m, pg) {
   e.relogio.forEach(function (y) { h += marcaHTML(mk, {x: e.relogioX, y: y}); });
   e.topoX.forEach(function (x) { h += marcaHTML(mk, {x: x, y: e.topoY}); });
   var nums = []; for (i = 0; i < e.jogos; i++) nums.push(pg.ini + i + 1);
-  h += '<div class="cab-v" style="left:0;top:1.2mm;width:' + m.v.largura + 'mm"><span>' + esc(m.v.arquivo || "MegaCover") + "</span><b>" + nums.join("-") + "</b></div>";
+  h += '<div class="cab-v" style="left:0;top:1.2mm;width:' + m.v.largura + 'mm"><span>' + esc(tituloCab(c, m)) + "</span><b>" + nums.join("-") + "</b>" + (e.lista ? "<span>MegaCover Pro Elite · " + esc(SITE_URL) + "</span>" : "") + "</div>";
   if (pg.guia) {
     for (var g = 0; g < e.jogos; g++) {
       if (e.esquema === "digito") {
@@ -327,12 +364,25 @@ function volanteExatoHTML(e, c, m, pg) {
         }
       }
     }
+    if (e.trevos) for (var g2 = 0; g2 < e.jogos; g2++) for (var t = 1; t <= 6; t++) {
+      var pt = trevosExato(e, String(t), g2)[0];
+      h += '<b class="casa ex" style="left:' + (pt.x - e.trevos.marca[0] / 2) + "mm;top:" + (pt.y - e.trevos.marca[1] / 2) + "mm;width:" + e.trevos.marca[0] + "mm;height:" + e.trevos.marca[1] + 'mm">' + t + "</b>";
+    }
     if (e.qtd) for (i = 0; i < 6; i++) h += '<b class="casa ex" style="left:' + (e.qtd.x0 + i * e.qtd.passo - mk.marcaL / 2) + "mm;top:" + (e.qtd.y - mk.marcaA / 2) + "mm;width:" + mk.marcaL + "mm;height:" + mk.marcaA + 'mm">' + (e.qtd.min + i) + "</b>";
+    if (e.qtd2) for (i = 0; i < 5; i++) h += '<b class="casa ex" style="left:' + (e.qtd2.x0 + i * e.qtd2.passo - mk.marcaL / 2) + "mm;top:" + (e.qtd2.y - mk.marcaA / 2) + "mm;width:" + mk.marcaL + "mm;height:" + mk.marcaA + 'mm">' + (e.qtd2.min + i) + "</b>";
   } else {
-    pg.jogos.forEach(function (jogo, g) { marcasExato(e, c, jogo, g).forEach(function (p) { h += marcaHTML(mk, p); }); });
+    var mkT = e.trevos ? {marcaL: e.trevos.marca[0], marcaA: e.trevos.marca[1], formato: "retangulo"} : null;
+    pg.jogos.forEach(function (jogo, g) {
+      marcasExato(e, c, jogo, g).forEach(function (p) { h += marcaHTML(mk, p); });
+      if (mkT && S.extras) trevosExato(e, S.extras[pg.ini + g], g).forEach(function (p) { h += marcaHTML(mkT, p); });
+    });
     if (e.qtd && pg.jogos.length) {
       var q = pg.jogos[0].length, k = q - e.qtd.min;
       if (k >= 0 && k < 10) h += marcaHTML(mk, {x: e.qtd.x0 + k * e.qtd.passo, y: e.qtd.y});
+    }
+    if (e.qtd2 && pg.jogos.length && S.extras) {
+      var nt = String(S.extras[pg.ini] || "").split(/[^0-9]+/).filter(Boolean).length, k2 = nt - e.qtd2.min;
+      if (k2 >= 0 && k2 < 10) h += marcaHTML(mk, {x: e.qtd2.x0 + k2 * e.qtd2.passo, y: e.qtd2.y});
     }
   }
   return h;
