@@ -14,8 +14,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=JetBrains+Mono:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=20260929m">
-<link rel="stylesheet" href="assets/site.css?v=20260929m">
+<link rel="stylesheet" href="assets/style.css?v=20260929p">
+<link rel="stylesheet" href="assets/site.css?v=20260929p">
 <script>try{var t=localStorage.getItem("mc:tema");if(t)document.documentElement.setAttribute("data-theme",JSON.parse(t))}catch(e){}</script>
 </head>
 <body class="site">
@@ -26,6 +26,7 @@
     <nav aria-label="Seções">
       <a href="#recursos">Recursos</a><a href="#como">Como funciona</a><a href="#planos">Planos</a><a href="#faq">Dúvidas</a>
     </nav>
+    <a class="bt" href="conta.html" id="lk-conta" hidden>Entrar</a>
     <a class="bt primario" href="app.html">Abrir o painel</a>
   </div>
 </header>
@@ -194,8 +195,8 @@
   </div>
 </footer>
 
-<script src="assets/plano.js?v=20260929m"></script>
-<script src="assets/engine.js?v=20260929m"></script>
+<script src="assets/plano.js?v=20260929p"></script>
+<script src="assets/engine.js?v=20260929p"></script>
 <script>
 (function () {
   "use strict";
@@ -249,5 +250,6 @@
   $("#d-gerar").onclick = gerar;
 })();
 </script>
+<script>try{if(window.MC_PLANO&&MC_PLANO.loginAtivo&&MC_PLANO.loginAtivo())document.getElementById("lk-conta").hidden=false}catch(e){}</script>
 </body>
 </html>

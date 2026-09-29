@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=20260929m">
+<link rel="stylesheet" href="assets/style.css?v=20260929p">
 <script>try{var t=localStorage.getItem("mc:tema");if(t)document.documentElement.setAttribute("data-theme",JSON.parse(t))}catch(e){}</script>
 </head>
 <body>
@@ -33,6 +33,7 @@
       <div class="titulo" id="titulo"><h1>Carregando…</h1></div>
       <div class="acoes">
         <button id="bt-atualizar-todas" class="bt" type="button" title="Baixar os concursos novos das 9 loterias"><svg class="ic" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6"/></svg><span class="txt-lg">Atualizar todas</span></button>
+        <a id="bt-conta" class="bt" href="conta.html" hidden title="Entrar ou criar conta"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span class="txt-lg">Entrar</span></a>
         <button id="bt-tema" class="bt icone" type="button" title="Alternar tema claro/escuro" aria-label="Alternar tema"><svg class="ic" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
       </div>
     </header>
@@ -50,8 +51,10 @@
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-titulo"><div class="caixa" id="modal-caixa"></div></div>
 <div id="status" class="status" role="status" aria-live="polite"></div>
 
-<script src="assets/plano.js?v=20260929m"></script>
-<script src="assets/engine.js?v=20260929m"></script>
-<script src="assets/app.js?v=20260929m"></script>
+<script src="assets/plano.js?v=20260929p"></script>
+<script src="assets/vendor/supabase.min.js"></script>
+<script src="assets/auth.js?v=20260929p"></script>
+<script src="assets/engine.js?v=20260929p"></script>
+<script src="assets/app.js?v=20260929p"></script>
 </body>
 </html>

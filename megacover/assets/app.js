@@ -981,12 +981,32 @@ function tema() {
   };
 }
 /* ======================= Plano / Beta ======================= */
+var AU = window.MC_AUTH, CONTA = {usuario: null};
 function planoCard() {
   var el = $("#plano-card"); if (!el) return;
-  el.innerHTML = PL.beta()
-    ? '<span class="tag"><i></i>Acesso Beta</span><p>Todos os recursos PRO liberados grátis durante o período de testes.</p><button class="bt" type="button" id="bt-plano" style="width:100%">' + I("coroa") + "Conhecer o PRO</button>"
-    : '<span class="tag">Plano gratuito</span><p>Desbloqueie IA, fechamentos e simulações ilimitadas.</p><button class="bt primario" type="button" id="bt-plano" style="width:100%">' + I("coroa") + "Assinar PRO</button>";
-  $("#bt-plano").onclick = function () { modalPlano(); };
+  var ass = PL.assinante && PL.assinante(), u = CONTA.usuario, h;
+  if (ass) h = '<span class="tag"><i></i>Assinante PRO</span><p>Todos os recursos liberados. Obrigado por apoiar o MegaCover.</p>';
+  else if (PL.beta()) h = '<span class="tag"><i></i>Acesso Beta</span><p>Todos os recursos PRO liberados grátis durante o período de testes.</p><button class="bt" type="button" id="bt-plano" style="width:100%">' + I("coroa") + "Conhecer o PRO</button>";
+  else h = '<span class="tag">Plano gratuito</span><p>Desbloqueie IA, fechamentos e simulações ilimitadas.</p><button class="bt primario" type="button" id="bt-plano" style="width:100%">' + I("coroa") + "Assinar PRO</button>";
+  if (AU && AU.ativo()) {
+    h += u ? '<div class="conta-card"><span title="' + esc(u.email) + '">' + esc((u.user_metadata && u.user_metadata.nome) || u.email) + '</span><button class="bt peq" type="button" id="bt-sair">Sair</button></div>'
+           : '<div class="conta-card"><a href="conta.html?volta=app.html">Entrar ou criar conta</a></div>';
+  }
+  el.innerHTML = h;
+  var bp = $("#bt-plano"); if (bp) bp.onclick = function () { modalPlano(); };
+  var bs = $("#bt-sair"); if (bs) bs.onclick = function () { AU.sair().then(function () { location.href = "index.html"; }); };
+  var bc = $("#bt-conta"); if (bc) bc.hidden = !(AU && AU.ativo() && !u);
+}
+/* Login (Supabase): atualiza a assinatura ao abrir e redesenha o cartão do plano. */
+function conta() {
+  if (!AU || !AU.ativo()) return;
+  AU.usuario().then(function (u) {
+    CONTA.usuario = u;
+    if (!u && PL.loginObrigatorio) { location.href = "conta.html?volta=app.html"; return; }
+    planoCard();
+    return AU.iniciar().then(function () { planoCard(); });
+  }).catch(function () {});
+  AU.aoMudar(function (ev, s) { CONTA.usuario = s ? s.user : null; if (ev === "SIGNED_OUT" && PL.loginObrigatorio) location.href = "conta.html"; else planoCard(); });
 }
 function abrirModal(html) {
   var m = $("#modal"); $("#modal-caixa").innerHTML = html; m.hidden = false;
@@ -1027,7 +1047,7 @@ function montarUltimos() {
   });
 }
 function iniciar() {
-  tema(); montarNav(); boasVindas();
+  tema(); montarNav(); boasVindas(); conta();
   $("#bt-atualizar-todas").onclick = atualizarTodas;
   var h = location.hash.replace("#", "").split("/"), u = ls("ultima") || [];
   window.addEventListener("hashchange", function () { var p = location.hash.replace("#", "").split("/"); if (p[0] !== S.lot || p[1] !== S.aba) ir(p[0], p[1]); });
