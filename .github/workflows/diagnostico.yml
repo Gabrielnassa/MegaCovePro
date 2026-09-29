@@ -8,16 +8,18 @@ jobs:
     steps:
       - name: Consultar fontes
         run: |
-          H='-H "Accept: application/json, text/plain, */*" -H "Origin: https://loterias.caixa.gov.br" -H "Referer: https://loterias.caixa.gov.br/" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"'
-          for u in \
-            https://servicebus2.caixa.gov.br/portaldeloterias/api/megasena \
-            https://servicebus2.caixa.gov.br/portaldeloterias/api/megasena/3063 \
-            https://servicebus2.caixa.gov.br/portaldeloterias/api/lotofacil \
-            https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte \
-            https://loteriascaixa-api.vercel.app/api/megasena/latest \
-            https://api.guidi.dev.br/loteria/megasena/ultimo \
-            https://loteriascaixa-api.vercel.app/api/lotofacil/latest ; do
-            echo "=== $u"
-            eval curl -sS -m 25 $H -o /tmp/r -w '"HTTP %{http_code} · %{size_download} bytes · CORS=%header{access-control-allow-origin}\n"' "$u" || echo "falhou"
-            head -c 400 /tmp/r; echo
-          done
+          t() { echo "=== $1 [$2]"; shift; curl -sS -m 25 -o /tmp/r -w "HTTP %{http_code} · %{size_download} bytes · CORS=%header{access-control-allow-origin}\n" "$@" || echo "falhou"; head -c 300 /tmp/r | tr '\n' ' '; echo; echo; }
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
+          C=https://servicebus2.caixa.gov.br/portaldeloterias/api/megasena
+          t "$C" "só UA" -A "$UA" "$C"
+          t "$C" "UA+Accept" -A "$UA" -H 'Accept: application/json' "$C"
+          t "$C" "curl puro" "$C"
+          t "$C/" "barra final, UA" -A "$UA" "$C/"
+          t "https://servicebus2.caixa.gov.br/portaldeloterias/api/home/ultimos-resultados" "home" -A "$UA" "https://servicebus2.caixa.gov.br/portaldeloterias/api/home/ultimos-resultados"
+          t "https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx" "site caixa" -A "$UA" "https://loterias.caixa.gov.br/Paginas/Mega-Sena.aspx"
+          t "allorigins" "proxy" "https://api.allorigins.win/raw?url=$(python3 -c "import urllib.parse;print(urllib.parse.quote('$C',safe=''))")"
+          t "corsproxy.io" "proxy" "https://corsproxy.io/?url=$C"
+          t "api.codetabs" "proxy" "https://api.codetabs.com/v1/proxy/?quest=$C"
+          t "eitchtee commits" "idade da base" "https://api.github.com/repos/eitchtee/loterias.json/commits?per_page=1&path=data/mega-sena.json"
+          t "eitchtee mega" "último concurso" "https://raw.githubusercontent.com/eitchtee/loterias.json/main/data/mega-sena.json"
+          python3 -c "import json;d=json.load(open('/tmp/r'));print('eitchtee último:',d[-1]['concurso'],d[-1]['data'])" || true
