@@ -17,13 +17,19 @@ function base(o) {
     rotacao: 0, escalaX: 100, escalaY: 100, virar: "nao",
     /* volante virtual em A4 (sulfite): até 4 jogos por folha, com cabeçalho e marcas de relógio */
     v: {jogos: 3, porFolha: 2, gapV: 8, largura: 82, altura: 245, recorteX: 10, recorteY: 10, x: 14, y: 32, gapY: 8,
-        relogioX: 5, relogioL: 3.4, relogioA: 1.8, arquivo: "MegaCover", recorte: "sim", lista: "sim"}};
+        relogioX: 5, relogioL: 3.4, relogioA: 1.8, topoN: 2, topoX: 5, topoPasso: 5, topoY: 0, relogioFim: "",
+        qtdMin: 0, qtdY: 0, qtdX: 0, qtdPasso: 5.5, arquivo: "MegaCover", recorte: "sim", lista: "sim"}};
   for (var k in o) d[k] = o[k];
   return d;
 }
 var MOLDES = {
   megasena: base({linhas: 6, colunas: 10}),
-  lotofacil: base({linhas: 5, colunas: 5, passoX: 9, passoY: 6, x: 18}),
+  /* Lotofácil (medido na foto do volante): colunas de 5 números correndo de cima para baixo,
+     da direita para a esquerda; fileira de 6 marcas no topo; campo "quantos números" abaixo dos blocos */
+  lotofacil: base({linhas: 5, colunas: 5, passoX: 13.2, passoY: 5.25, ordem: "colunaDir", marcaL: 3.6, marcaA: 2.4,
+    v: {jogos: 3, porFolha: 2, gapV: 8, largura: 82, altura: 205, recorteX: 10, recorteY: 10, x: 25, y: 52, gapY: 3.8,
+        relogioX: 9.5, relogioL: 2.6, relogioA: 2.2, topoN: 6, topoX: 25, topoPasso: 5.3, topoY: 45, relogioFim: "135.5,145,154.5,161,166.3,169.5,172.7",
+        qtdMin: 15, qtdY: 135.5, qtdX: 15, qtdPasso: 5.5, arquivo: "MegaCover", recorte: "sim", lista: "sim"}}),
   quina: base({linhas: 8, colunas: 10, passoY: 4.6}),
   lotomania: base({linhas: 10, colunas: 10, passoY: 4.4, zeroNoFim: true}),
   duplasena: base({linhas: 5, colunas: 10}),
@@ -37,6 +43,9 @@ var CAMPOS_V = [["porFolha", "Volantes por folha A4", 0, "porFolha"], ["gapV", "
   ["recorteX", "Recorte · da borda esquerda da folha", 0.5], ["recorteY", "Recorte · da borda de cima da folha", 0.5],
   ["x", "1º número · da esquerda do recorte", 0.1], ["y", "1º número · do topo do recorte", 0.1], ["gapY", "Espaço entre jogos", 0.5],
   ["relogioX", "Coluna de relógio · da esquerda do recorte", 0.1], ["relogioL", "Largura da marca de relógio", 0.1], ["relogioA", "Altura da marca de relógio", 0.1],
+  ["topoN", "Marcas de relógio no topo (quantas)", 1, "int"], ["topoX", "1ª marca do topo · da esquerda", 0.1], ["topoPasso", "Distância entre marcas do topo", 0.1], ["topoY", "Fileira do topo · do topo (0 = automático)", 0.1],
+  ["relogioFim", "Marcas de relógio abaixo dos jogos (mm, separadas por vírgula)", 0, "texto"],
+  ["qtdMin", "Campo \"quantos números\": menor valor (0 = não tem)", 1, "int"], ["qtdY", "Campo quantos números · do topo", 0.1], ["qtdX", "Campo quantos números · da esquerda", 0.1], ["qtdPasso", "Distância entre as casas do campo", 0.1],
   ["recorte", "Traço vermelho de recorte", 0, "simnao"], ["lista", "Lista dos jogos e MegaCover no rodapé", 0, "simnao"]];
 var CAMPOS = [
   ["Volante", [["largura", "Largura do volante", 0.5], ["altura", "Altura do volante", 0.5]]],
@@ -53,7 +62,7 @@ var CAMPOS = [
 var EXTRA = [["x", "Centro do 1º item · da esquerda", 0.1], ["y", "Centro do 1º item · do topo", 0.1], ["passoX", "Distância entre colunas", 0.05],
   ["passoY", "Distância entre linhas", 0.05], ["linhas", "Linhas", 1, "int"], ["colunas", "Colunas", 1, "int"]];
 var OPC = {dir: [["vertical", "um abaixo do outro"], ["horizontal", "lado a lado"]],
-  ordem: [["linha", "por linha (01, 02, 03… →)"], ["coluna", "por coluna (01, 02, 03… ↓)"]],
+  ordem: [["linha", "por linha (01, 02, 03… →)"], ["coluna", "por coluna (01, 02, 03… ↓)"], ["colunaDir", "por coluna, da direita para a esquerda (Lotofácil)"]],
   formato: [["retangulo", "retângulo cheio"], ["elipse", "oval cheio"], ["x", "traço (X)"]],
   papel: [["volante", "o próprio volante (alimentação manual)"], ["a4", "folha A4 com o volante colado"]],
   virar: [["nao", "com o topo para dentro (normal)"], ["sim", "de cabeça para baixo (girar 180°)"]],
@@ -83,6 +92,12 @@ function molde(lot) {
 }
 function salvar() { ls("vol:" + S.lot, S.m); }
 
+/* linha e coluna da casa nº idx conforme a ordem de numeração do volante */
+function linCol(m, idx) {
+  if (m.ordem === "coluna") return [idx % m.linhas, Math.floor(idx / m.linhas)];
+  if (m.ordem === "colunaDir") return [idx % m.linhas, m.colunas - 1 - Math.floor(idx / m.linhas)];
+  return [Math.floor(idx / m.colunas), idx % m.colunas];
+}
 /* posição (mm) do centro de um número dentro do jogo nº j (0…) */
 function ordemNumeros(c, m) {
   var l = c.dezenas.slice();
@@ -90,9 +105,7 @@ function ordemNumeros(c, m) {
   return l;
 }
 function celula(m, idx, j) {
-  var lin, col;
-  if (m.ordem === "coluna") { col = Math.floor(idx / m.linhas); lin = idx % m.linhas; }
-  else { lin = Math.floor(idx / m.colunas); col = idx % m.colunas; }
+  var lc = linCol(m, idx), lin = lc[0], col = lc[1];
   var dx = m.dirJogos === "horizontal" ? j * m.distJogos : 0, dy = m.dirJogos === "vertical" ? j * m.distJogos : 0;
   return {x: m.x + col * m.passoX + dx, y: m.y + lin * m.passoY + dy};
 }
@@ -107,8 +120,7 @@ function marcasDoJogo(c, m, jogo, extra, j) {
   if (c.colunar) {
     jogo.forEach(function (col, ci) {
       col.forEach(function (d) {
-        var idx = m.ordem === "coluna" ? ci * m.linhas + d : d * m.colunas + ci;
-        out.push(celula(m, idx, j));
+          out.push(celula(m, m.ordem === "linha" ? d * m.colunas + ci : ci * m.linhas + d, j));
       });
     });
   } else {
@@ -137,7 +149,7 @@ function guiaHTML(c, m) {
   var h = reguaHTML(m), ordem = ordemNumeros(c, m), total = c.colunar ? m.linhas * m.colunas : ordem.length;
   for (var j = 0; j < m.jogos; j++) {
     for (var i = 0; i < total; i++) {
-      var p = celula(m, i, j), rot = c.colunar ? (m.ordem === "coluna" ? i % m.linhas : Math.floor(i / m.colunas)) : c.fmt(ordem[i]);
+      var p = celula(m, i, j), rot = c.colunar ? linCol(m, i)[0] : c.fmt(ordem[i]);
       h += '<b class="casa" style="left:' + (p.x - m.marcaL / 2) + "mm;top:" + (p.y - m.marcaA / 2) + "mm;width:" + m.marcaL + "mm;height:" + m.marcaA + 'mm">' + rot + "</b>";
     }
     if (m.extra) {
@@ -169,12 +181,8 @@ function arranjoVirtual(c, m) {
 function origemJogo(m, ar, j) { return {x: m.v.x, y: m.v.y + j * (ar.th + m.v.gapY)}; }
 function marcasVirtual(c, m, jogo, extra, o) {
   var out = [], ordem = ordemNumeros(c, m);
-  function cel(idx) {
-    var lin, col;
-    if (m.ordem === "coluna") { col = Math.floor(idx / m.linhas); lin = idx % m.linhas; } else { lin = Math.floor(idx / m.colunas); col = idx % m.colunas; }
-    return {x: o.x + col * m.passoX, y: o.y + lin * m.passoY};
-  }
-  if (c.colunar) jogo.forEach(function (col, ci) { col.forEach(function (d) { out.push(cel(m.ordem === "coluna" ? ci * m.linhas + d : d * m.colunas + ci)); }); });
+  function cel(idx) { var lc = linCol(m, idx); return {x: o.x + lc[1] * m.passoX, y: o.y + lc[0] * m.passoY}; }
+  if (c.colunar) jogo.forEach(function (col, ci) { col.forEach(function (d) { out.push(cel(m.ordem === "linha" ? d * m.colunas + ci : ci * m.linhas + d)); }); });
   else jogo.forEach(function (d) { var i = ordem.indexOf(d); if (i >= 0) out.push(cel(i)); });
   if (extra && m.extra) {
     var e = m.extra, ey = o.y + (m.linhas - 1) * m.passoY + m.marcaA + 4;
@@ -187,16 +195,18 @@ function marcasVirtual(c, m, jogo, extra, o) {
 /* coluna de relógio: 2 marcas na linha do cabeçalho, uma por linha de cada jogo, 3 no rodapé */
 function relogioHTML(c, m, ar) {
   var v = m.v, rl = {marcaL: v.relogioL, marcaA: v.relogioA, formato: "retangulo"}, h = "", j, r;
-  var yCab = v.y - m.passoY * 1.6;
-  h += marcaHTML(rl, {x: v.relogioX, y: yCab}) + marcaHTML(rl, {x: v.relogioX + v.relogioL + 1.6, y: yCab});
+  var yCab = +v.topoY || (v.y - m.passoY * 1.6), nT = Math.max(0, v.topoN | 0);
+  for (r = 0; r < nT; r++) h += marcaHTML(rl, {x: (+v.topoX || v.relogioX) + r * (+v.topoPasso || 5), y: yCab});
   for (j = 0; j < ar.n; j++) {
     var o = origemJogo(m, ar, j);
     for (r = 0; r < m.linhas; r++) h += marcaHTML(rl, {x: v.relogioX, y: o.y + r * m.passoY});
     if (m.extra) for (r = 0; r < m.extra.linhas; r++) h += marcaHTML(rl, {x: v.relogioX, y: o.y + (m.linhas - 1) * m.passoY + m.marcaA + 4 + r * m.extra.passoY});
   }
   var yFim = origemJogo(m, ar, ar.n - 1).y + ar.th;
-  for (r = 0; r < 3; r++) h += marcaHTML(rl, {x: v.relogioX, y: yFim + 6 + r * 3.2});
-  return {html: h, yFim: yFim + 6 + 3 * 3.2};
+  var extras = String(v.relogioFim || "").split(/[^0-9.]+/).filter(Boolean).map(Number);
+  if (!extras.length) for (r = 0; r < 3; r++) extras.push(yFim + 6 + r * 3.2);
+  extras.forEach(function (y) { h += marcaHTML(rl, {x: v.relogioX, y: y}); });
+  return {html: h, yFim: Math.max.apply(null, extras.concat([yFim]))};
 }
 function cabecalhoHTML(c, m, ar, ini) {
   var nums = []; for (var i = 0; i < ar.n; i++) nums.push(ini + i + 1);
@@ -209,17 +219,19 @@ function rodapeHTML(c, m, pg, yIni) {
     var j = pg.jogos[i];
     linhas.push("Jogo " + (pg.ini + i + 1) + ": " + (j ? (c.colunar ? j.map(function (x) { return x.join(""); }).join(" | ") : j.map(c.fmt.bind(c)).join(",")) + (S.extras && S.extras[pg.ini + i] ? " [" + esc(S.extras[pg.ini + i]) + "]" : "") : ""));
   }
-  return '<div class="rod-v" style="left:' + m.v.x + "mm;top:" + (yIni + 4) + "mm;width:" + (m.v.largura - m.v.x - 3) + 'mm">' + linhas.map(function (l) { return "<div>" + esc(l) + "</div>"; }).join("") + '<div class="marca-v">MegaCover Pro Elite</div></div>';
+  var x0 = m.v.relogioX + m.v.relogioL + 3, largo = m.v.largura - x0 - 3, longo = linhas.some(function (l) { return l.length > 34; });
+  var altura = linhas.length * (longo ? 3.2 : 4.3) + 7, top = Math.min(yIni + 3, m.v.altura - altura - 2);
+  return '<div class="rod-v' + (longo ? " peq" : "") + '" style="left:' + x0 + "mm;top:" + top + "mm;width:" + largo + 'mm">' + linhas.map(function (l) { return "<div>" + esc(l) + "</div>"; }).join("") + '<div class="marca-v">MegaCover Pro Elite</div></div>';
 }
 function guiaVirtualHTML(c, m, ar) {
   var h = "", ordem = ordemNumeros(c, m), total = c.colunar ? m.linhas * m.colunas : ordem.length;
   for (var j = 0; j < ar.n; j++) {
     var o = origemJogo(m, ar, j);
     for (var i = 0; i < total; i++) {
-      var lin, col;
-      if (m.ordem === "coluna") { col = Math.floor(i / m.linhas); lin = i % m.linhas; } else { lin = Math.floor(i / m.colunas); col = i % m.colunas; }
+      var lc = linCol(m, i), lin = lc[0], col = lc[1];
       h += '<b class="casa" style="left:' + (o.x + col * m.passoX) + "mm;top:" + (o.y + lin * m.passoY) + "mm;width:" + m.marcaL + "mm;height:" + m.marcaA + 'mm">' + (c.colunar ? lin : c.fmt(ordem[i])) + "</b>";
     }
+    if (j === 0 && m.v.qtdMin > 0) for (var q = 0; q < 6; q++) h += '<b class="casa ex" style="left:' + (m.v.qtdX + q * m.v.qtdPasso) + "mm;top:" + m.v.qtdY + "mm;width:" + m.marcaL + "mm;height:" + m.marcaA + 'mm">' + (m.v.qtdMin + q) + "</b>";
     if (m.extra) {
       var e = m.extra, ey = o.y + (m.linhas - 1) * m.passoY + m.marcaA + 4;
       for (i = 0; i < e.linhas * e.colunas; i++) h += '<b class="casa ex" style="left:' + (o.x + (i % e.colunas) * e.passoX) + "mm;top:" + (ey + Math.floor(i / e.colunas) * e.passoY) + "mm;width:" + m.marcaL + "mm;height:" + m.marcaA + 'mm">' + (c.chave === "diadesorte" ? (MESES[i] || "").slice(0, 3) : i + 1) + "</b>";
@@ -244,6 +256,10 @@ function folhasVirtual() {
     else pg.jogos.forEach(function (jogo, j) {
       dentro += marcasVirtual(c, m, jogo, S.extras ? S.extras[pg.ini + j] : null, origemJogo(m, ar, j)).map(function (p) { return marcaHTML(m, {x: p.x + m.marcaL / 2, y: p.y + m.marcaA / 2}); }).join("");
     });
+    if (!pg.guia && v.qtdMin > 0 && pg.jogos.length) {
+      var q = pg.jogos[0].length;      /* o campo é um por volante: usa a quantidade do 1º jogo */
+      dentro += marcaHTML(m, {x: v.qtdX + (q - v.qtdMin) * v.qtdPasso + m.marcaL / 2, y: v.qtdY + m.marcaA / 2});
+    }
     dentro += rodapeHTML(c, m, pg, rel.yFim);
     return '<div class="area' + (v.recorte === "nao" ? "" : " recorte") + '" style="left:' + (offX + k * (v.largura + v.gapV)) + "mm;top:" + offY + "mm;width:" + v.largura + "mm;height:" + v.altura + "mm;transform:" + tr + '">' + dentro + "</div>";
   }
