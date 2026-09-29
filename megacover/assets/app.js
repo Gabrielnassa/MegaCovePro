@@ -148,7 +148,13 @@ function carregar(id) {
 /* ---------- fontes online ----------
    1ª) API pública que lê a CAIXA em tempo real (concurso a concurso)
    2ª) base do GitHub eitchtee/loterias.json (histórico completo, atrasa alguns dias) */
-var APIS = ["https://loteriascaixa-api.vercel.app/api/{id}/{n}", "https://api.guidi.dev.br/loteria/{id}/{n}"];
+/* {url} com {id} e {n}; "ultimo" é o que se põe em {n} para pedir o último concurso */
+var APIS = [
+  {nome: "CAIXA (oficial)", url: "https://servicebus2.caixa.gov.br/portaldeloterias/api/{id}/{n}", ultimo: ""},
+  {nome: "loteriascaixa-api", url: "https://loteriascaixa-api.vercel.app/api/{id}/{n}", ultimo: "latest"},
+  {nome: "guidi", url: "https://api.guidi.dev.br/loteria/{id}/{n}", ultimo: "ultimo"}
+];
+function urlApi(a, id, n) { return a.url.replace("{id}", id).replace("{n}", n === "latest" ? a.ultimo : n).replace(/\/$/, ""); }
 var SYNC_INTERVALO = 15 * 60 * 1000;   /* volta a checar a cada 15 min (só 1 requisição "último" por loteria) */
 function apiParaRow(cfg, j) {
   if (!j || typeof j !== "object") return null;
@@ -170,8 +176,7 @@ function apiConcurso(id, n) {           /* tenta cada API; n = "latest" ou núme
   return new Promise(function (res, rej) {
     (function prox() {
       if (i >= APIS.length) { rej(new Error("APIs indisponíveis")); return; }
-      var url = APIS[i++].replace("{id}", id).replace("{n}", n === "latest" && i === 2 ? "ultimo" : n);
-      getJSON(url, 8000).then(function (j) { var r = apiParaRow(cfg, j); if (r) res(r); else prox(); }).catch(prox);
+      getJSON(urlApi(APIS[i++], id, n), 9000).then(function (j) { var r = apiParaRow(cfg, j); if (r) res(r); else prox(); }).catch(prox);
     })();
   });
 }
@@ -862,7 +867,7 @@ TELAS.dados = function (el, cfg) {
   var h = '<div class="grade g2"><div class="card"><h3>Atualizar resultados</h3><p class="dica">O painel sincroniza sozinho ao abrir e a cada 15 minutos: primeiro pela API pública que lê a CAIXA em tempo real, depois pela base do GitHub (eitchtee/loterias.json) como reserva. Os concursos novos ficam salvos neste navegador. Use o botão para forçar agora.</p>' +
     '<div class="resumo">Base do site: até o concurso <b>' + fmtN(S.meta[S.lot].ultimoBase || 0) + "</b>" + (S.meta[S.lot].atualizado ? " (" + new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") + ")" : "") +
     "<br>Salvos neste navegador: <b>" + fmtN(add.length) + "</b> concurso(s)" + (sy ? " · última sincronização " + new Date(sy).toLocaleString("pt-BR") : "") + "</div>" +
-    '<div class="linha-bts"><button class="bt lot" id="x-on" type="button">' + I("atualizar") + 'Atualizar ' + esc(cfg.nome) + '</button><button class="bt perigo" id="x-limpar" type="button">' + I("lixo") + 'Apagar dados locais</button></div></div>';
+    '<div class="linha-bts"><button class="bt lot" id="x-on" type="button">' + I("atualizar") + 'Atualizar ' + esc(cfg.nome) + '</button><button class="bt" id="x-testar" type="button">' + I("lupa") + 'Testar fontes</button><button class="bt perigo" id="x-limpar" type="button">' + I("lixo") + 'Apagar dados locais</button></div><div id="x-fontes"></div></div>';
   h += '<div class="card"><h3>Adicionar concurso</h3><div class="form"><div class="campo"><label for="x-n">Concurso</label><input id="x-n" type="number" min="1" value="' + ((c.length ? c[c.length - 1].concurso : 0) + 1) + '"></div><div class="campo"><label for="x-d">Data</label><input id="x-d" type="text" placeholder="dd/mm/aaaa"></div></div>' +
     '<div class="form" style="margin-top:10px"><div class="campo" style="grid-column:1/-1"><label for="x-dz">' + nCols + " número(s)" + (cfg.sorteios > 1 ? " (1º sorteio seguido do 2º)" : cfg.colunar ? " (coluna 1 a 7)" : "") + '</label><input id="x-dz" type="text" placeholder="ex.: 04 05 30 33 41 52"></div>' +
     (cfg.extra_nome ? '<div class="campo" style="grid-column:1/-1"><label for="x-ex">' + esc(cfg.extra_nome) + (cfg.extra_qtd > 1 ? " (ex.: 2,5)" : "") + '</label><input id="x-ex" type="text"></div>' : "") +
@@ -876,6 +881,25 @@ TELAS.dados = function (el, cfg) {
     ls("sync:" + S.lot, null);
     atualizarOnline(S.lot).then(function (n) { status(n ? n + " concurso(s) novo(s) da " + cfg.nome + "." : cfg.nome + " já está atualizada."); render(); })
       .catch(function (e) { status("Não foi possível conectar (" + e.message + ")."); bt.disabled = false; bt.innerHTML = I("atualizar") + "Atualizar " + esc(cfg.nome); });
+  };
+  $("#x-testar").onclick = function () {
+    var box = $("#x-fontes"), bt = this; bt.disabled = true;
+    var fontes = APIS.map(function (a) { return {nome: a.nome, url: urlApi(a, S.lot, "latest")}; })
+      .concat([{nome: "Base GitHub (eitchtee)", url: GH + GH_NOME[S.lot] + ".json", lista: true}]);
+    box.innerHTML = '<div class="resumo">Testando ' + fontes.length + " fontes a partir do seu navegador…</div>";
+    Promise.all(fontes.map(function (f) {
+      var t0 = Date.now();
+      return getJSON(f.url, 15000).then(function (j) {
+        var r = f.lista ? (Array.isArray(j) && j.length ? ghParaRow(cfg, j[j.length - 1]) : null) : apiParaRow(cfg, j);
+        return {f: f, ok: !!r, txt: r ? "concurso " + r[0] + " · " + r[1] : "respondeu, mas em formato inesperado", ms: Date.now() - t0};
+      }, function (e) { return {f: f, ok: false, txt: "falhou (" + (e && e.message || "bloqueado/CORS") + ")", ms: Date.now() - t0}; });
+    })).then(function (rs) {
+      box.innerHTML = '<div class="resumo" id="x-diag">' + rs.map(function (r) {
+        return (r.ok ? "✅" : "❌") + " <b>" + esc(r.f.nome) + "</b>: " + esc(r.txt) + ' <small>(' + r.ms + " ms)</small>";
+      }).join("<br>") + '<br><small>Local: concurso ' + ultimoLocal(S.lot) + " · " + new Date().toLocaleString("pt-BR") + " · " + esc(navigator.userAgent.slice(0, 60)) + '</small></div><div class="linha-bts"><button class="bt" id="x-copiar-diag" type="button">' + I("copiar") + "Copiar resultado</button></div>";
+      $("#x-copiar-diag").onclick = function () { navigator.clipboard.writeText($("#x-diag").innerText).then(function () { status("Copiado. Cole na conversa para eu analisar."); }); };
+      bt.disabled = false;
+    });
   };
   $("#x-limpar").onclick = function () {
     if (!confirm("Apagar os concursos salvos neste navegador para a " + cfg.nome + "? A base do site continua.")) return;
