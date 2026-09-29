@@ -26,6 +26,7 @@
   #folhas{zoom:var(--z,1);display:flex;flex-direction:column;align-items:flex-start;gap:14px}
   .folha{position:relative;background:#fff;box-shadow:0 6px 24px -8px rgba(0,0,0,.45);overflow:hidden;flex:none}
   .area{position:absolute;transform-origin:0 0}
+  .area.girado>*{transform-origin:0 0}
   .folha.virada{transform:rotate(180deg)}
   .regua{position:absolute;border:0 solid #c0392b;font:600 2mm/1 var(--f-num);color:#c0392b}
   .regua.h{border-bottom-width:.3mm;height:3mm;background:repeating-linear-gradient(90deg,#c0392b 0 .25mm,transparent .25mm 10mm)}
