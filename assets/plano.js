@@ -24,6 +24,12 @@ window.MC_PLANO = {
   whatsapp: "",
   email: "",
 
+  /* Login e assinatura (Supabase). Crie o projeto em supabase.com, copie a URL e a chave "anon public"
+     (Settings → API). Vazio = login desativado (o site continua funcionando sem conta). */
+  supabase: {url: "", chave: ""},
+  /* true = só entra no painel quem fizer login (mesmo no Beta). */
+  loginObrigatorio: false,
+
   /* Limites do plano gratuito quando a fase for "assinatura". */
   gratis: {jogosPorGeracao: 10, simulacoes: 10000},
 
@@ -39,8 +45,15 @@ window.MC_PLANO = {
 
 (function (P) {
   P.beta = function () { return P.fase === "beta"; };
-  /* Troque por uma verificação real (login + servidor) quando for cobrar. */
-  P.assinante = function () { return false; };
+  /* Assinatura lida do Supabase (tabela "assinaturas") por assets/auth.js e guardada em cache local.
+     A verificação real é feita no servidor: a linha só existe se você (ou o webhook do pagamento) criar. */
+  P.assinante = function () {
+    try {
+      var a = JSON.parse(localStorage.getItem("mc:assinatura") || "null");
+      return !!(a && a.status === "ativa" && (!a.valido_ate || new Date(a.valido_ate) > new Date()));
+    } catch (e) { return false; }
+  };
+  P.loginAtivo = function () { return !!(P.supabase && P.supabase.url && P.supabase.chave); };
   P.liberado = function (recurso) { return P.beta() || !P.pro[recurso] || P.assinante(); };
   P.contatoUrl = function () {
     if (P.whatsapp) return "https://wa.me/" + P.whatsapp + "?text=" + encodeURIComponent("Quero entrar na lista do " + P.produto + " PRO");

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrar · MegaCover Pro Elite</title>
+<meta name="theme-color" content="#090b0f">
+<link rel="icon" href="assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600&family=JetBrains+Mono:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=20260929p">
+<script>try{var t=localStorage.getItem("mc:tema");if(t)document.documentElement.setAttribute("data-theme",JSON.parse(t))}catch(e){}</script>
+<style>
+  .conta{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+  .conta .caixa-conta{width:100%;max-width:420px}
+  .conta .marca{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:18px;color:var(--txt);text-decoration:none}
+  .conta .marca img{width:40px;height:40px;border-radius:10px}
+  .conta .marca b{font-family:var(--f-titulo);font-size:20px;display:block;line-height:1}
+  .conta .marca small{color:var(--txt3);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+  .conta .card{padding:22px}
+  .abas-conta{display:flex;gap:4px;border-bottom:1px solid var(--borda);margin:-6px 0 16px}
+  .abas-conta button{background:none;border:0;padding:10px 12px;font:600 14px var(--f-texto);color:var(--txt2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+  .abas-conta button.ativa{color:var(--ouro);border-bottom-color:var(--ouro)}
+  .conta form{display:grid;gap:12px}
+  .conta .campo input{width:100%}
+  .conta .erro{background:var(--perigo-bg,rgba(220,60,60,.12));color:var(--perigo,#e5484d);border:1px solid rgba(220,60,60,.3);border-radius:10px;padding:10px 12px;font-size:13.5px}
+  .conta .okm{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok);border-radius:10px;padding:10px 12px;font-size:13.5px}
+  .conta .rodape-conta{margin-top:14px;text-align:center;font-size:13px;color:var(--txt3)}
+  .conta .rodape-conta a{color:var(--txt2)}
+  .conta .esqueci{text-align:right;font-size:13px;margin-top:-4px}
+  .conta .esqueci a{color:var(--txt2)}
+</style>
+</head>
+<body class="site">
+<main class="conta">
+  <div class="caixa-conta">
+    <a class="marca" href="index.html"><img src="assets/icon.png" alt=""><span><b>MegaCover</b><small>Pro Elite</small></span></a>
+    <div class="card" id="cartao">
+      <div class="abas-conta" id="abas-conta">
+        <button type="button" data-aba="entrar" class="ativa">Entrar</button>
+        <button type="button" data-aba="criar">Criar conta</button>
+        <button type="button" data-aba="recuperar">Esqueci a senha</button>
+      </div>
+      <div id="msg" hidden></div>
+
+      <form id="f-entrar" autocomplete="on">
+        <label class="campo"><span class="rot">E-mail</span><input type="email" name="email" required autocomplete="email" inputmode="email"></label>
+        <label class="campo"><span class="rot">Senha</span><input type="password" name="senha" required autocomplete="current-password" minlength="8"></label>
+        <div class="esqueci"><a href="#" data-ir="recuperar">Esqueci a senha</a></div>
+        <button class="bt primario" type="submit">Entrar</button>
+      </form>
+
+      <form id="f-criar" hidden autocomplete="on">
+        <label class="campo"><span class="rot">Nome</span><input type="text" name="nome" required autocomplete="name" maxlength="60"></label>
+        <label class="campo"><span class="rot">E-mail</span><input type="email" name="email" required autocomplete="email" inputmode="email"></label>
+        <label class="campo"><span class="rot">Senha (mínimo 8 caracteres)</span><input type="password" name="senha" required autocomplete="new-password" minlength="8"></label>
+        <label class="campo"><span class="rot">Repita a senha</span><input type="password" name="senha2" required autocomplete="new-password" minlength="8"></label>
+        <label class="chk" style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--txt2)"><input type="checkbox" name="maior" required style="margin-top:3px;accent-color:var(--ouro)"><span>Tenho 18 anos ou mais e entendo que o MegaCover é uma ferramenta estatística, sem garantia de prêmios.</span></label>
+        <button class="bt primario" type="submit">Criar conta</button>
+      </form>
+
+      <form id="f-recuperar" hidden>
+        <p class="dica" style="margin:0">Enviaremos um link por e-mail para você definir uma nova senha.</p>
+        <label class="campo"><span class="rot">E-mail</span><input type="email" name="email" required autocomplete="email" inputmode="email"></label>
+        <button class="bt primario" type="submit">Enviar link</button>
+      </form>
+
+      <form id="f-nova" hidden>
+        <p class="dica" style="margin:0">Defina a nova senha da sua conta.</p>
+        <label class="campo"><span class="rot">Nova senha (mínimo 8 caracteres)</span><input type="password" name="senha" required autocomplete="new-password" minlength="8"></label>
+        <label class="campo"><span class="rot">Repita a nova senha</span><input type="password" name="senha2" required autocomplete="new-password" minlength="8"></label>
+        <button class="bt primario" type="submit">Salvar nova senha</button>
+      </form>
+
+      <div id="logado" hidden>
+        <p class="dica" style="margin:0 0 12px">Você já está conectado como <b id="quem"></b>.</p>
+        <div class="linha-bts"><a class="bt primario" href="app.html">Abrir o painel</a><button class="bt" type="button" id="bt-sair">Sair</button></div>
+      </div>
+
+      <div id="sem-login" hidden>
+        <p class="dica" style="margin:0 0 12px">O login ainda não foi ativado nesta instalação. Durante o Beta o painel é aberto a todos.</p>
+        <a class="bt primario" href="app.html">Abrir o painel</a>
+      </div>
+    </div>
+    <p class="rodape-conta">Suas senhas são guardadas com criptografia pelo Supabase e nunca passam pelo site. · <a href="index.html">Voltar</a></p>
+  </div>
+</main>
+<script src="assets/plano.js?v=20260929p"></script>
+<script src="assets/vendor/supabase.min.js"></script>
+<script src="assets/auth.js?v=20260929p"></script>
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); }, A = window.MC_AUTH, q = new URLSearchParams(location.search);
+  var forms = {entrar: "#f-entrar", criar: "#f-criar", recuperar: "#f-recuperar", nova: "#f-nova"};
+  function msg(t, ok) { var m = $("#msg"); m.hidden = !t; m.className = ok ? "okm" : "erro"; m.textContent = t || ""; }
+  function aba(n) {
+    Object.keys(forms).forEach(function (k) { $(forms[k]).hidden = k !== n; });
+    $("#logado").hidden = true; $("#sem-login").hidden = true;
+    document.querySelectorAll("#abas-conta button").forEach(function (b) { b.classList.toggle("ativa", b.dataset.aba === n); });
+    $("#abas-conta").hidden = n === "nova";
+    msg("");
+  }
+  function mostrarLogado(u) {
+    Object.keys(forms).forEach(function (k) { $(forms[k]).hidden = true; });
+    $("#abas-conta").hidden = true; $("#logado").hidden = false; $("#quem").textContent = u.email; msg("");
+  }
+  function ocupado(f, sim) { var b = f.querySelector("button[type=submit]"); b.disabled = sim; b.textContent = sim ? "Aguarde…" : b.dataset.rot; }
+  document.querySelectorAll("form button[type=submit]").forEach(function (b) { b.dataset.rot = b.textContent; });
+  document.querySelectorAll("#abas-conta button").forEach(function (b) { b.onclick = function () { aba(b.dataset.aba); }; });
+  document.querySelectorAll("[data-ir]").forEach(function (a) { a.onclick = function (e) { e.preventDefault(); aba(a.dataset.ir); }; });
+  var destino = q.get("volta") || "app.html";
+  if (!/^[\w.-]+\.html(#[\w\/-]*)?$/.test(destino)) destino = "app.html";
+
+  if (!A.ativo()) {
+    Object.keys(forms).forEach(function (k) { $(forms[k]).hidden = true; });
+    $("#abas-conta").hidden = true; $("#sem-login").hidden = false;
+    return;
+  }
+  if (q.get("confirmado") === "1") msg("E-mail confirmado. Agora é só entrar.", true);
+  if (q.get("modo") === "nova-senha") aba("nova");
+
+  A.aoMudar(function (ev, s) {
+    if (ev === "PASSWORD_RECOVERY") { aba("nova"); return; }
+    if (ev === "SIGNED_IN" && s && q.get("modo") !== "nova-senha") mostrarLogado(s.user);
+  });
+  A.usuario().then(function (u) { if (u && q.get("modo") !== "nova-senha") mostrarLogado(u); });
+
+  $("#f-entrar").onsubmit = function (e) {
+    e.preventDefault(); var f = this; ocupado(f, true); msg("");
+    A.entrar(f.email.value.trim(), f.senha.value).then(function () { return A.assinatura(); })
+      .then(function () { location.href = destino; })
+      .catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(f, false); });
+  };
+  $("#f-criar").onsubmit = function (e) {
+    e.preventDefault(); var f = this;
+    if (f.senha.value !== f.senha2.value) { msg("As senhas não conferem."); return; }
+    ocupado(f, true); msg("");
+    A.cadastrar(f.email.value.trim(), f.senha.value, f.nome.value.trim()).then(function (d) {
+      if (d.session) { location.href = destino; return; }
+      msg("Conta criada! Enviamos um e-mail de confirmação para " + f.email.value.trim() + ". Abra o link e depois entre.", true);
+      f.reset();
+    }).catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(f, false); });
+  };
+  $("#f-recuperar").onsubmit = function (e) {
+    e.preventDefault(); var f = this; ocupado(f, true); msg("");
+    A.recuperar(f.email.value.trim()).then(function () { msg("Se este e-mail tiver conta, o link para nova senha foi enviado. Veja também o spam.", true); })
+      .catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(f, false); });
+  };
+  $("#f-nova").onsubmit = function (e) {
+    e.preventDefault(); var f = this;
+    if (f.senha.value !== f.senha2.value) { msg("As senhas não conferem."); return; }
+    ocupado(f, true); msg("");
+    A.novaSenha(f.senha.value).then(function () { msg("Senha alterada. Entrando…", true); setTimeout(function () { location.href = "app.html"; }, 900); })
+      .catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(f, false); });
+  };
+  $("#bt-sair").onclick = function () { A.sair().then(function () { location.reload(); }); };
+})();
+</script>
+</body>
+</html>
