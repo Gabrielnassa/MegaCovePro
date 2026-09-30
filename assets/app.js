@@ -985,11 +985,12 @@ var AU = window.MC_AUTH, CONTA = {usuario: null};
 function planoCard() {
   var el = $("#plano-card"); if (!el) return;
   var ass = PL.assinante && PL.assinante(), u = CONTA.usuario, h;
-  if (ass) h = '<span class="tag"><i></i>Assinante PRO</span><p>Todos os recursos liberados. Obrigado por apoiar o MegaCover.</p>';
+  var aPl = PL.assinatura && PL.assinatura(), nomePl = aPl ? (aPl.plano === "cortesia" ? "Cortesia" : ((PL.plano(aPl.plano) || {}).nome || "Pro")) : "";
+  if (ass) h = '<span class="tag"><i></i>Plano ' + esc(nomePl) + '</span><p>Recursos do seu plano liberados. Obrigado por apoiar o MegaCover.</p><a class="bt" href="conta.html" style="width:100%">Minha conta</a>';
   else if (PL.beta()) h = '<span class="tag"><i></i>Acesso Beta</span><p>Todos os recursos PRO liberados grátis durante o período de testes.</p><button class="bt" type="button" id="bt-plano" style="width:100%">' + I("coroa") + "Conhecer o PRO</button>";
-  else h = '<span class="tag">Plano gratuito</span><p>Desbloqueie IA, fechamentos e simulações ilimitadas.</p><button class="bt primario" type="button" id="bt-plano" style="width:100%">' + I("coroa") + "Assinar PRO</button>";
+  else h = '<span class="tag">Plano gratuito</span><p>Desbloqueie IA, fechamentos e simulações ilimitadas.</p><button class="bt primario" type="button" id="bt-plano" style="width:100%">' + I("coroa") + "Ver planos</button>";
   if (AU && AU.ativo()) {
-    h += u ? '<div class="conta-card"><span title="' + esc(u.email) + '">' + esc((u.user_metadata && u.user_metadata.nome) || u.email) + '</span><button class="bt peq" type="button" id="bt-sair">Sair</button></div>'
+    h += u ? '<div class="conta-card"><a href="conta.html" title="' + esc(u.email) + '">' + esc((u.user_metadata && (u.user_metadata.nome || u.user_metadata.full_name)) || u.email) + '</a><button class="bt peq" type="button" id="bt-sair">Sair</button></div>'
            : '<div class="conta-card"><a href="conta.html?volta=app.html">Entrar ou criar conta</a></div>';
   }
   el.innerHTML = h;
@@ -1017,15 +1018,15 @@ function fecharModal() { $("#modal").hidden = true; }
 document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("#modal").hidden && !$("#modal-caixa [data-obrigatorio]")) fecharModal(); });
 function listaPro() { return Object.keys(PL.pro || {}).map(function (k) { return "<li>" + I("check") + "<span>" + esc(PL.pro[k]) + "</span></li>"; }).join(""); }
 function modalPlano(recurso) {
-  var link = PL.linkAssinatura, contato = PL.contatoUrl();
+  var min = recurso && PL.planoMinimo ? PL.planoMinimo(recurso) : null, nome = min ? min.nome : "Pro";
   var acao = PL.beta()
-    ? (contato ? '<a class="bt primario" href="' + esc(contato) + '" target="_blank" rel="noopener">Entrar na lista de espera</a>' : "") + '<button class="bt" type="button" data-fechar>Continuar no Beta</button>'
-    : (link ? '<a class="bt primario" href="' + esc(link) + '" target="_blank" rel="noopener">Assinar agora' + (PL.precoMensal ? " · " + esc(PL.precoMensal) + "/mês" : "") + "</a>" : '<button class="bt primario" type="button" disabled>Assinaturas em breve</button>') + '<button class="bt" type="button" data-fechar>Agora não</button>';
-  abrirModal('<div class="sobre">' + (PL.beta() ? "Período de testes" : "MegaCover PRO") + '</div><h2 id="modal-titulo">' +
-    (recurso && !PL.beta() ? esc(PL.pro[recurso]) + " é um recurso PRO" : PL.beta() ? "Você está no Beta — tudo liberado" : "Conheça o MegaCover PRO") + "</h2>" +
-    "<p>" + (PL.beta() ? "Durante o período de testes você usa gratuitamente todos os recursos que farão parte da assinatura PRO:" : "A assinatura PRO inclui:") + "</p><ul>" + listaPro() + "</ul>" +
+    ? '<a class="bt primario" href="planos.html">Ver os planos</a><button class="bt" type="button" data-fechar>Continuar no Beta</button>'
+    : '<a class="bt primario" href="planos.html">Assinar o ' + esc(nome) + (min && min.mensal ? " · a partir de " + esc(PL.reais(min.anualMes || min.mensal)) + "/mês" : "") + '</a><button class="bt" type="button" data-fechar>Agora não</button>';
+  abrirModal('<div class="sobre">' + (PL.beta() ? "Período de testes" : "Recurso do plano " + esc(nome)) + '</div><h2 id="modal-titulo">' +
+    (recurso && !PL.beta() ? esc(PL.pro[recurso]) + " faz parte do plano " + esc(nome) : PL.beta() ? "Você está no Beta: tudo liberado" : "Conheça os planos do MegaCover") + "</h2>" +
+    "<p>" + (PL.beta() ? "Durante o período de testes você usa de graça todos os recursos dos planos pagos:" : "Os planos pagos incluem:") + "</p><ul>" + listaPro() + "</ul>" +
     (PL.beta() ? '<p style="font-size:13px">Quando as assinaturas abrirem, os participantes do Beta serão avisados com antecedência.</p>' : "") +
-    '<div class="linha-bts">' + acao + '<a class="bt fantasma" href="index.html#planos">Ver planos</a></div>');
+    '<div class="linha-bts">' + acao + "</div>");
 }
 function boasVindas() {
   if (ls("aceite")) return;

@@ -14,8 +14,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=JetBrains+Mono:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=20260929p">
-<link rel="stylesheet" href="assets/site.css?v=20260929p">
+<link rel="stylesheet" href="assets/style.css?v=20261001a">
+<link rel="stylesheet" href="assets/site.css?v=20261001a">
 <script>try{var t=localStorage.getItem("mc:tema");if(t)document.documentElement.setAttribute("data-theme",JSON.parse(t))}catch(e){}</script>
 </head>
 <body class="site">
@@ -24,7 +24,7 @@
   <div class="envolve">
     <a class="marca" href="#topo"><img src="assets/icon.png" alt=""><span><b>MegaCover</b><small>Pro Elite</small></span></a>
     <nav aria-label="Seções">
-      <a href="#recursos">Recursos</a><a href="#como">Como funciona</a><a href="#planos">Planos</a><a href="#faq">Dúvidas</a>
+      <a href="#recursos">Recursos</a><a href="#como">Como funciona</a><a href="planos.html">Planos</a><a href="#faq">Dúvidas</a>
     </nav>
     <a class="bt" href="conta.html" id="lk-conta" hidden>Entrar</a>
     <a class="bt primario" href="app.html">Abrir o painel</a>
@@ -145,10 +145,11 @@
     <div class="envolve">
       <div class="cab-secao">
         <div class="sobre">Planos</div>
-        <h2>Grátis durante o Beta. Simples depois dele.</h2>
-        <p>Enquanto o MegaCover está em fase de testes, você usa todos os recursos PRO sem pagar nada. Quem participar do Beta será avisado antes do lançamento das assinaturas.</p>
+        <h2>Comece grátis. Assine quando quiser mais.</h2>
+        <p>Três planos, cobrança mensal ou anual e cancelamento quando quiser. Durante o Beta, tudo está liberado de graça.</p>
       </div>
-      <div class="planos" id="planos-grade"></div>
+      <div id="planos-grade"></div>
+      <p style="text-align:center;margin-top:22px"><a class="bt" href="planos.html">Comparar todos os planos</a></p>
     </div>
   </section>
 
@@ -163,7 +164,7 @@
         <details><summary>O que é o MegaScore™?</summary><p>Uma nota de 0 a 100 que avalia o equilíbrio do jogo em cinco critérios: frequência (25%), distribuição no volante (25%), atraso (20%), cobertura (20%) e padrões improváveis (10%). É uma medida de qualidade estatística, não uma probabilidade de prêmio.</p></details>
         <details><summary>De onde vêm os resultados?</summary><p>Do histórico público dos concursos das Loterias CAIXA, desde o 1º sorteio de cada modalidade, atualizado automaticamente todos os dias. Em caso de divergência, vale sempre o resultado oficial publicado pela CAIXA.</p></details>
         <details><summary>Preciso instalar alguma coisa?</summary><p>Não. Funciona no navegador do computador, do tablet e do celular. Os cálculos rodam no seu próprio aparelho — seus jogos não são enviados a nenhum servidor.</p></details>
-        <details><summary>Quanto vai custar depois do Beta?</summary><p>Os valores das assinaturas mensal e anual serão anunciados antes do fim do período de testes. O Beta continua gratuito até lá, sem cartão de crédito.</p></details>
+        <details><summary>Quanto custa?</summary><p>Há um plano Grátis sem prazo e os planos Pro e Elite, com cobrança mensal ou anual. Veja os valores na <a href="planos.html">página de planos</a>. Durante o Beta, todos os recursos estão liberados sem custo e sem cartão.</p></details>
         <details><summary>O MegaCover é da CAIXA?</summary><p>Não. É uma ferramenta independente da NassaTech, sem vínculo com a Caixa Econômica Federal. "Loterias CAIXA" e os nomes das modalidades são marcas da CAIXA. As apostas são feitas nas lotéricas ou nos canais oficiais.</p></details>
       </div>
     </div>
@@ -195,8 +196,11 @@
   </div>
 </footer>
 
-<script src="assets/plano.js?v=20260929p"></script>
-<script src="assets/engine.js?v=20260929p"></script>
+<script src="assets/plano.js?v=20261001a"></script>
+<script src="assets/vendor/supabase.min.js"></script>
+<script src="assets/auth.js?v=20261001a"></script>
+<script src="assets/planos.js?v=20261001a"></script>
+<script src="assets/engine.js?v=20261001a"></script>
 <script>
 (function () {
   "use strict";
@@ -210,25 +214,8 @@
   var itens = MC.ORDEM.map(function (l) { return '<span style="--c:' + l.cor + '"><i></i>' + l.nome + "</span>"; }).join("");
   $("#trilho").innerHTML = itens + itens;
 
-  /* planos (lidos de assets/plano.js) */
-  var pro = Object.keys(P.pro).map(function (k) { return P.pro[k]; });
-  var base = ["Histórico completo das 9 loterias", "Estatísticas e padrões", "Gerador com MegaScore™", "Conferência no último concurso"];
-  var contato = P.contatoUrl(), link = P.linkAssinatura;
-  function li(t, ok) { return '<li class="' + (ok ? "" : "nao") + '">' + (ok ? OK : NAO) + "<span>" + t + "</span></li>"; }
-  function botaoPro() {
-    if (!P.beta() && link) return '<a class="bt primario" href="' + link + '" target="_blank" rel="noopener">Assinar</a>';
-    if (contato) return '<a class="bt" href="' + contato + '" target="_blank" rel="noopener">Entrar na lista de espera</a>';
-    return '<button class="bt" type="button" disabled>Em breve</button>';
-  }
-  $("#planos-grade").innerHTML =
-    '<div class="plano atual"><span class="fita">' + (P.beta() ? "Disponível agora" : "Grátis") + "</span><h3>" + (P.beta() ? "Beta" : "Gratuito") + '</h3><p class="desc">' +
-      (P.beta() ? "Acesso completo durante o período de testes." : "Para conhecer o MegaCover.") + '</p><div class="preco">R$ 0</div><div class="obs">' + (P.beta() ? "sem cartão, sem cadastro" : "para sempre") + "</div><ul>" +
-      base.map(function (t) { return li(t, true); }).join("") + pro.map(function (t) { return li(t, P.beta()); }).join("") +
-      '</ul><a class="bt primario" href="app.html">' + (P.beta() ? "Entrar no Beta" : "Começar grátis") + "</a></div>" +
-    '<div class="plano"><h3>PRO Mensal</h3><p class="desc">Todos os recursos, com a flexibilidade de cancelar quando quiser.</p><div class="preco">' + (P.precoMensal ? P.precoMensal + "<small>/mês</small>" : "Em breve") + '</div><div class="obs">' + (P.precoMensal ? "renovação mensal" : "valor anunciado antes do lançamento") + "</div><ul>" +
-      base.concat(pro).map(function (t) { return li(t, true); }).join("") + "</ul>" + botaoPro() + "</div>" +
-    '<div class="plano"><h3>PRO Anual</h3><p class="desc">O melhor custo para quem joga o ano inteiro.</p><div class="preco">' + (P.precoAnual ? P.precoAnual + "<small>/ano</small>" : "Em breve") + '</div><div class="obs">' + (P.economiaAnual || (P.precoAnual ? "pagamento único anual" : "com desconto sobre o mensal")) + "</div><ul>" +
-      base.concat(pro).map(function (t) { return li(t, true); }).concat([li("Prioridade em novos recursos", true)]).join("") + "</ul>" + botaoPro() + "</div>";
+  /* planos (lidos de assets/plano.js, desenhados por assets/planos.js) */
+  MC_PLANOS.iniciar($("#planos-grade"));
 
   /* demonstração ao vivo com o motor real */
   var cfg = MC.TODAS.megasena, cs = null;

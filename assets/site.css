@@ -121,3 +121,32 @@
   .chamada .caixa-cta{padding:40px 20px}
   .hero .prova{gap:20px}
 }
+
+/* ===== planos: seletor Mensal/Anual, cartão em destaque, aviso do Beta ===== */
+.ciclo{display:flex;width:max-content;margin:0 auto 22px;padding:4px;gap:4px;border:1px solid var(--borda2);border-radius:999px;background:var(--painel)}
+.ciclo button{border:0;background:none;color:var(--txt2);font:700 14px var(--f-texto);padding:9px 20px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.ciclo button[aria-selected="true"]{background:linear-gradient(180deg,var(--ouro2),var(--ouro));color:var(--ouro-txt)}
+.ciclo .desconto{font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;background:var(--ok-bg);color:var(--ok)}
+.ciclo button[aria-selected="true"] .desconto{background:rgba(0,0,0,.14);color:inherit}
+.aviso-beta{max-width:680px;margin:0 auto 26px;text-align:center;font-size:14px;color:var(--txt2);background:var(--ouro-bg);border:1px solid color-mix(in srgb,var(--ouro) 35%,transparent);border-radius:12px;padding:10px 16px}
+.plano.destaque{border-color:color-mix(in srgb,var(--ouro) 60%,transparent);background:radial-gradient(100% 60% at 50% 0%,var(--ouro-bg),transparent 70%),var(--painel);box-shadow:var(--sombra-alta)}
+@media (min-width:901px){.plano.destaque{transform:translateY(-10px)}}
+.plano .preco .moeda{font-size:18px;font-weight:600;margin-right:3px;vertical-align:8px;color:var(--txt2)}
+.plano .obs s{color:var(--txt3)}
+.plano>.bt{margin:18px 0 4px;width:100%}
+.plano ul{margin:18px 0 0}
+.plano li.base{font-weight:700}
+.plano.atual .bt[disabled]{opacity:1;border-color:var(--ok);color:var(--ok)}
+.comparar{width:100%;border-collapse:collapse;font-size:14.5px;background:var(--painel);border:1px solid var(--borda);border-radius:14px;overflow:hidden}
+.comparar th,.comparar td{padding:12px 14px;border-bottom:1px solid var(--borda);text-align:center}
+.comparar th:first-child,.comparar td:first-child{text-align:left}
+.comparar thead th{font-family:var(--f-titulo);font-weight:600;font-size:17px}
+.comparar thead th.destaque{color:var(--ouro)}
+.comparar td .ic{color:var(--ok)}
+.comparar td.nao{color:var(--txt3)}
+.garantias{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:26px}
+.garantias div{display:flex;gap:12px;align-items:flex-start;background:var(--painel);border:1px solid var(--borda);border-radius:14px;padding:16px;font-size:14px;color:var(--txt2)}
+.garantias b{display:block;color:var(--txt);font-size:15px;margin-bottom:2px}
+.garantias .ic{color:var(--ouro);flex:none;width:22px;height:22px}
+@media (max-width:900px){.garantias{grid-template-columns:1fr}.comparar{font-size:13px}.comparar th,.comparar td{padding:10px 8px}}
+.tabela-rola{overflow-x:auto;-webkit-overflow-scrolling:touch}
