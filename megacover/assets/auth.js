@@ -28,6 +28,7 @@ window.MC_AUTH = (function () {
     if (/rate limit|too many/i.test(m)) return "Muitas tentativas. Aguarde um minuto e tente de novo.";
     if (/Unable to validate email|invalid format/i.test(m)) return "E-mail inválido.";
     if (/Failed to fetch|NetworkError/i.test(m)) return "Sem conexão com o servidor de login.";
+    if (/provider is not enabled|Unsupported provider/i.test(m)) return "O login com Google ainda não foi ativado.";
     return m || "Não foi possível concluir.";
   }
   function entrar(email, senha) {
@@ -37,6 +38,12 @@ window.MC_AUTH = (function () {
   function cadastrar(email, senha, nome) {
     var c = cliente(); if (!c) return Promise.reject(new Error("Login não configurado."));
     return c.auth.signUp({email: email, password: senha, options: {data: {nome: nome || ""}, emailRedirectTo: base() + "conta.html?confirmado=1"}})
+      .then(function (r) { if (r.error) throw r.error; return r.data; });
+  }
+  /* Google: volta para a página de conta, que segue para o destino escolhido */
+  function entrarGoogle(volta) {
+    var c = cliente(); if (!c) return Promise.reject(new Error("Login não configurado."));
+    return c.auth.signInWithOAuth({provider: "google", options: {redirectTo: base() + "conta.html" + (volta ? "?volta=" + encodeURIComponent(volta) : "")}})
       .then(function (r) { if (r.error) throw r.error; return r.data; });
   }
   function recuperar(email) {
@@ -49,13 +56,21 @@ window.MC_AUTH = (function () {
   }
   function sair() { var c = cliente(); try { localStorage.removeItem("mc:assinatura"); } catch (e) {} return c ? c.auth.signOut() : Promise.resolve(); }
   /* Lê a assinatura da pessoa logada e guarda em cache (usado por MC_PLANO.assinante()). */
+  /* assinatura completa (inclusive vencida/cancelada), para a página Minha conta */
+  function minhaAssinatura() {
+    var c = cliente(); if (!c) return Promise.resolve(null);
+    return sessao().then(function (s) {
+      if (!s) return null;
+      return c.from("assinaturas").select("plano,ciclo,status,valido_ate").eq("user_id", s.user.id).maybeSingle().then(function (r) { return r.error ? null : r.data; });
+    });
+  }
   function assinatura() {
     var c = cliente(); if (!c) return Promise.resolve(null);
     return sessao().then(function (s) {
       if (!s) { try { localStorage.removeItem("mc:assinatura"); } catch (e) {} return null; }
-      return c.from("assinaturas").select("plano,status,valido_ate").eq("user_id", s.user.id).maybeSingle().then(function (r) {
+      return c.from("assinaturas").select("plano,ciclo,status,valido_ate").eq("user_id", s.user.id).maybeSingle().then(function (r) {
         var a = r.error ? null : r.data;
-        try { if (a) localStorage.setItem("mc:assinatura", JSON.stringify({plano: a.plano, status: a.status, valido_ate: a.valido_ate, lido_em: Date.now()})); else localStorage.removeItem("mc:assinatura"); } catch (e) {}
+        try { if (a) localStorage.setItem("mc:assinatura", JSON.stringify({plano: a.plano, ciclo: a.ciclo, status: a.status, valido_ate: a.valido_ate, lido_em: Date.now()})); else localStorage.removeItem("mc:assinatura"); } catch (e) {}
         return a;
       });
     });
@@ -63,6 +78,6 @@ window.MC_AUTH = (function () {
   function aoMudar(f) { ouvintes.push(f); cliente(); }
   /* Chamado pelo painel ao abrir: atualiza a assinatura e avisa quem quiser saber. */
   function iniciar() { if (!ativo()) return Promise.resolve(null); return assinatura().catch(function () { return null; }); }
-  return {ativo: ativo, cliente: cliente, sessao: sessao, usuario: usuario, entrar: entrar, cadastrar: cadastrar, recuperar: recuperar,
+  return {ativo: ativo, cliente: cliente, sessao: sessao, usuario: usuario, entrar: entrar, entrarGoogle: entrarGoogle, minhaAssinatura: minhaAssinatura, cadastrar: cadastrar, recuperar: recuperar,
     novaSenha: novaSenha, sair: sair, assinatura: assinatura, aoMudar: aoMudar, iniciar: iniciar, erroPt: erroPt};
 })();

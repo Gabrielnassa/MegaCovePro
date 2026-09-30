@@ -29,17 +29,28 @@ Falta só criar o projeto e colar duas chaves. Leva uns 10 minutos.
    **Nunca** coloque a chave `service_role` no site.
 3. Suba o `plano.js` para o GitHub. Pronto: o botão **Entrar** aparece no site e no painel.
 
-## 5. Liberar o PRO para alguém
+## 4b. Login com Google (opcional, recomendado)
+1. No Google Cloud Console (console.cloud.google.com) crie um projeto → **APIs e serviços → Credenciais → Criar credenciais → ID do cliente OAuth** (tipo "Aplicativo da Web").
+2. Em "URIs de redirecionamento autorizados" cole a **Callback URL** que o Supabase mostra em **Authentication → Providers → Google**.
+3. Copie o Client ID e o Client Secret para essa tela do Supabase e ative o Google.
+4. Em `assets/plano.js`, troque `loginGoogle: false` por `loginGoogle: true`. O botão "Continuar com Google" aparece na tela de login.
+
+## 5. Planos, preços e pagamento
+Os planos (Grátis, Pro e Elite), os preços mensal e anual e os links de pagamento ficam em `assets/plano.js`, na lista `planos`.
+Para cada plano pago preencha `checkout: {mensal: "link", anual: "link"}` com o link de pagamento (Mercado Pago, Stripe…).
+O site envia o e-mail e o id da conta junto no link (`prefilled_email` e `client_reference_id`), o que o Stripe usa para identificar quem pagou.
+
+## 5b. Liberar um plano para alguém
 Enquanto não houver pagamento automático, libere pelo **SQL Editor**:
 ```sql
-insert into public.assinaturas (user_id, plano, valido_ate)
-select id, 'mensal', now() + interval '30 days' from auth.users where email = 'pessoa@exemplo.com'
-on conflict (user_id) do update set status = 'ativa', plano = excluded.plano, valido_ate = excluded.valido_ate, atualizado_em = now();
+insert into public.assinaturas (user_id, plano, ciclo, valido_ate)
+select id, 'pro', 'mensal', now() + interval '30 days' from auth.users where email = 'pessoa@exemplo.com'
+on conflict (user_id) do update set status = 'ativa', plano = excluded.plano, ciclo = excluded.ciclo, valido_ate = excluded.valido_ate, atualizado_em = now();
 ```
 Para cancelar: `update public.assinaturas set status = 'cancelada' where user_id = (select id from auth.users where email = '...');`
 
 ## 6. Quando sair do Beta
-Em `assets/plano.js` troque `fase: "beta"` por `fase: "assinatura"` e, se quiser exigir conta para abrir o painel,
+Em `assets/plano.js` troque `fase: "beta"` por `fase: "assinatura"`. Cada recurso passa a pedir o plano mínimo definido em `recursos` (Pro ou Elite) e, se quiser exigir conta para abrir o painel,
 `loginObrigatorio: true`. Os recursos PRO passam a pedir assinatura ativa.
 
 ## 7. Pagamento automático (próximo passo)

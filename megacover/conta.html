@@ -2,159 +2,299 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Entrar · MegaCover Pro Elite</title>
 <meta name="theme-color" content="#090b0f">
 <link rel="icon" href="assets/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600&family=JetBrains+Mono:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=20260929p">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=JetBrains+Mono:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=20261001a">
 <script>try{var t=localStorage.getItem("mc:tema");if(t)document.documentElement.setAttribute("data-theme",JSON.parse(t))}catch(e){}</script>
 <style>
-  .conta{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
-  .conta .caixa-conta{width:100%;max-width:420px}
-  .conta .marca{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:18px;color:var(--txt);text-decoration:none}
-  .conta .marca img{width:40px;height:40px;border-radius:10px}
-  .conta .marca b{font-family:var(--f-titulo);font-size:20px;display:block;line-height:1}
-  .conta .marca small{color:var(--txt3);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
-  .conta .card{padding:22px}
-  .abas-conta{display:flex;gap:4px;border-bottom:1px solid var(--borda);margin:-6px 0 16px}
-  .abas-conta button{background:none;border:0;padding:10px 12px;font:600 14px var(--f-texto);color:var(--txt2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
-  .abas-conta button.ativa{color:var(--ouro);border-bottom-color:var(--ouro)}
-  .conta form{display:grid;gap:12px}
-  .conta .campo input{width:100%}
-  .conta .erro{background:var(--perigo-bg,rgba(220,60,60,.12));color:var(--perigo,#e5484d);border:1px solid rgba(220,60,60,.3);border-radius:10px;padding:10px 12px;font-size:13.5px}
-  .conta .okm{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok);border-radius:10px;padding:10px 12px;font-size:13.5px}
-  .conta .rodape-conta{margin-top:14px;text-align:center;font-size:13px;color:var(--txt3)}
-  .conta .rodape-conta a{color:var(--txt2)}
-  .conta .esqueci{text-align:right;font-size:13px;margin-top:-4px}
-  .conta .esqueci a{color:var(--txt2)}
+  body{min-height:100vh}
+  .tela{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);min-height:100vh}
+  /* painel da marca */
+  .lado{position:relative;overflow:hidden;padding:40px 48px;display:flex;flex-direction:column;gap:28px;color:#f3efe4;
+    background:radial-gradient(90% 60% at 10% 0%,rgba(212,166,63,.28),transparent 60%),radial-gradient(70% 50% at 100% 100%,rgba(212,166,63,.14),transparent 60%),linear-gradient(160deg,#10141c,#07090d 70%)}
+  .lado::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(180deg,#000,transparent 85%);pointer-events:none}
+  .lado>*{position:relative;z-index:1}
+  .lado .marca{display:flex;align-items:center;gap:10px;color:#f3efe4;text-decoration:none}
+  .lado .marca img{width:40px;height:40px;border-radius:10px}
+  .lado .marca b{font-family:var(--f-titulo);font-size:20px;display:block;line-height:1}
+  .lado .marca small{color:#d4a63f;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+  .lado h1{font-family:var(--f-titulo);font-weight:600;font-size:clamp(28px,3.2vw,40px);line-height:1.1;letter-spacing:-.02em;margin:auto 0 0;max-width:520px}
+  .lado h1 em{font-style:normal;color:#e7c46a}
+  .lado .lista{list-style:none;padding:0;margin:0;display:grid;gap:12px;max-width:480px}
+  .lado .lista li{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:#d9d3c3}
+  .lado .lista .ic{color:#e7c46a;flex:none;margin-top:1px}
+  .lado .numeros{display:flex;gap:28px;flex-wrap:wrap;margin-top:auto;padding-top:22px;border-top:1px solid rgba(255,255,255,.1)}
+  .lado .numeros div{font-size:12.5px;color:#a9a393;letter-spacing:.04em}
+  .lado .numeros b{display:block;font-family:var(--f-num);font-size:24px;color:#f3efe4;letter-spacing:-.02em}
+  .escolha{background:rgba(255,255,255,.06);border:1px solid rgba(231,196,106,.35);border-radius:16px;padding:18px 20px;max-width:480px}
+  .escolha .rot{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:#e7c46a}
+  .escolha h2{font-family:var(--f-titulo);font-weight:600;font-size:24px;margin:6px 0 2px}
+  .escolha p{margin:0;color:#cfc8b6;font-size:14px}
+  .escolha .preco{font-family:var(--f-num);font-size:28px;color:#f3efe4;margin-top:8px}
+  .escolha .preco small{font-family:var(--f-texto);font-size:13px;color:#a9a393}
+  /* formulário */
+  .form-lado{display:flex;align-items:center;justify-content:center;padding:40px 24px;background:var(--bg)}
+  .caixa-form{width:100%;max-width:400px}
+  .caixa-form h2{font-family:var(--f-titulo);font-weight:600;font-size:30px;letter-spacing:-.02em;margin:0 0 6px}
+  .caixa-form .sub{color:var(--txt2);font-size:15px;margin:0 0 24px}
+  .bt-google{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#1f1f1f;border:1px solid #dadce0;border-radius:12px;padding:12px 16px;font:600 15px var(--f-texto);cursor:pointer}
+  .bt-google:hover{background:#f7f8f8}
+  .bt-google svg{width:18px;height:18px}
+  .ou{display:flex;align-items:center;gap:12px;color:var(--txt3);font-size:12.5px;margin:18px 0;text-transform:uppercase;letter-spacing:.1em}
+  .ou::before,.ou::after{content:"";flex:1;height:1px;background:var(--borda)}
+  .caixa-form form{display:grid;gap:14px}
+  .caixa-form .campo input{width:100%;font-family:var(--f-texto);font-size:15px;padding:12px 14px}
+  .senha{position:relative}
+  .senha input{padding-right:44px}
+  .senha button{position:absolute;right:6px;bottom:6px;background:none;border:0;color:var(--txt3);cursor:pointer;padding:6px;border-radius:8px}
+  .senha button:hover{color:var(--txt)}
+  .linha-senha{display:flex;justify-content:space-between;align-items:center;margin-top:-4px}
+  .linha-senha a,.troca a,.voltar a{color:var(--ouro);font-weight:600;text-decoration:none}
+  .caixa-form .bt.primario{width:100%;padding:13px 16px;font-size:15.5px}
+  .troca{text-align:center;font-size:14.5px;color:var(--txt2);margin-top:20px}
+  .termos{font-size:12.5px;color:var(--txt3);text-align:center;margin-top:18px;line-height:1.5}
+  .chk18{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--txt2)}
+  .chk18 input{margin-top:3px;accent-color:var(--ouro)}
+  .erro{background:var(--perigo-bg,rgba(220,60,60,.12));color:var(--perigo,#e5484d);border:1px solid rgba(220,60,60,.3);border-radius:10px;padding:10px 12px;font-size:13.5px;margin-bottom:14px}
+  .okm{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok);border-radius:10px;padding:10px 12px;font-size:13.5px;margin-bottom:14px}
+  .voltar{font-size:14px;margin-bottom:22px}
+  /* minha conta */
+  .perfil{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .avatar{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font:700 22px var(--f-titulo);color:var(--ouro-txt);background:linear-gradient(180deg,var(--ouro2),var(--ouro));flex:none}
+  .perfil b{display:block;font-size:17px}
+  .perfil span{color:var(--txt3);font-size:14px;word-break:break-all}
+  .cartao-plano{border:1px solid var(--borda2);border-radius:16px;padding:18px;background:var(--painel);margin-bottom:16px}
+  .cartao-plano .topo{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .cartao-plano .rot{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--txt3)}
+  .cartao-plano h3{font-family:var(--f-titulo);font-weight:600;font-size:24px;margin:4px 0}
+  .cartao-plano p{margin:0;color:var(--txt2);font-size:14px}
+  .selo{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--ok-bg);color:var(--ok)}
+  .selo.aviso{background:var(--ouro-bg);color:var(--ouro)}
+  .acoes-conta{display:grid;gap:10px}
+  .acoes-conta .bt{width:100%}
+  @media (max-width:900px){
+    .tela{grid-template-columns:1fr}
+    .lado{padding:24px 16px 28px;gap:18px}
+    .lado h1{margin-top:6px;font-size:26px}
+    .lado .lista,.lado .numeros{display:none}
+    .form-lado{padding:28px 16px 40px;align-items:flex-start}
+  }
 </style>
 </head>
 <body class="site">
-<main class="conta">
-  <div class="caixa-conta">
+<div class="tela">
+  <aside class="lado">
     <a class="marca" href="index.html"><img src="assets/icon.png" alt=""><span><b>MegaCover</b><small>Pro Elite</small></span></a>
-    <div class="card" id="cartao">
-      <div class="abas-conta" id="abas-conta">
-        <button type="button" data-aba="entrar" class="ativa">Entrar</button>
-        <button type="button" data-aba="criar">Criar conta</button>
-        <button type="button" data-aba="recuperar">Esqueci a senha</button>
-      </div>
+    <div id="escolha" hidden></div>
+    <h1 id="lado-titulo">Jogue com <em>método</em>, não com palpite.</h1>
+    <ul class="lista">
+      <li><svg class="ic" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>Histórico completo e estatísticas das 9 loterias CAIXA</span></li>
+      <li><svg class="ic" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>Gerador com MegaScore™ e MegaCover AI</span></li>
+      <li><svg class="ic" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>Fechamentos, simulação Monte Carlo e conferência</span></li>
+      <li><svg class="ic" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>Volante virtual pronto para imprimir e levar à lotérica</span></li>
+    </ul>
+    <div class="numeros">
+      <div><b>9</b>loterias</div>
+      <div><b>1º</b>concurso em diante</div>
+      <div><b>24h</b>resultados atualizados</div>
+    </div>
+  </aside>
+
+  <main class="form-lado">
+    <div class="caixa-form">
+      <div class="voltar"><a href="index.html">← Voltar ao site</a></div>
       <div id="msg" hidden></div>
 
-      <form id="f-entrar" autocomplete="on">
-        <label class="campo"><span class="rot">E-mail</span><input type="email" name="email" required autocomplete="email" inputmode="email"></label>
-        <label class="campo"><span class="rot">Senha</span><input type="password" name="senha" required autocomplete="current-password" minlength="8"></label>
-        <div class="esqueci"><a href="#" data-ir="recuperar">Esqueci a senha</a></div>
-        <button class="bt primario" type="submit">Entrar</button>
-      </form>
-
-      <form id="f-criar" hidden autocomplete="on">
-        <label class="campo"><span class="rot">Nome</span><input type="text" name="nome" required autocomplete="name" maxlength="60"></label>
-        <label class="campo"><span class="rot">E-mail</span><input type="email" name="email" required autocomplete="email" inputmode="email"></label>
-        <label class="campo"><span class="rot">Senha (mínimo 8 caracteres)</span><input type="password" name="senha" required autocomplete="new-password" minlength="8"></label>
-        <label class="campo"><span class="rot">Repita a senha</span><input type="password" name="senha2" required autocomplete="new-password" minlength="8"></label>
-        <label class="chk" style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--txt2)"><input type="checkbox" name="maior" required style="margin-top:3px;accent-color:var(--ouro)"><span>Tenho 18 anos ou mais e entendo que o MegaCover é uma ferramenta estatística, sem garantia de prêmios.</span></label>
-        <button class="bt primario" type="submit">Criar conta</button>
-      </form>
-
-      <form id="f-recuperar" hidden>
-        <p class="dica" style="margin:0">Enviaremos um link por e-mail para você definir uma nova senha.</p>
-        <label class="campo"><span class="rot">E-mail</span><input type="email" name="email" required autocomplete="email" inputmode="email"></label>
-        <button class="bt primario" type="submit">Enviar link</button>
-      </form>
-
-      <form id="f-nova" hidden>
-        <p class="dica" style="margin:0">Defina a nova senha da sua conta.</p>
-        <label class="campo"><span class="rot">Nova senha (mínimo 8 caracteres)</span><input type="password" name="senha" required autocomplete="new-password" minlength="8"></label>
-        <label class="campo"><span class="rot">Repita a nova senha</span><input type="password" name="senha2" required autocomplete="new-password" minlength="8"></label>
-        <button class="bt primario" type="submit">Salvar nova senha</button>
-      </form>
-
-      <div id="logado" hidden>
-        <p class="dica" style="margin:0 0 12px">Você já está conectado como <b id="quem"></b>.</p>
-        <div class="linha-bts"><a class="bt primario" href="app.html">Abrir o painel</a><button class="bt" type="button" id="bt-sair">Sair</button></div>
+      <!-- Entrar / Criar conta -->
+      <div id="v-acesso">
+        <h2 id="t-titulo">Entrar na sua conta</h2>
+        <p class="sub" id="t-sub">Bem-vindo de volta. Continue de onde parou.</p>
+        <div id="google-box" hidden>
+          <button class="bt-google" type="button" id="bt-google"><svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Continuar com Google</button>
+          <div class="ou">ou com e-mail</div>
+        </div>
+        <form id="f-acesso" autocomplete="on" novalidate>
+          <label class="campo" id="c-nome" hidden><span class="rot">Nome</span><input type="text" name="nome" autocomplete="name" maxlength="60" placeholder="Como devemos te chamar"></label>
+          <label class="campo"><span class="rot">E-mail</span><input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="voce@email.com"></label>
+          <label class="campo senha"><span class="rot">Senha</span><input type="password" name="senha" required minlength="8" autocomplete="current-password" placeholder="Mínimo de 8 caracteres"><button type="button" class="olho" aria-label="Mostrar senha"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></label>
+          <div class="linha-senha" id="c-esqueci"><span></span><a href="#" data-ir="recuperar">Esqueci a senha</a></div>
+          <label class="chk18" id="c-18" hidden><input type="checkbox" name="maior"><span>Tenho 18 anos ou mais e entendo que o MegaCover é uma ferramenta estatística, sem garantia de prêmios.</span></label>
+          <button class="bt primario" type="submit" id="bt-acesso">Entrar</button>
+        </form>
+        <p class="troca" id="troca"></p>
+        <p class="termos">Suas senhas são protegidas com criptografia pelo Supabase e nunca passam pelo site.</p>
       </div>
 
-      <div id="sem-login" hidden>
-        <p class="dica" style="margin:0 0 12px">O login ainda não foi ativado nesta instalação. Durante o Beta o painel é aberto a todos.</p>
-        <a class="bt primario" href="app.html">Abrir o painel</a>
+      <!-- Recuperar senha -->
+      <div id="v-recuperar" hidden>
+        <h2>Esqueceu a senha?</h2>
+        <p class="sub">Digite seu e-mail e enviaremos um link para criar uma nova.</p>
+        <form id="f-recuperar"><label class="campo"><span class="rot">E-mail</span><input type="email" name="email" required autocomplete="email" inputmode="email" placeholder="voce@email.com"></label><button class="bt primario" type="submit">Enviar link</button></form>
+        <p class="troca"><a href="#" data-ir="entrar">Voltar para o login</a></p>
+      </div>
+
+      <!-- Nova senha (link do e-mail) -->
+      <div id="v-nova" hidden>
+        <h2>Crie uma nova senha</h2>
+        <p class="sub">Use pelo menos 8 caracteres.</p>
+        <form id="f-nova">
+          <label class="campo senha"><span class="rot">Nova senha</span><input type="password" name="senha" required minlength="8" autocomplete="new-password"><button type="button" class="olho" aria-label="Mostrar senha"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></label>
+          <label class="campo"><span class="rot">Repita a nova senha</span><input type="password" name="senha2" required minlength="8" autocomplete="new-password"></label>
+          <button class="bt primario" type="submit">Salvar nova senha</button>
+        </form>
+      </div>
+
+      <!-- Minha conta -->
+      <div id="v-conta" hidden>
+        <h2>Minha conta</h2>
+        <p class="sub">Gerencie seu plano e seus dados de acesso.</p>
+        <div class="perfil"><div class="avatar" id="avatar">M</div><div><b id="p-nome"></b><span id="p-email"></span></div></div>
+        <div class="cartao-plano" id="p-plano"></div>
+        <div class="acoes-conta">
+          <a class="bt primario" href="app.html">Abrir o painel</a>
+          <a class="bt" href="planos.html" id="bt-mudar">Ver planos</a>
+          <button class="bt" type="button" id="bt-trocar-senha">Alterar senha</button>
+          <button class="bt fantasma" type="button" id="bt-sair">Sair da conta</button>
+        </div>
+      </div>
+
+      <!-- Login desligado -->
+      <div id="v-sem" hidden>
+        <h2>Login em breve</h2>
+        <p class="sub">As contas ainda não foram ativadas. Durante o Beta o painel é aberto a todos, sem cadastro.</p>
+        <a class="bt primario" href="app.html" style="width:100%">Abrir o painel</a>
+        <p class="troca"><a href="planos.html">Ver os planos</a></p>
       </div>
     </div>
-    <p class="rodape-conta">Suas senhas são guardadas com criptografia pelo Supabase e nunca passam pelo site. · <a href="index.html">Voltar</a></p>
-  </div>
-</main>
-<script src="assets/plano.js?v=20260929p"></script>
+  </main>
+</div>
+
+<script src="assets/plano.js?v=20261001a"></script>
 <script src="assets/vendor/supabase.min.js"></script>
-<script src="assets/auth.js?v=20260929p"></script>
+<script src="assets/auth.js?v=20261001a"></script>
 <script>
 (function () {
-  var $ = function (s) { return document.querySelector(s); }, A = window.MC_AUTH, q = new URLSearchParams(location.search);
-  var forms = {entrar: "#f-entrar", criar: "#f-criar", recuperar: "#f-recuperar", nova: "#f-nova"};
-  function msg(t, ok) { var m = $("#msg"); m.hidden = !t; m.className = ok ? "okm" : "erro"; m.textContent = t || ""; }
-  function aba(n) {
-    Object.keys(forms).forEach(function (k) { $(forms[k]).hidden = k !== n; });
-    $("#logado").hidden = true; $("#sem-login").hidden = true;
-    document.querySelectorAll("#abas-conta button").forEach(function (b) { b.classList.toggle("ativa", b.dataset.aba === n); });
-    $("#abas-conta").hidden = n === "nova";
-    msg("");
-  }
-  function mostrarLogado(u) {
-    Object.keys(forms).forEach(function (k) { $(forms[k]).hidden = true; });
-    $("#abas-conta").hidden = true; $("#logado").hidden = false; $("#quem").textContent = u.email; msg("");
-  }
-  function ocupado(f, sim) { var b = f.querySelector("button[type=submit]"); b.disabled = sim; b.textContent = sim ? "Aguarde…" : b.dataset.rot; }
-  document.querySelectorAll("form button[type=submit]").forEach(function (b) { b.dataset.rot = b.textContent; });
-  document.querySelectorAll("#abas-conta button").forEach(function (b) { b.onclick = function () { aba(b.dataset.aba); }; });
-  document.querySelectorAll("[data-ir]").forEach(function (a) { a.onclick = function (e) { e.preventDefault(); aba(a.dataset.ir); }; });
+  var $ = function (s) { return document.querySelector(s); }, A = window.MC_AUTH, P = window.MC_PLANO, q = new URLSearchParams(location.search);
+  var VISTAS = ["v-acesso", "v-recuperar", "v-nova", "v-conta", "v-sem"], modo = q.get("modo") === "criar" ? "criar" : "entrar";
   var destino = q.get("volta") || "app.html";
-  if (!/^[\w.-]+\.html(#[\w\/-]*)?$/.test(destino)) destino = "app.html";
+  if (!/^[\w.-]+\.html([?#][\w\/=&%.-]*)?$/.test(destino)) destino = "app.html";
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]; }); }
+  function msg(t, ok) { var m = $("#msg"); m.hidden = !t; m.className = ok ? "okm" : "erro"; m.textContent = t || ""; }
+  function ver(id) { VISTAS.forEach(function (v) { $("#" + v).hidden = v !== id; }); }
+  function ocupado(b, sim, txt) { if (!b.dataset.rot) b.dataset.rot = b.textContent; b.disabled = sim; b.textContent = sim ? "Aguarde…" : (txt || b.dataset.rot); }
 
-  if (!A.ativo()) {
-    Object.keys(forms).forEach(function (k) { $(forms[k]).hidden = true; });
-    $("#abas-conta").hidden = true; $("#sem-login").hidden = false;
-    return;
+  /* plano escolhido na página de planos (ex.: ?plano=pro-anual) */
+  var esc0 = (q.get("plano") || "").split("-"), pl = P.plano(esc0[0]), ciclo = esc0[1] === "mensal" ? "mensal" : "anual";
+  if (pl && pl.nivel) {
+    var v = ciclo === "anual" ? pl.anualMes : pl.mensal;
+    $("#escolha").hidden = false;
+    $("#escolha").innerHTML = '<div class="escolha"><div class="rot">Você escolheu</div><h2>' + esc(pl.nome) + " · " + (ciclo === "anual" ? "Anual" : "Mensal") + "</h2><p>" + esc(pl.frase) + "</p>" +
+      (v ? '<div class="preco">' + P.reais(v) + "<small>/mês" + (ciclo === "anual" ? " · cobrado anualmente" : "") + "</small></div>" : "") + "</div>";
+    $("#lado-titulo").innerHTML = "Falta pouco para liberar o <em>" + esc(pl.nome) + "</em>.";
   }
-  if (q.get("confirmado") === "1") msg("E-mail confirmado. Agora é só entrar.", true);
-  if (q.get("modo") === "nova-senha") aba("nova");
 
-  A.aoMudar(function (ev, s) {
-    if (ev === "PASSWORD_RECOVERY") { aba("nova"); return; }
-    if (ev === "SIGNED_IN" && s && q.get("modo") !== "nova-senha") mostrarLogado(s.user);
+  function modoAcesso(m) {
+    modo = m; ver("v-acesso"); msg("");
+    var criar = m === "criar";
+    $("#t-titulo").textContent = criar ? "Crie sua conta grátis" : "Entrar na sua conta";
+    $("#t-sub").textContent = criar ? (pl && pl.nivel ? "Crie a conta e siga para o pagamento do plano " + pl.nome + "." : "Leva menos de um minuto. Sem cartão de crédito.") : "Bem-vindo de volta. Continue de onde parou.";
+    $("#c-nome").hidden = !criar; $("#c-18").hidden = !criar; $("#c-esqueci").hidden = criar;
+    $("#f-acesso").senha.autocomplete = criar ? "new-password" : "current-password";
+    $("#bt-acesso").textContent = criar ? "Criar conta" : "Entrar"; $("#bt-acesso").dataset.rot = $("#bt-acesso").textContent;
+    $("#troca").innerHTML = criar ? 'Já tem conta? <a href="#" data-ir="entrar">Entrar</a>' : 'Não tem conta? <a href="#" data-ir="criar">Criar conta grátis</a>';
+    ligarLinks();
+  }
+  function ligarLinks() {
+    document.querySelectorAll("[data-ir]").forEach(function (a) {
+      a.onclick = function (e) { e.preventDefault(); var d = a.dataset.ir; if (d === "recuperar") { ver("v-recuperar"); msg(""); } else modoAcesso(d); };
+    });
+  }
+  document.querySelectorAll(".olho").forEach(function (b) {
+    b.onclick = function () { var i = b.parentNode.querySelector("input"); i.type = i.type === "password" ? "text" : "password"; b.setAttribute("aria-label", i.type === "password" ? "Mostrar senha" : "Esconder senha"); };
   });
-  A.usuario().then(function (u) { if (u && q.get("modo") !== "nova-senha") mostrarLogado(u); });
 
-  $("#f-entrar").onsubmit = function (e) {
-    e.preventDefault(); var f = this; ocupado(f, true); msg("");
-    A.entrar(f.email.value.trim(), f.senha.value).then(function () { return A.assinatura(); })
-      .then(function () { location.href = destino; })
-      .catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(f, false); });
-  };
-  $("#f-criar").onsubmit = function (e) {
-    e.preventDefault(); var f = this;
-    if (f.senha.value !== f.senha2.value) { msg("As senhas não conferem."); return; }
-    ocupado(f, true); msg("");
-    A.cadastrar(f.email.value.trim(), f.senha.value, f.nome.value.trim()).then(function (d) {
-      if (d.session) { location.href = destino; return; }
-      msg("Conta criada! Enviamos um e-mail de confirmação para " + f.email.value.trim() + ". Abra o link e depois entre.", true);
-      f.reset();
-    }).catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(f, false); });
+  /* Minha conta */
+  function nomePlano(a) {
+    if (!a) return {nome: "Grátis", info: "Recursos essenciais, sem prazo.", selo: ""};
+    var p = a.plano === "cortesia" ? {nome: "Cortesia"} : (P.plano(a.plano) || {nome: a.plano});
+    var ate = a.valido_ate ? new Date(a.valido_ate).toLocaleDateString("pt-BR") : "";
+    var ativo = a.status === "ativa" && (!a.valido_ate || new Date(a.valido_ate) > new Date());
+    return {nome: p.nome + (a.ciclo ? " · " + (a.ciclo === "anual" ? "Anual" : "Mensal") : ""),
+            info: ativo ? (ate ? "Válido até " + ate : "Sem data de vencimento") : (a.status === "cancelada" ? "Cancelado" : "Vencido") + (ate ? " em " + ate : ""),
+            selo: ativo ? '<span class="selo">Ativo</span>' : '<span class="selo aviso">' + (a.status === "cancelada" ? "Cancelado" : "Vencido") + "</span>"};
+  }
+  function mostrarConta(u) {
+    ver("v-conta"); msg("");
+    var nome = (u.user_metadata && (u.user_metadata.nome || u.user_metadata.full_name || u.user_metadata.name)) || u.email.split("@")[0];
+    $("#p-nome").textContent = nome; $("#p-email").textContent = u.email; $("#avatar").textContent = nome.trim().charAt(0).toUpperCase() || "M";
+    function desenhar(a) {
+      var n = nomePlano(a);
+      $("#p-plano").innerHTML = '<div class="topo"><div><div class="rot">Seu plano</div><h3>' + esc(n.nome) + "</h3></div>" + n.selo + "</div><p>" + esc(n.info) + "</p>" +
+        (P.beta() ? '<p style="margin-top:8px">Beta: todos os recursos estão liberados enquanto durarem os testes.</p>' : "");
+      $("#bt-mudar").textContent = a && a.status === "ativa" ? "Mudar de plano" : "Assinar um plano";
+    }
+    desenhar(null);
+    A.minhaAssinatura().then(desenhar).catch(function () {});
+    A.assinatura().catch(function () {});
+  }
+  /* depois do login: segue para o destino (painel ou pagamento do plano escolhido) */
+  function seguir() { location.href = destino; }
+
+  if (!A.ativo()) { ver("v-sem"); return; }
+  if (P.loginGoogle) $("#google-box").hidden = false;
+  modoAcesso(modo);
+  if (q.get("confirmado") === "1") msg("E-mail confirmado. Agora é só entrar.", true);
+  if (q.get("modo") === "nova-senha") ver("v-nova");
+
+  var veioDoGoogle = /access_token|code=/.test(location.hash + location.search);
+  A.aoMudar(function (ev, s) {
+    if (ev === "PASSWORD_RECOVERY") { ver("v-nova"); return; }
+    if (ev === "SIGNED_IN" && s && q.get("modo") !== "nova-senha") { if (veioDoGoogle && q.get("volta")) seguir(); else mostrarConta(s.user); }
+  });
+  A.usuario().then(function (u) { if (u && q.get("modo") !== "nova-senha") { if (veioDoGoogle && q.get("volta")) seguir(); else mostrarConta(u); } });
+
+  $("#bt-google").onclick = function () { var b = this; ocupado(b, true); A.entrarGoogle(destino).catch(function (err) { msg(A.erroPt(err)); ocupado(b, false); }); };
+
+  $("#f-acesso").onsubmit = function (e) {
+    e.preventDefault(); var f = this, b = $("#bt-acesso"), email = f.email.value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg("Digite um e-mail válido."); return; }
+    if (f.senha.value.length < 8) { msg("A senha precisa ter pelo menos 8 caracteres."); return; }
+    if (modo === "criar") {
+      if (!f.nome.value.trim()) { msg("Digite seu nome."); return; }
+      if (!f.maior.checked) { msg("Confirme que você tem 18 anos ou mais."); return; }
+      ocupado(b, true); msg("");
+      A.cadastrar(email, f.senha.value, f.nome.value.trim()).then(function (d) {
+        if (d.session) { seguir(); return; }
+        msg("Conta criada! Enviamos um link de confirmação para " + email + ". Abra o e-mail (veja também o spam) e depois entre.", true);
+        modoAcesso("entrar"); $("#f-acesso").email.value = email;
+        msg("Conta criada! Enviamos um link de confirmação para " + email + ". Abra o e-mail (veja também o spam) e depois entre.", true);
+      }).catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(b, false); });
+      return;
+    }
+    ocupado(b, true); msg("");
+    A.entrar(email, f.senha.value).then(function () { return A.assinatura(); }).then(seguir)
+      .catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(b, false); });
   };
   $("#f-recuperar").onsubmit = function (e) {
-    e.preventDefault(); var f = this; ocupado(f, true); msg("");
-    A.recuperar(f.email.value.trim()).then(function () { msg("Se este e-mail tiver conta, o link para nova senha foi enviado. Veja também o spam.", true); })
-      .catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(f, false); });
+    e.preventDefault(); var f = this, b = f.querySelector("button"); ocupado(b, true); msg("");
+    A.recuperar(f.email.value.trim()).then(function () { msg("Se este e-mail tiver conta, o link para criar a nova senha foi enviado. Veja também o spam.", true); })
+      .catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(b, false); });
   };
   $("#f-nova").onsubmit = function (e) {
-    e.preventDefault(); var f = this;
+    e.preventDefault(); var f = this, b = f.querySelector("button[type=submit]");
+    if (f.senha.value.length < 8) { msg("A senha precisa ter pelo menos 8 caracteres."); return; }
     if (f.senha.value !== f.senha2.value) { msg("As senhas não conferem."); return; }
-    ocupado(f, true); msg("");
-    A.novaSenha(f.senha.value).then(function () { msg("Senha alterada. Entrando…", true); setTimeout(function () { location.href = "app.html"; }, 900); })
-      .catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(f, false); });
+    ocupado(b, true); msg("");
+    A.novaSenha(f.senha.value).then(function () { msg("Senha alterada.", true); A.usuario().then(function (u) { if (u) mostrarConta(u); msg("Senha alterada com sucesso.", true); }); })
+      .catch(function (err) { msg(A.erroPt(err)); }).then(function () { ocupado(b, false); });
   };
-  $("#bt-sair").onclick = function () { A.sair().then(function () { location.reload(); }); };
+  $("#bt-trocar-senha").onclick = function () { ver("v-nova"); msg(""); };
+  $("#bt-sair").onclick = function () { A.sair().then(function () { location.href = "conta.html"; }); };
 })();
 </script>
 </body>

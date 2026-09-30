@@ -30,17 +30,24 @@ create trigger ao_criar_usuario after insert on auth.users for each row execute 
 --    O site apenas lê a própria linha — por isso não há policy de insert/update para usuários.
 create table if not exists public.assinaturas (
   user_id        uuid primary key references auth.users (id) on delete cascade,
-  plano          text not null default 'mensal' check (plano in ('mensal', 'anual', 'cortesia')),
+  plano          text not null default 'pro' check (plano in ('pro', 'elite', 'cortesia')),
+  ciclo          text not null default 'mensal' check (ciclo in ('mensal', 'anual')),
   status         text not null default 'ativa' check (status in ('ativa', 'cancelada', 'vencida')),
   valido_ate     timestamptz,
   pagamento_id   text,
   atualizado_em  timestamptz not null default now()
 );
+-- quem já tinha criado a tabela na versão anterior (planos mensal/anual) roda estas linhas também:
+alter table public.assinaturas add column if not exists ciclo text not null default 'mensal';
+alter table public.assinaturas drop constraint if exists assinaturas_plano_check;
+update public.assinaturas set plano = 'pro' where plano in ('mensal', 'anual');
+alter table public.assinaturas add constraint assinaturas_plano_check check (plano in ('pro', 'elite', 'cortesia'));
 alter table public.assinaturas enable row level security;
 drop policy if exists "assinatura: ler a propria" on public.assinaturas;
 create policy "assinatura: ler a propria" on public.assinaturas for select to authenticated using (auth.uid() = user_id);
 
 -- 3) Atalho para liberar alguém à mão (SQL Editor):
---    insert into public.assinaturas (user_id, plano, valido_ate)
---    select id, 'cortesia', now() + interval '30 days' from auth.users where email = 'pessoa@exemplo.com'
---    on conflict (user_id) do update set status = 'ativa', plano = excluded.plano, valido_ate = excluded.valido_ate, atualizado_em = now();
+--    insert into public.assinaturas (user_id, plano, ciclo, valido_ate)
+--    select id, 'pro', 'mensal', now() + interval '30 days' from auth.users where email = 'pessoa@exemplo.com'
+--    on conflict (user_id) do update set status = 'ativa', plano = excluded.plano, ciclo = excluded.ciclo, valido_ate = excluded.valido_ate, atualizado_em = now();
+--    (plano: 'pro', 'elite' ou 'cortesia' = tudo liberado; ciclo: 'mensal' ou 'anual')
