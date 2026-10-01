@@ -66,20 +66,7 @@ function status(msg) {
 }
 
 /* ======================= Dados ======================= */
-function normTime(s) { return String(s || "").replace(/\s+/g, " ").replace(/\s*\/\s*/g, "/").trim().toUpperCase(); }
-function rowParaConcurso(cfg, r) {
-  var dz = (r[2] || []).map(Number), extra = "";
-  if (cfg.sorteios > 1) dz = dz.concat((r[3] || []).map(Number));
-  else if (cfg.extra_qtd > 1) extra = (r[3] || []).map(Number).sort(function (a, b) { return a - b; }).join(",");
-  else if (cfg.extra_nome) extra = cfg.chave === "timemania" ? normTime(r[3]) : String(r[3] || "").trim();
-  if (!cfg.colunar) {
-    if (cfg.sorteios > 1) {
-      var n = cfg.sorteadas;
-      dz = MC.util.sortN(dz.slice(0, n)).concat(MC.util.sortN(dz.slice(n)));
-    } else dz = MC.util.sortN(dz);
-  }
-  return {concurso: +r[0], data: r[1] || "", dezenas: dz, extra: extra};
-}
+var normTime = MC.normTime, rowParaConcurso = MC.rowParaConcurso;   /* fonte única no motor (também usada pelo servidor) */
 function concursoParaRow(cfg, c) {
   var row = [c.concurso, c.data, c.dezenas.slice(0, cfg.colunar ? cfg.colunas : cfg.sorteadas)];
   if (cfg.sorteios > 1) row.push(c.dezenas.slice(cfg.sorteadas));
