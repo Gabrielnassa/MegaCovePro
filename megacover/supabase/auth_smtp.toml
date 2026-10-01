@@ -1,0 +1,11 @@
+
+# Acrescentado ao config.toml pelo workflow só quando existe RESEND_API_KEY:
+# os e-mails de cadastro e de nova senha saem pelo Resend, com o seu domínio.
+[auth.email.smtp]
+enabled = true
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_API_KEY)"
+admin_email = "env(EMAIL_AVISOS)"
+sender_name = "MegaCover"

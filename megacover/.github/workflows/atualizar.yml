@@ -37,12 +37,16 @@ jobs:
             git push
           fi
       # Servidor (planos): grava os concursos no Supabase e envia os avisos de resultado por e-mail.
-      # Precisa dos segredos MEGACOVER_API_URL e TAREFA_TOKEN; sem eles o passo só avisa e segue.
+      # Usa os segredos do Supabase (SUPABASE_PROJECT_REF e SUPABASE_DB_PASSWORD); sem eles o passo só avisa e segue.
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Enviar ao servidor e avisar por e-mail
+      - name: Endereço e token do servidor
         env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
           MEGACOVER_API_URL: ${{ secrets.MEGACOVER_API_URL }}
           TAREFA_TOKEN: ${{ secrets.TAREFA_TOKEN }}
+        run: bash tools/segredos.sh
+      - name: Enviar ao servidor e avisar por e-mail
         run: node tools/enviar_concursos.mjs ${{ github.event.inputs.tudo == 'sim' && '--tudo' || '' }}

@@ -1,4 +1,6 @@
 # Configuração do Supabase CLI (usada pelo GitHub Actions em .github/workflows/servidor.yml).
+# "supabase config push" só altera no projeto o que este arquivo declara; o resto fica como está no painel.
+# Os valores "env(...)" são preenchidos pelo workflow a partir do segredo DOMINIO.
 project_id = "megacover"
 
 # As duas funções conferem o acesso por conta própria:
@@ -9,3 +11,39 @@ verify_jwt = false
 
 [functions.asaas-webhook]
 verify_jwt = false
+
+[auth]
+site_url = "env(SITE_URL)"
+additional_redirect_urls = ["env(URL_REDIRECT)", "env(URL_REDIRECT_WWW)", "https://gabrielnassa.github.io/MegaCovePro/**"]
+enable_signup = true
+minimum_password_length = 8
+
+[auth.rate_limit]
+# e-mails de login por hora (vale com o SMTP próprio, ligado pelo workflow quando há RESEND_API_KEY)
+email_sent = 100
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+double_confirm_changes = true
+max_frequency = "60s"
+
+[auth.email.template.confirmation]
+subject = "Confirme seu e-mail no MegaCover"
+content_path = "./supabase/templates/confirmar.html"
+
+[auth.email.template.recovery]
+subject = "Crie uma nova senha no MegaCover"
+content_path = "./supabase/templates/recuperar.html"
+
+[auth.email.template.magic_link]
+subject = "Seu link de acesso ao MegaCover"
+content_path = "./supabase/templates/link.html"
+
+[auth.email.template.email_change]
+subject = "Confirme a troca de e-mail no MegaCover"
+content_path = "./supabase/templates/trocar_email.html"
+
+[auth.email.template.invite]
+subject = "Você foi convidado para o MegaCover"
+content_path = "./supabase/templates/convite.html"
