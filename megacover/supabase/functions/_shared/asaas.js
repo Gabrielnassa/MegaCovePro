@@ -70,6 +70,7 @@ export async function assinar(ctx, b) {
   const nome = String(b.nome || (perfil && perfil.nome) || ctx.usuario.meta.nome || "").trim();
   if (nome.length < 3) falha(400, "invalido", "Informe seu nome completo.");
   const preco = await precoComCupom(ctx, ped);
+  await abandonar(uid);   // checkout anterior não pago: cancela no Asaas para não gerar cobranças soltas
 
   let cliente = perfil && perfil.asaas_cliente_id;
   if (!cliente) {
@@ -90,6 +91,18 @@ export async function assinar(ctx, b) {
   const primeira = (pg.data || [])[0];
   if (!primeira || !primeira.invoiceUrl) falha(502, "pagamento", "O Asaas não devolveu o link de pagamento. Tente de novo.");
   return {url: primeira.invoiceUrl, valor: preco.valor, assinatura: sub.id};
+}
+
+/* Assinaturas criadas no checkout e nunca pagas: cancela no Asaas e esquece. */
+async function abandonar(uid, subId) {
+  const pend = subId
+    ? await db()`select asaas_assinatura_id from public.pagamentos_pendentes where asaas_assinatura_id = ${subId}`
+    : await db()`select asaas_assinatura_id from public.pagamentos_pendentes where user_id = ${uid}`;
+  for (const p of pend) {
+    try { await chamar("DELETE", `/subscriptions/${p.asaas_assinatura_id}`); } catch (e) { console.error("não cancelou checkout abandonado", e.message); }
+    await db()`delete from public.pagamentos_pendentes where asaas_assinatura_id = ${p.asaas_assinatura_id}`;
+  }
+  return pend.length;
 }
 
 export async function cancelar(ctx) {
@@ -121,8 +134,11 @@ export async function processarEvento(ev) {
     const p = ev.payment || {}, subId = p.subscription || (ev.subscription && ev.subscription.id);
     let r = {ok: true, ignorado: true};
     if (subId && PAGO.includes(ev.event)) r = await ativar(subId, p);
-    else if (subId && ev.event === "PAYMENT_OVERDUE")
-      await sql`update public.assinaturas set status = 'atrasada', atualizado_em = now() where asaas_assinatura_id = ${subId} and status = 'ativa'`, r = {ok: true};
+    else if (subId && ev.event === "PAYMENT_OVERDUE") {
+      const a = await sql`update public.assinaturas set status = 'atrasada', atualizado_em = now() where asaas_assinatura_id = ${subId} and status = 'ativa' returning user_id`;
+      // primeira cobrança vencida sem nunca ter pago: checkout abandonado
+      r = a.length ? {ok: true} : {ok: true, abandonado: (await abandonar(null, subId)) > 0};
+    }
     else if (subId && ESTORNO.includes(ev.event))
       await sql`update public.assinaturas set status = 'suspensa', atualizado_em = now() where asaas_assinatura_id = ${subId}`, r = {ok: true};
     else if (subId && FIM.includes(ev.event))
