@@ -62,39 +62,13 @@ rota("GET", "concursos", async (req, url) => {
 rota("GET", "estatisticas", async (req, url) => {
   const ctx = await contexto(req), lot = url.searchParams.get("loteria"), cfg = cfgDe(lot);
   const c = paraConcursos(cfg, await historico(ctx, lot)), completas = PERM.pode(R, ctx.plano, "estatisticasCompletas").ok;
-  const out = {loteria: lot, nivel: completas ? "completas" : "basicas", concursos: c.length};
-  if (cfg.colunar) {
-    out.porColuna = MC.porColuna(c, cfg);
-    out.atrasoPorColuna = Array.from({length: cfg.colunas}, (_, col) => {
-      const ult = {}; c.forEach((x, i) => { ult[x.dezenas[col]] = i; });
-      return Object.fromEntries(cfg.dezenas.map((d) => [d, ult[d] == null ? c.length : c.length - 1 - ult[d]]));
-    });
-    return json(200, out);
-  }
-  out.frequencias = MC.frequencias(c, cfg);
-  out.atrasos = MC.atrasos(c, cfg);
-  if (completas) {
-    const jan = Math.min(500, Math.max(5, +url.searchParams.get("janela") || 20));
-    out.tendencia = MC.tendencia(c, cfg, jan); out.janela = jan;
-    if (cfg.extra_nome) { out.extras = MC.frequenciaExtras(c, cfg); out.atrasoExtras = MC.atrasoExtras(c, cfg); }
-  }
-  return json(200, out);
+  const jan = Math.min(500, Math.max(5, +url.searchParams.get("janela") || 20));
+  return json(200, {loteria: lot, ...MC.dadosEstatisticas(c, cfg, completas, jan)});
 });
 rota("GET", "padroes", async (req, url) => {
   const ctx = await contexto(req), lot = url.searchParams.get("loteria"), cfg = cfgDe(lot);
   exigir(ctx, "graficos");
-  const c = paraConcursos(cfg, await historico(ctx, lot));
-  if (cfg.colunar) {
-    let rep = 0; for (let i = 1; i < c.length; i++) for (let k = 0; k < 7; k++) if (c[i].dezenas[k] === c[i - 1].dezenas[k]) rep++;
-    return json(200, {loteria: lot, colunar: true, somas: c.map((x) => MC.soma(x.dezenas)), repeticaoMedia: rep / Math.max(1, c.length - 1)});
-  }
-  const rp = MC.mediaRepeticao(c, cfg);
-  let pr = 0, ns = 0; c.forEach((x) => MC.sorteiosDe(x, cfg).forEach((st) => { pr += MC.primos(st); ns++; }));
-  const out = {loteria: lot, paresImpares: MC.distParesImpares(c, cfg).mostCommon(), somas: MC.distSomas(c, cfg),
-    sequencias: MC.distSequencias(c, cfg).mostCommon(), repeticao: {media: rp.media, dist: rp.dist.mostCommon()},
-    faixas: MC.distFaixasHistorica(c, cfg), limitesSoma: MC.limitesSoma(cfg.sorteadas, cfg), primosMedia: ns ? pr / ns : 0};
-  if (lot === "lotofacil") { let mm = 0; c.forEach((x) => { mm += MC.molduraMiolo(x.dezenas)[1]; }); out.mioloMedia = c.length ? mm / c.length : 0; }
-  return json(200, out);
+  return json(200, {loteria: lot, ...MC.dadosPadroes(paraConcursos(cfg, await historico(ctx, lot)), cfg)});
 });
 
 /* ---------- gerador ---------- */
@@ -145,7 +119,8 @@ rota("POST", "montecarlo", async (req) => {
   const n = Math.min(1000000, Math.max(1000, Math.floor(+b.simulacoes || 10000)));
   const uso = await consumir(ctx, "monteCarlo");
   const r = await MC.monteCarlo(jogos, cfg, n, null);
-  return json(200, {resultado: r, simulacoes: n, uso});
+  const anteriores = MC.historicoConjunto(jogos, paraConcursos(cfg, await historico(ctx, b.loteria)), cfg);
+  return json(200, {resultado: r, anteriores, simulacoes: n, uso});
 });
 
 /* ---------- fechamentos ---------- */
@@ -284,8 +259,10 @@ function exigirTarefa(req) {
 rota("POST", "tarefas/concursos", async (req) => {
   exigirTarefa(req);
   const b = await lerCorpo(req), cfg = cfgDe(b.loteria), rows = Array.isArray(b.concursos) ? b.concursos : [];
-  const val = rows.filter((r) => Array.isArray(r) && Number.isInteger(+r[0]) && Array.isArray(r[2]))
-    .map((r) => ({loteria: cfg.chave, concurso: +r[0], data: String(r[1] || ""), dezenas: r[2], extra: r[3] == null ? null : r[3]}));
+  // o histórico da CAIXA traz caracteres nulos em alguns nomes de time (o Postgres recusa \u0000 em jsonb)
+  const limpo = (v) => typeof v === "string" ? v.replace(/\u0000/g, "").trim() : Array.isArray(v) ? v.map(limpo) : v;
+  const val = rows.filter((r) => Array.isArray(r) && Number.isInteger(+r[0]) && Array.isArray(r[2])).map(limpo)
+    .map((r) => ({loteria: cfg.chave, concurso: +r[0], data: String(r[1] || ""), dezenas: db().json(r[2]), extra: r[3] == null ? null : db().json(r[3])}));
   for (let i = 0; i < val.length; i += 500) {
     const lote = val.slice(i, i + 500);
     await db()`insert into public.concursos ${db()(lote, "loteria", "concurso", "data", "dezenas", "extra")}

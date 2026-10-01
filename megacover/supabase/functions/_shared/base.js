@@ -40,7 +40,15 @@ export async function autenticar(req) {
   const tok = h.startsWith("Bearer ") ? h.slice(7) : "";
   if (!tok) falha(401, "login", "Entre na sua conta para continuar.");
   const r = await fetch(env("SUPABASE_URL") + "/auth/v1/user", {headers: {Authorization: "Bearer " + tok, apikey: env("SUPABASE_ANON_KEY")}});
-  if (!r.ok) falha(401, "login", "Sua sessão expirou. Entre novamente.");
+  if (!r.ok) {
+    // sessão derrubada por login em outro aparelho: o Auth recusa o token; a mensagem certa vem da nossa tabela
+    const sid = payloadJwt(tok).session_id;
+    if (sid) {
+      const [s] = await db()`select revogada from public.sessoes where session_id = ${sid}::uuid`.catch(() => []);
+      if (s && s.revogada) falha(401, "sessao_encerrada", "Sua conta foi acessada em outro aparelho e esta sessão foi encerrada. Entre novamente para continuar.");
+    }
+    falha(401, "login", "Sua sessão expirou. Entre novamente.");
+  }
   const u = await r.json();
   if (!u || !u.id) falha(401, "login", "Sua sessão expirou. Entre novamente.");
   return {id: u.id, email: u.email, meta: u.user_metadata || {}, sessionId: payloadJwt(tok).session_id || null};

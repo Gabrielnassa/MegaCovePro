@@ -11,6 +11,12 @@ var ABAS = [["dashboard", "Visão geral", "painel"], ["estatisticas", "Estatíst
   ["gerador", "Gerador", "raio"], ["fechamentos", "Fechamentos", "alvo"], ["simulador", "Simulador", "dado"],
   ["conferir", "Conferir", "check"], ["dados", "Dados", "banco"]];
 var PL = window.MC_PLANO || {beta: function () { return true; }, liberado: function () { return true; }, pro: {}, contatoUrl: function () { return ""; }};
+/* Modo servidor: com o login configurado, regras, dados e recursos pagos vêm da API (assets/api.js).
+   O servidor decide tudo; o painel só antecipa os avisos para a pessoa não clicar à toa. */
+var SRV = !!(window.MC_API && window.MC_API.ativo());
+var REGRAS = null, PERM = window.MC_PERM, ME = null;
+var MAPA_REC = {ia: "otimizador", fechamentos: "fechamentoPersonalizado", historico: "historicoCompleto", exportar: "exportar", simulacaoGrande: "monteCarlo"};
+function podeSrv(rec, valor) { return PERM.pode(REGRAS, ME ? ME.plano : "gratis", MAPA_REC[rec] || rec, valor); }
 
 /* ícones de traço (24×24) */
 var ICONES = {
@@ -38,12 +44,19 @@ var ICONES = {
   trofeu: "M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3",
   lupa: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5",
   x: "M6 6l12 12M18 6 6 18",
-  escudo: "M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"
+  escudo: "M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z",
+  cadeado: "M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4"
 };
 function I(n, extra) { return '<svg class="ic' + (extra ? " " + extra : "") + '" viewBox="0 0 24 24" aria-hidden="true"><path d="' + ICONES[n] + '"/></svg>'; }
-function tagPro(recurso) { return PL.pro && PL.pro[recurso] ? ' <span class="pro" title="' + (PL.beta() ? "Recurso PRO — liberado grátis no Beta" : "Recurso PRO") + '">PRO</span>' : ""; }
+function tagPro(recurso, valor) {
+  if (SRV) { var r = podeSrv(recurso, valor); return r.ok || !r.planoMinimo ? "" : ' <span class="pro" title="Recurso do plano ' + esc(r.planoMinimo.nome) + '">' + I("cadeado") + esc(r.planoMinimo.nome) + "</span>"; }
+  return PL.pro && PL.pro[recurso] ? ' <span class="pro" title="' + (PL.beta() ? "Recurso PRO — liberado grátis no Beta" : "Recurso PRO") + '">PRO</span>' : "";
+}
 /* true se o recurso está liberado; senão abre o convite de assinatura */
-function pro(recurso) { if (PL.liberado(recurso)) return true; modalPlano(recurso); return false; }
+function pro(recurso, valor) {
+  if (SRV) { var r = podeSrv(recurso, valor); if (r.ok) return true; upsell(r); return false; }
+  if (PL.liberado(recurso)) return true; modalPlano(recurso); return false;
+}
 
 var S = {lot: "megasena", aba: "dashboard", dados: {}, meta: {}, ger: {}, fech: {}, carregando: {}, sync: {}, ordem: {}};
 var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -112,6 +125,7 @@ function getJSON(url, ms) {
   });
 }
 function carregar(id) {
+  if (SRV) return carregarSrv(id);
   if (S.dados[id]) return Promise.resolve(S.dados[id]);
   if (S.carregando[id]) return S.carregando[id];
   var cfg = MC.TODAS[id];
@@ -130,6 +144,19 @@ function carregar(id) {
     setTimeout(function () { sincronizar(id); }, 50);   /* busca concursos novos sem travar a tela */
     return S.dados[id];
   });
+  return S.carregando[id];
+}
+/* modo servidor: o histórico vem da API, já limitado ao que o plano libera */
+function carregarSrv(id) {
+  if (S.dados[id]) return Promise.resolve(S.dados[id]);
+  if (S.carregando[id]) return S.carregando[id];
+  var cfg = MC.TODAS[id];
+  S.carregando[id] = MC_API.get("concursos?loteria=" + id, {silencioso: true}).then(function (d) {
+    S.meta[id] = {atualizado: null, ultimoBase: d.total, total: d.total, limitado: d.limitado, limite: d.limite};
+    S.dados[id] = d.concursos.map(function (r) { return rowParaConcurso(cfg, r); });
+  }).catch(function (e) {
+    S.meta[id] = {erro: e.message, codigo: e.codigo}; S.dados[id] = [];
+  }).then(function () { delete S.carregando[id]; return S.dados[id]; });
   return S.carregando[id];
 }
 /* ---------- fontes online ----------
@@ -348,6 +375,11 @@ function render() {
   var nomeAba = ABAS.filter(function (a) { return a[0] === S.aba; })[0][1];
   document.title = cfg.nome + " · " + nomeAba + " · MegaCover Pro Elite";
   var main = $("#conteudo");
+  if (SRV && !podeSrv("loteria", S.lot).ok) {
+    $("#titulo").innerHTML = '<h1><span class="ponto"></span>' + esc(cfg.nome) + "</h1><p>Disponível nos planos pagos</p>";
+    main.innerHTML = '<div id="aba" class="entrar">' + cardBloqueado(podeSrv("loteria", S.lot), "A " + cfg.nome + " e as outras 6 loterias fazem parte dos planos pagos. No Grátis você usa a Mega-Sena e a Lotofácil.") + "</div>";
+    ligarBloqueados(main); return;
+  }
   if (!S.dados[S.lot]) {
     $("#titulo").innerHTML = '<h1><span class="ponto"></span>' + esc(cfg.nome) + "</h1><p>Carregando histórico…</p>";
     main.innerHTML = '<div class="carregando"><div class="esqueleto"></div><div class="esqueleto" style="height:260px"></div></div>';
@@ -355,7 +387,9 @@ function render() {
   }
   var c = cs(), u = c[c.length - 1];
   $("#titulo").innerHTML = '<h1><span class="ponto"></span>' + esc(cfg.nome) + "</h1><p>" +
-    (u ? 'Concurso <span class="mono">' + fmtN(u.concurso) + "</span> · " + esc(u.data) + '<span class="sep"> · <span class="mono">' + fmtN(c.length) + "</span> concursos na base</span>" : "Sem resultados") + "</p>";
+    (u ? 'Concurso <span class="mono">' + fmtN(u.concurso) + "</span> · " + esc(u.data) + '<span class="sep"> · <span class="mono">' + fmtN(c.length) + "</span> concursos " +
+      (SRV && S.meta[S.lot].limitado ? 'liberados <a href="#" class="lk-hist">(histórico completo no Pro)</a>' : "na base") + "</span>" : (SRV && S.meta[S.lot].erro ? esc(S.meta[S.lot].erro) : "Sem resultados")) + "</p>";
+  var lkh = $(".lk-hist"); if (lkh) lkh.onclick = function (e) { e.preventDefault(); pro("historicoCompleto"); };
   var ul = $("#ult-" + S.lot); if (ul && u) ul.textContent = "nº " + u.concurso;
   main.innerHTML = (cfg.nota && S.aba === "dashboard" ? '<p class="nota">' + I("info") + "<span>" + esc(cfg.nota) + "</span></p>" : "") + '<div id="aba" class="entrar"></div>';
   TELAS[S.aba]($("#aba"), cfg);
@@ -399,7 +433,8 @@ TELAS.dashboard = function (el, cfg) {
     var fx = MC.frequenciaExtras(c, cfg);
     h += kpi(esc(cfg.extra_nome) + " líder", fx.length ? esc(fx[0][0]) : "—", fx.length ? fmtN(fx[0][1]) + " vezes · " + fx[0][2].toFixed(1).replace(".", ",") + "%" : "sem dados", true);
   }
-  h += kpi("Última sincronização", sy ? new Date(sy).toLocaleString("pt-BR", {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"}) : (S.meta[S.lot].atualizado ? new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") : "—"), sy ? "automática · checa a cada 15 min" : "arquivo do site", true) + "</div>";
+  if (SRV) h += kpi("Histórico liberado", S.meta[S.lot].limitado ? "Últimos " + S.meta[S.lot].limite : "Completo", S.meta[S.lot].limitado ? "de " + fmtN(S.meta[S.lot].total) + " concursos · completo no Pro" : "atualizado automaticamente", true);
+  else h += kpi("Última sincronização", sy ? new Date(sy).toLocaleString("pt-BR", {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"}) : (S.meta[S.lot].atualizado ? new Date(S.meta[S.lot].atualizado).toLocaleDateString("pt-BR") : "—"), sy ? "automática · checa a cada 15 min" : "arquivo do site", true) + "</div>";
   if (cfg.colunar) {
     var tab = MC.porColuna(c, cfg);
     h += '<div class="card"><div class="cab"><h3>Dígito líder em cada coluna</h3><span class="dica" style="margin:0">frequência no histórico</span></div><div class="bolas grandes">' + tab.map(function (f, i) {
@@ -410,7 +445,8 @@ TELAS.dashboard = function (el, cfg) {
     h += '<div class="grade g2"><div class="card"><div class="cab"><h3>Mais sorteadas</h3><span class="dica" style="margin:0">top 10 · histórico</span></div>' + bolas(cfg, r.quentes.map(function (x) { return x[0]; }).sort(function (a, b) { return a - b; })) + "</div>" +
       '<div class="card"><div class="cab"><h3>Mais atrasadas</h3><span class="dica" style="margin:0">top 10 · concursos sem sair</span></div>' + bolas(cfg, r.atrasadas.map(function (x) { return x[0]; }).sort(function (a, b) { return a - b; })) + "</div></div>";
     var fr = MC.frequencias(c, cfg);
-    h += '<div class="card"><div class="cab"><h3>Frequência de cada dezena</h3><div class="legenda" style="margin:0"><span><i style="background:var(--lot-viva)"></i>frequência</span><span><i style="background:var(--ouro)"></i>6 mais sorteadas</span></div></div>' +
+    if (SRV && !podeSrv("graficos").ok) h += cardBloqueado(podeSrv("graficos"), "O gráfico de frequência de cada dezena faz parte dos gráficos do plano Pro.");
+    else h += '<div class="card"><div class="cab"><h3>Frequência de cada dezena</h3><div class="legenda" style="margin:0"><span><i style="background:var(--lot-viva)"></i>frequência</span><span><i style="background:var(--ouro)"></i>6 mais sorteadas</span></div></div>' +
       grafico(cfg.dezenas.map(cfg.fmt.bind(cfg)), cfg.dezenas.map(function (d) { return fr[d].abs; }), {titulo: "Frequência", destacar: 6, maxRotulos: cfg.dezenas.length > 60 ? 50 : 80}) + "</div>";
   }
   el.innerHTML = h;
@@ -426,83 +462,86 @@ TELAS.dashboard = function (el, cfg) {
 };
 
 TELAS.estatisticas = function (el, cfg) {
-  var c = cs(), h = "";
   var jan = +(ls("janela") || 20);
+  if (!SRV) { desenharEstat(el, cfg, MC.dadosEstatisticas(cs(), cfg, true, jan)); return; }
+  el.innerHTML = '<div class="carregando"><div class="esqueleto" style="height:300px"></div></div>';
+  MC_API.get("estatisticas?loteria=" + cfg.chave + "&janela=" + jan, {silencioso: true})
+    .then(function (D) { desenharEstat(el, cfg, D); }).catch(function (e) { el.innerHTML = cardErro(e); ligarBloqueados(el); });
+};
+function desenharEstat(el, cfg, D) {
+  var h = "", jan = D.janela || +(ls("janela") || 20), completas = D.nivel === "completas";
   if (cfg.colunar) {
-    var tab = MC.porColuna(c, cfg);
-    h += '<div class="card"><h3>Frequência por coluna</h3><p class="dica">Quantas vezes cada dígito saiu em cada coluna (' + fmtN(c.length) + " concursos).</p>";
-    h += tabela(["Dígito"].concat(tab.map(function (_, i) { return "Coluna " + (i + 1); })), cfg.dezenas.map(function (d) {
-      return [d].concat(tab.map(function (f) { return f[d]; }));
+    h += '<div class="card"><h3>Frequência por coluna</h3><p class="dica">Quantas vezes cada dígito saiu em cada coluna (' + fmtN(D.concursos) + " concursos).</p>";
+    h += tabela(["Dígito"].concat(D.porColuna.map(function (_, i) { return "Coluna " + (i + 1); })), cfg.dezenas.map(function (d) {
+      return [d].concat(D.porColuna.map(function (f) { return f[d]; }));
     }), "t-ss") + "</div>";
-    var at = [];
-    for (var col = 0; col < cfg.colunas; col++) {
-      var ult = {};
-      c.forEach(function (x, i) { ult[x.dezenas[col]] = i; });
-      at.push(ult);
-    }
-    h += '<div class="card"><h3>Atraso por coluna</h3><p class="dica">Há quantos concursos o dígito não sai naquela coluna.</p>' + tabela(["Dígito"].concat(at.map(function (_, i) { return "Coluna " + (i + 1); })), cfg.dezenas.map(function (d) {
-      return [d].concat(at.map(function (u) { return u[d] == null ? c.length : c.length - 1 - u[d]; }));
+    h += '<div class="card"><h3>Atraso por coluna</h3><p class="dica">Há quantos concursos o dígito não sai naquela coluna.</p>' + tabela(["Dígito"].concat(D.atrasoPorColuna.map(function (_, i) { return "Coluna " + (i + 1); })), cfg.dezenas.map(function (d) {
+      return [d].concat(D.atrasoPorColuna.map(function (u) { return u[d]; }));
     }), "t-ss2") + "</div>";
     el.innerHTML = h; ativarOrdenacao("t-ss"); ativarOrdenacao("t-ss2"); return;
   }
-  var fr = MC.frequencias(c, cfg), at2 = MC.atrasos(c, cfg), td = MC.tendencia(c, cfg, jan);
-  h += '<div class="card"><h3>Frequência, atraso e tendência</h3><div class="form" style="margin-bottom:14px;max-width:260px"><div class="campo"><label for="e-jan">Janela da tendência (concursos)</label><select id="e-jan">' + opcoes([10, 20, 30, 50, 100], jan) + '</select></div></div><p class="dica">Clique no cabeçalho para ordenar.</p>';
-  h += tabela(["Dezena", "Frequência", "%", "Atraso atual", "Maior atraso", "Últimos " + jan], cfg.dezenas.map(function (d) {
-    return [{h: bola(cfg, d, false, true), s: d}, fr[d].abs, {h: fr[d].pct.toFixed(2).replace(".", ","), s: fr[d].pct, num: 1}, at2.atual[d], at2.maior[d], td[d]];
+  var fr = D.frequencias, at2 = D.atrasos, td = D.tendencia;
+  h += '<div class="card"><h3>' + (completas ? "Frequência, atraso e tendência" : "Frequência e atraso") + "</h3>" +
+    (completas ? '<div class="form" style="margin-bottom:14px;max-width:260px"><div class="campo"><label for="e-jan">Janela da tendência (concursos)</label><select id="e-jan">' + opcoes([10, 20, 30, 50, 100], jan) + "</select></div></div>" : "") +
+    '<p class="dica">' + (SRV ? "Calculado sobre " + fmtN(D.concursos) + " concursos. " : "") + "Clique no cabeçalho para ordenar.</p>";
+  var cab = ["Dezena", "Frequência", "%", "Atraso atual", "Maior atraso"].concat(completas ? ["Últimos " + jan] : []);
+  h += tabela(cab, cfg.dezenas.map(function (d) {
+    return [{h: bola(cfg, d, false, true), s: d}, fr[d].abs, {h: fr[d].pct.toFixed(2).replace(".", ","), s: fr[d].pct, num: 1}, at2.atual[d], at2.maior[d]].concat(completas ? [td[d]] : []);
   }), "t-est") + "</div>";
-  if (cfg.extra_nome) {
-    var fx = MC.frequenciaExtras(c, cfg), ax = MC.atrasoExtras(c, cfg);
+  if (!completas) h += cardBloqueado(podeSrv("estatisticasCompletas"), "Tendência por janela de concursos e as estatísticas do " + (cfg.extra_nome ? esc(cfg.extra_nome) : "histórico completo") + " estão nas estatísticas completas.");
+  else if (cfg.extra_nome) {
+    var fx = D.extras || [], ax = D.atrasoExtras || {};
     h += '<div class="card"><h3>' + esc(cfg.extra_nome) + "</h3>";
     h += fx.length ? tabela(["#", esc(cfg.extra_nome), "Vezes", "%", "Atraso"], fx.map(function (x, i) {
       return [i + 1, esc(x[0]), x[1], {h: x[2].toFixed(2).replace(".", ","), s: x[2], num: 1}, ax[x[0]] != null ? ax[x[0]] : "—"];
     }), "t-ext") : '<p class="vazio">Sem dados do campo extra nesta base.</p>';
     h += "</div>";
   }
-  el.innerHTML = h;
+  el.innerHTML = h; ligarBloqueados(el);
   ativarOrdenacao("t-est"); ativarOrdenacao("t-ext");
-  $("#e-jan").onchange = function () { ls("janela", +this.value); render(); };
-};
+  if ($("#e-jan")) $("#e-jan").onchange = function () { ls("janela", +this.value); render(); };
+}
 
 TELAS.padroes = function (el, cfg) {
-  var c = cs(), h = "";
+  if (!SRV) { desenharPadroes(el, cfg, MC.dadosPadroes(cs(), cfg)); return; }
+  if (!podeSrv("graficos").ok) { el.innerHTML = cardBloqueado(podeSrv("graficos"), "Gráficos de pares e ímpares, somas, faixas, sequências e repetições ajudam a organizar seus jogos."); ligarBloqueados(el); return; }
+  el.innerHTML = '<div class="carregando"><div class="esqueleto" style="height:300px"></div></div>';
+  MC_API.get("padroes?loteria=" + cfg.chave, {silencioso: true})
+    .then(function (D) { desenharPadroes(el, cfg, D); }).catch(function (e) { el.innerHTML = cardErro(e); ligarBloqueados(el); });
+};
+function desenharPadroes(el, cfg, D) {
+  var h = "";
   if (cfg.colunar) {
-    var sm = c.map(function (x) { return MC.soma(x.dezenas); }), cont = {};
+    var sm = D.somas, cont = {};
     sm.forEach(function (s) { cont[s] = (cont[s] || 0) + 1; });
     var ks = []; for (var s = 0; s <= 63; s++) ks.push(s);
-    var rep = 0; for (var i = 1; i < c.length; i++) for (var k = 0; k < 7; k++) if (c[i].dezenas[k] === c[i - 1].dezenas[k]) rep++;
-    h += '<div class="kpis">' + kpi("Soma média", (sm.reduce(function (a, b) { return a + b; }, 0) / sm.length).toFixed(1).replace(".", ",")) +
-      kpi("Colunas repetidas", (rep / Math.max(1, c.length - 1)).toFixed(2).replace(".", ","), "média por concurso vs. o anterior") + "</div>";
+    h += '<div class="kpis">' + kpi("Soma média", (sm.reduce(function (a, b) { return a + b; }, 0) / Math.max(1, sm.length)).toFixed(1).replace(".", ",")) +
+      kpi("Colunas repetidas", D.repeticaoMedia.toFixed(2).replace(".", ","), "média por concurso vs. o anterior") + "</div>";
     h += '<div class="card"><h3>Soma dos 7 dígitos</h3>' + grafico(ks.map(String), ks.map(function (s) { return cont[s] || 0; }), {maxRotulos: 32}) + "</div>";
     el.innerHTML = h; return;
   }
-  var pi = MC.distParesImpares(c, cfg).mostCommon().sort(function (a, b) { return parseInt(a[0]) - parseInt(b[0]); });
-  var somas = MC.distSomas(c, cfg), mn = Math.min.apply(null, somas), mx = Math.max.apply(null, somas);
+  var pi = D.paresImpares.slice().sort(function (a, b) { return parseInt(a[0]) - parseInt(b[0]); });
+  var somas = D.somas, mn = Math.min.apply(null, somas), mx = Math.max.apply(null, somas);
   var nb = Math.min(30, mx - mn + 1), lb = (mx - mn + 1) / nb, bins = [], rot = [];
   for (var b = 0; b < nb; b++) { bins.push(0); rot.push(String(Math.round(mn + b * lb))); }
   somas.forEach(function (s) { bins[Math.min(nb - 1, Math.floor((s - mn) / lb))]++; });
-  var seq = MC.distSequencias(c, cfg).mostCommon().sort(function (a, b) { return a[0] - b[0]; });
-  var rp = MC.mediaRepeticao(c, cfg), lim = MC.limitesSoma(cfg.sorteadas, cfg);
-  var dentro = somas.filter(function (s) { return s >= lim[0] && s <= lim[1]; }).length;
-  var pr = 0, ns = 0; c.forEach(function (x) { MC.sorteiosDe(x, cfg).forEach(function (st) { pr += MC.primos(st); ns++; }); });
-  h += '<div class="kpis">' + kpi("Repetição média", rp.media.toFixed(2).replace(".", ","), "dezenas repetidas do sorteio anterior") +
+  var seq = D.sequencias.slice().sort(function (a, b) { return a[0] - b[0]; });
+  var lim = D.limitesSoma, dentro = somas.filter(function (s) { return s >= lim[0] && s <= lim[1]; }).length;
+  h += '<div class="kpis">' + kpi("Repetição média", D.repeticao.media.toFixed(2).replace(".", ","), "dezenas repetidas do sorteio anterior") +
     kpi("Soma média", (somas.reduce(function (a, b) { return a + b; }, 0) / somas.length).toFixed(1).replace(".", ","), "faixa típica " + lim[0] + "–" + lim[1]) +
     kpi("Dentro da faixa típica", pct(dentro / somas.length, 1), "dos sorteios") +
-    kpi("Primos por sorteio", (pr / ns).toFixed(2).replace(".", ","), "em média");
-  if (cfg.chave === "lotofacil") {
-    var mm = 0; c.forEach(function (x) { mm += MC.molduraMiolo(x.dezenas)[1]; });
-    h += kpi("Miolo (volante 5×5)", (mm / c.length).toFixed(2).replace(".", ","), "dezenas do miolo em média");
-  }
+    kpi("Primos por sorteio", D.primosMedia.toFixed(2).replace(".", ","), "em média");
+  if (D.mioloMedia != null) h += kpi("Miolo (volante 5×5)", D.mioloMedia.toFixed(2).replace(".", ","), "dezenas do miolo em média");
   h += "</div><div class=\"grade g2\">";
   h += '<div class="card"><h3>Pares × ímpares</h3>' + grafico(pi.map(function (x) { return x[0]; }), pi.map(function (x) { return x[1]; }), {altura: 260}) + "</div>";
   h += '<div class="card"><h3>Distribuição das somas</h3>' + grafico(rot, bins, {altura: 260, maxRotulos: 10}) + "</div>";
-  var fh = MC.distFaixasHistorica(c, cfg);
-  h += '<div class="card"><h3>Dezenas por faixa</h3>' + grafico(cfg.faixas.map(function (f) { return cfg.fmt(f[0]) + "–" + cfg.fmt(f[1]); }), fh, {altura: 260}) + "</div>";
+  h += '<div class="card"><h3>Dezenas por faixa</h3>' + grafico(cfg.faixas.map(function (f) { return cfg.fmt(f[0]) + "–" + cfg.fmt(f[1]); }), D.faixas, {altura: 260}) + "</div>";
   h += '<div class="card"><h3>Maior sequência de consecutivas</h3>' + grafico(seq.map(function (x) { return x[0] + " seguidas"; }), seq.map(function (x) { return x[1]; }), {altura: 260}) + "</div>";
-  var rd = rp.dist.mostCommon().sort(function (a, b) { return a[0] - b[0]; });
+  var rd = D.repeticao.dist.slice().sort(function (a, b) { return a[0] - b[0]; });
   h += '<div class="card"><h3>Repetições em relação ao sorteio anterior</h3>' + grafico(rd.map(function (x) { return x[0] + " rep."; }), rd.map(function (x) { return x[1]; }), {altura: 260}) + "</div>";
   h += "</div>";
   el.innerHTML = h;
-};
+}
 
 /* ---------- Gerador ---------- */
 function definirExtras(cfg, n, modo) {
@@ -586,15 +625,20 @@ TELAS.gerador = function (el, cfg) {
   var h = '<div class="card"><h3>Parâmetros</h3><div class="form">';
   h += '<div class="campo"><label for="g-nd">' + (cfg.colunar ? "Números por coluna" : "Dezenas por jogo") + '</label><select id="g-nd">' +
     opcoes(cfg.colunar ? [[1, "1 por coluna"], [2, "2 por coluna"], [3, "3 por coluna"]] : range(cfg.aposta_min, cfg.aposta_max), nd) + "</select></div>";
-  h += '<div class="campo"><label for="g-nj">Quantidade de jogos</label><input id="g-nj" type="number" min="1" max="500" value="' + (ls("nj") || 10) + '"></div>';
-  h += '<div class="campo"><label for="g-es">Estratégia</label><select id="g-es">' + opcoes(MC.ESTRATEGIAS, ls("estr") || "Estatística") + "</select></div>";
+  var maxJ = SRV && ME.limites.geradorMaxJogos ? ME.limites.geradorMaxJogos : 500, pond = !SRV || podeSrv("geradorPonderado").ok, filtrosOk = !SRV || podeSrv("filtros").ok;
+  var estrIni = ls("estr") || "Estatística"; if (!pond) estrIni = "Alta cobertura";
+  h += '<div class="campo"><label for="g-nj">Quantidade de jogos' + (SRV && ME.limites.geradorMaxJogos ? " (até " + maxJ + ")" : "") + '</label><input id="g-nj" type="number" min="1" max="' + maxJ + '" value="' + Math.min(maxJ, ls("nj") || 10) + '"></div>';
+  h += '<div class="campo"><label for="g-es">Estratégia' + (pond ? "" : tagPro("geradorPonderado")) + '</label><select id="g-es">' + MC.ESTRATEGIAS.map(function (e) {
+    var bloq = !pond && e !== "Alta cobertura";
+    return '<option value="' + esc(e) + '"' + (e === estrIni ? " selected" : "") + '>' + esc(e === "Alta cobertura" ? "Aleatória (alta cobertura)" : e + " · ponderada pelo histórico") + (bloq ? " 🔒" : "") + "</option>";
+  }).join("") + "</select></div>";
   if (!cfg.colunar) {
     h += '<div class="campo"><label for="g-smin">Soma mín (0 = auto)</label><input id="g-smin" type="number" min="0" max="5000" value="' + (pf.soma_min || 0) + '"></div>';
     h += '<div class="campo"><label for="g-smax">Soma máx (0 = auto)</label><input id="g-smax" type="number" min="0" max="5000" value="' + (pf.soma_max || 0) + '"></div>';
   }
   h += "</div>";
-  if (!cfg.colunar) h += '<div class="checks">' + MC.FILTROS.map(function (f) {
-    return '<label><input type="checkbox" data-f="' + f[0] + '"' + (pf[f[0]] !== false ? " checked" : "") + "> " + f[1] + "</label>";
+  if (!cfg.colunar) h += '<div class="checks' + (filtrosOk ? "" : " travado") + '">' + (filtrosOk ? "" : '<span class="dica" style="margin:0;width:100%">Filtros de soma, pares, repetidas e sequências' + tagPro("filtros") + "</span>") + MC.FILTROS.map(function (f) {
+    return '<label><input type="checkbox" data-f="' + f[0] + '"' + (filtrosOk && pf[f[0]] !== false ? " checked" : "") + (filtrosOk ? "" : " disabled") + "> " + f[1] + "</label>";
   }).join("") + "</div>";
   if (cfg.extra_nome) {
     var rank = MC.frequenciaExtras(cs(), cfg);
@@ -614,11 +658,12 @@ TELAS.gerador = function (el, cfg) {
     var media = g.scores ? g.scores.reduce(function (a, b) { return a + b; }, 0) / g.scores.length : null;
     box.innerHTML = '<div class="cab"><h3>' + g.jogos.length + ' jogos</h3><span class="dica" style="margin:0">' + esc(g.estr) + (media != null ? ' · MegaScore™ médio <b class="mono">' + media.toFixed(1).replace(".", ",") + "</b>" : "") + "</span></div>" +
       tabela(cabJogos(cfg), linhasJogos(cfg, g), "t-jogos") +
-      '<div class="linha-bts"><button class="bt" data-x="csv" type="button">' + I("baixar") + 'Excel' + tagPro("exportar") + '</button><button class="bt" data-x="txt" type="button">' + I("baixar") + 'TXT</button><button class="bt" data-x="pdf" type="button">' + I("imprimir") + 'PDF</button><button class="bt" data-x="projeto" type="button">' + I("salvar") + 'Salvar projeto</button><button class="bt" data-x="copiar" type="button">' + I("copiar") + 'Copiar</button><span style="flex:1"></span><button class="bt" data-x="sim" type="button">' + I("dado") + 'Simular</button><button class="bt" data-x="conf" type="button">' + I("check") + 'Conferir</button><button class="bt primario" data-x="volante" type="button">' + I("imprimir") + 'Imprimir no volante</button></div>';
+      '<div class="linha-bts"><button class="bt" data-x="csv" type="button">' + I("baixar") + 'Excel' + tagPro("exportar") + '</button><button class="bt" data-x="txt" type="button">' + I("baixar") + 'TXT</button><button class="bt" data-x="pdf" type="button">' + I("imprimir") + 'PDF' + (SRV ? tagPro("relatorioPdf", "simples") : "") + '</button>' + (SRV ? '<button class="bt" data-x="salvar" type="button">' + I("salvar") + "Salvar jogos</button>" : "") + '<button class="bt" data-x="projeto" type="button">' + I("salvar") + 'Salvar projeto</button><button class="bt" data-x="copiar" type="button">' + I("copiar") + 'Copiar</button><span style="flex:1"></span><button class="bt" data-x="sim" type="button">' + I("dado") + 'Simular</button><button class="bt" data-x="conf" type="button">' + I("check") + 'Conferir</button><button class="bt primario" data-x="volante" type="button">' + I("imprimir") + 'Imprimir no volante</button></div>';
     ativarOrdenacao("t-jogos");
     $$("[data-x]", box).forEach(function (b) {
       b.onclick = function () {
         var x = b.dataset.x;
+        if (SRV && (x === "csv" || x === "pdf" || x === "salvar")) { acaoServidor(cfg, g, x, b); return; }
         if (["csv", "txt", "pdf", "projeto"].indexOf(x) >= 0 && !pro("exportar")) return;
         if (x === "pdf") window.print();
         else if (x === "sim") ir(S.lot, "simulador");
@@ -643,6 +688,17 @@ TELAS.gerador = function (el, cfg) {
     ls("nd:" + S.lot, nd); ls("nj", nj); ls("estr", es);
     var mod = $("#g-ex") ? $("#g-ex").value : null;
     S.ger[S.lot] = Object.assign(S.ger[S.lot] || {}, {modoExtra: mod});
+    if (SRV) {
+      if (es !== "Alta cobertura" && !pro("geradorPonderado")) return;
+      if (!pro("geradorJogos", nj)) return;
+      var bt0 = this; bt0.disabled = true;
+      MC_API.post("gerar", {loteria: cfg.chave, jogos: nj, estrategia: es, dezenas: nd, porColuna: nd, filtros: filtrosOk ? lerFiltros() : null}).then(function (d) {
+        if (!d.jogos.length) { status("Nenhum jogo passou nos filtros. Afrouxe os critérios."); return; }
+        definirJogos(cfg, d.jogos, es); desenharRes();
+        status(d.jogos.length < nj ? "Só " + d.jogos.length + " jogos passaram nos filtros." : d.jogos.length + " jogos gerados para a " + cfg.nome + ".");
+      }).catch(function (e) { if (e.codigo !== "plano") status(e.message); }).then(function () { bt0.disabled = false; });
+      return;
+    }
     var jogos = cfg.colunar ? MC.gerarColunar(cs(), cfg, nd, nj, es) : MC.gerarJogos(cs(), cfg, nd, nj, es, lerFiltros());
     if (!jogos.length) { status("Nenhum jogo passou nos filtros. Afrouxe os critérios."); return; }
     definirJogos(cfg, jogos, es);
@@ -654,6 +710,15 @@ TELAS.gerador = function (el, cfg) {
     var g = S.ger[S.lot];
     if (!g || !g.jogos.length) { status("Gere jogos primeiro."); return; }
     var bt = this, pr = $("#g-prog"), met = $("#g-met").value; bt.disabled = true;
+    if (SRV) {
+      bt.innerHTML = I("ia") + "Otimizando…";
+      MC_API.post("otimizar", {loteria: cfg.chave, metodo: met, jogos: g.jogos.slice(0, 50)}).then(function (r) {
+        definirJogos(cfg, r.jogos.map(MC.util.sortN), met); desenharRes();
+        status("Otimização concluída · fitness " + r.fit.toFixed(2) + " · " + r.uso.usado + " de " + r.uso.limite + " execuções hoje");
+      }).catch(function (e) { if (["plano", "limite_diario"].indexOf(e.codigo) < 0) status(e.message); })
+        .then(function () { bt.disabled = false; bt.innerHTML = I("ia") + "Otimizar com MegaCover AI" + tagPro("ia"); });
+      return;
+    }
     MC.otimizar(met, cs(), g.jogos, cfg, function (p, f) { progresso(pr, p); bt.innerHTML = I("ia") + "Fitness " + f.toFixed(2); }).then(function (r) {
       definirJogos(cfg, r.jogos.map(MC.util.sortN), met);
       pr.classList.remove("on"); bt.disabled = false; bt.innerHTML = I("ia") + "Otimizar com MegaCover AI" + tagPro("ia");
@@ -662,6 +727,26 @@ TELAS.gerador = function (el, cfg) {
   };
 };
 function range(a, b) { var o = []; for (var i = a; i <= b; i++) o.push(i); return o; }
+/* exportação, relatórios e jogos salvos pelo servidor */
+function acaoServidor(cfg, g, x, bt) {
+  if (x === "csv" && !pro("exportar")) return;
+  if (x === "pdf" && !pro("relatorioPdf", "simples")) return;
+  var txt0 = bt.innerHTML; bt.disabled = true;
+  var fim = function () { bt.disabled = false; bt.innerHTML = txt0; };
+  if (x === "salvar") {
+    MC_API.post("jogos", {loteria: cfg.chave, jogos: g.jogos.map(function (j, i) { return {dezenas: j, extra: g.extras ? g.extras[i] : null}; })})
+      .then(function (r) { status(r.ids.length + " jogo(s) salvo(s). Veja em Conferir › Meus jogos salvos."); })
+      .catch(function (e) { if (e.codigo !== "plano") status(e.message); }).then(fim);
+    return;
+  }
+  var tipo = x === "pdf" ? (ME.limites.relatorioPdf === "completo" ? "completo" : "simples") : null;
+  MC_API.post("exportar", {loteria: cfg.chave, formato: x, tipo: tipo, jogos: g.jogos, extras: g.extras}, {binario: true}).then(function (blob) {
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = "megacover-" + cfg.chave + "-" + new Date().toISOString().slice(0, 10) + "." + x; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+    status(x === "pdf" ? "Relatório " + tipo + " gerado." : "Planilha gerada.");
+  }).catch(function (e) { if (e.codigo !== "plano") status(e.message); }).then(fim);
+}
 
 /* leva os jogos para a página de impressão no volante */
 function imprimirVolante(cfg, jogos, extras) {
@@ -676,7 +761,7 @@ TELAS.fechamentos = function (el, cfg) {
   var gar = Object.keys(MC.garantias(cfg)), f = S.fech[S.lot];
   var tamPadrao = cfg.aposta_min, baseN = Math.min(cfg.dezenas.length - 1, tamPadrao + (cfg.chave === "lotomania" ? 10 : 4));
   var sel = new Set((ls("base:" + S.lot) || []).filter(function (d) { return d >= cfg.inicio && d <= cfg.universo; }));
-  var h = '<div class="card"><h3>Fechamento inteligente' + tagPro("fechamentos") + '</h3><p class="dica">Escolha a base de dezenas (clique no volante ou digite) e o sistema monta o menor conjunto de jogos que cobre as combinações da faixa-alvo dentro dela.</p>';
+  var h = (SRV ? '<div id="f-prontos"></div>' : "") + '<div class="card"><h3>Fechamento personalizado' + tagPro("fechamentos") + '</h3><p class="dica">Escolha a base de dezenas (clique no volante ou digite) e o sistema monta o menor conjunto de jogos que cobre as combinações da faixa-alvo dentro dela.</p>';
   h += '<div class="volante" id="f-vol">' + cfg.dezenas.map(function (d) { return '<button type="button" data-d="' + d + '"' + (sel.has(d) ? ' class="on"' : "") + ">" + cfg.fmt(d) + "</button>"; }).join("") + "</div>";
   h += '<div class="form" style="margin-top:12px"><div class="campo" style="grid-column:1/-1"><label for="f-base">Base (separe por vírgula ou espaço)</label><input id="f-base" type="text" value="' + Array.from(sel).sort(function (a, b) { return a - b; }).join(", ") + '"></div>';
   h += '<div class="campo"><label for="f-bn">Tamanho da base sugerida</label><input id="f-bn" type="number" min="' + (tamPadrao + 1) + '" max="' + cfg.dezenas.length + '" value="' + baseN + '"></div>';
@@ -717,9 +802,18 @@ TELAS.fechamentos = function (el, cfg) {
     $("#f-usar").onclick = function () { definirJogos(cfg, f.jogos, "Fechamento " + i.perfil); ir(S.lot, "gerador"); };
   }
   desenhar();
+  if (SRV) montarProntos($("#f-prontos"), cfg, function (r) { S.fech[S.lot] = r; desenhar(); $("#f-res").scrollIntoView({behavior: "smooth"}); });
   $("#f-ok").onclick = function () {
     if (!pro("fechamentos")) return;
     var base = lerBase(), tam = +$("#f-tam").value;
+    if (SRV) {
+      var bt1 = this; bt1.disabled = true; bt1.textContent = "Calculando…";
+      MC_API.post("fechamento", {loteria: cfg.chave, base: base, perfil: $("#f-per").value, garantia: $("#f-gar").value, tamanho: tam, max: +$("#f-max").value || null})
+        .then(function (r) { S.fech[S.lot] = r; desenhar(); status(r.jogos.length + " jogos no fechamento."); })
+        .catch(function (e) { if (e.codigo !== "plano") status(e.message); })
+        .then(function () { bt1.disabled = false; bt1.innerHTML = I("alvo") + "Gerar fechamento"; });
+      return;
+    }
     if (base.length - tam > 12 && !confirm("A base tem " + base.length + " dezenas para jogos de " + tam + ". O cálculo pode levar alguns segundos e a cobertura será estimada por amostragem. Continuar?")) return;
     var bt = this, pr = $("#f-prog"); bt.disabled = true; bt.textContent = "Calculando…";
     MC.gerarFechamento(base, cfg, $("#f-per").value, $("#f-gar").value, tam, +$("#f-max").value || null, function (p, n) {
@@ -747,14 +841,53 @@ function fechamentoSuperSete(el, cfg) {
     if (!pro("fechamentos")) return;
     try {
       var t = +$("#s-tot").value, p = $("#s-per").value; ls("ss-tot", t); ls("ss-per", p);
-      var r = MC.fechamentoSS(cs(), cfg, t, p);
+      if (SRV) {
+        MC_API.post("fechamento", {loteria: cfg.chave, total: t, perfil: p}).then(mostrarSS).catch(function (e) { if (e.codigo !== "plano") status(e.message); });
+        return;
+      }
+      mostrarSS(MC.fechamentoSS(cs(), cfg, t, p));
+    } catch (e) { status(e.message); }
+  };
+  function mostrarSS(r) {
+    var p = $("#s-per").value;
+    try {
       $("#s-res").innerHTML = "<h3>Cartão a marcar no volante</h3>" + colunasSS(r.cartao) + '<div class="resumo">' + esc(r.info.observacao) + "</div>" +
         '<h3 style="margin-top:16px">Jogos simples equivalentes (' + fmtN(r.jogos.length) + ")</h3>" +
         tabela(["#", "Jogo"], r.jogos.slice(0, 2187).map(function (j, i) { return [i + 1, j.map(function (c) { return c[0]; }).join(" ")]; })) +
         '<div class="linha-bts"><button class="bt lot" id="s-usar" type="button">Usar o cartão como jogo atual (simular / conferir)</button></div>';
       $("#s-usar").onclick = function () { definirJogos(cfg, [r.cartao], "Fechamento " + p); ir(S.lot, "simulador"); };
     } catch (e) { status(e.message); }
-  };
+  }
+}
+/* catálogo de fechamentos prontos (servidor): matrizes com cobertura conferida aplicadas às dezenas da pessoa */
+function montarProntos(box, cfg, aoGerar) {
+  MC_API.get("fechamentos?loteria=" + cfg.chave, {silencioso: true}).then(function (d) {
+    var L = d.fechamentos; if (!L.length) { box.innerHTML = ""; return; }
+    box.innerHTML = '<div class="card"><h3>Fechamentos prontos</h3><p class="dica">Modelos com cobertura conferida. Escolha um modelo, informe as suas dezenas e o MegaCover monta os jogos.</p><div class="prontos">' +
+      L.map(function (f) {
+        return '<label class="pronto' + (f.permitido ? "" : " travado") + '"><input type="radio" name="fp" value="' + esc(f.id) + '"' + (f.permitido ? "" : ' data-bloq="1"') + '><span><b>' + esc(f.nome) + "</b><small>" + f.qtdJogos + " jogos de " + f.tamanho + " dezenas · cobertura " + String(f.cobertura_pct).replace(".", ",") + "%</small></span>" + (f.permitido ? "" : tagPro("fechamentoPronto", f.id)) + "</label>";
+      }).join("") + '</div><div class="form" style="margin-top:12px"><div class="campo" style="grid-column:1/-1"><label for="fp-dz">Suas dezenas</label><input id="fp-dz" type="text" placeholder="Escolha um modelo acima"></div></div>' +
+      '<div class="linha-bts"><button class="bt lot" id="fp-ok" type="button">' + I("alvo") + 'Montar jogos</button><span id="fp-info" class="dica" style="margin:0"></span></div></div>';
+    var atual = null;
+    $$("input[name=fp]", box).forEach(function (r) {
+      r.onchange = function () {
+        if (r.dataset.bloq) { r.checked = false; atual = null; pro("fechamentoPronto", r.value); return; }
+        atual = L.filter(function (f) { return f.id === r.value; })[0];
+        $("#fp-dz").placeholder = "Digite " + atual.dezenas + " dezenas entre " + cfg.fmt(cfg.inicio) + " e " + cfg.fmt(cfg.universo);
+        $("#fp-info").textContent = atual.dezenas + " dezenas → " + atual.qtdJogos + " jogos";
+      };
+    });
+    $("#fp-ok").onclick = function () {
+      if (!atual) { status("Escolha um modelo de fechamento."); return; }
+      var dz = $("#fp-dz").value.split(/[^0-9]+/).filter(Boolean).map(Number);
+      MC_API.post("fechamentos/aplicar", {id: atual.id, dezenas: dz}).then(function (r) {
+        aoGerar({jogos: r.jogos, info: {qtd_jogos: r.jogos.length, tamanho_jogo: r.jogos[0].length, base: MC.util.sortN(dz), perfil: "Pronto", garantia_alvo: r.fechamento.garantia,
+          calculada_em: atual.acertos, cobertura_pct: r.fechamento.cobertura_pct,
+          observacao: "Fechamento pronto com cobertura conferida dentro das dezenas escolhidas. Organiza seus jogos; não constitui garantia de premiação."}});
+        status(r.jogos.length + " jogos montados.");
+      }).catch(function (e) { if (e.codigo !== "plano") status(e.message); });
+    };
+  }).catch(function () { box.innerHTML = ""; });
 }
 
 /* ---------- Simulador ---------- */
@@ -764,8 +897,12 @@ TELAS.simulador = function (el, cfg) {
     el.innerHTML = h + vazio("dado", "Gere jogos no <b>Gerador</b> (ou use um fechamento) para simular.", '<button class="bt primario" type="button" id="m-ir">' + I("raio") + "Ir para o Gerador</button>") + "</div>";
     $("#m-ir").onclick = function () { ir(S.lot, "gerador"); }; return;
   }
-  h += '<p class="dica">Sorteia aleatoriamente milhares de concursos e mede o melhor acerto do seu conjunto de ' + g.jogos.length + " jogo(s) em cada um.</p>";
-  h += '<div class="form"><div class="campo"><label for="m-n">Simulações</label><select id="m-n">' + opcoes([[10000, "10 mil"], [100000, "100 mil" + (PL.pro.simulacaoGrande ? " · PRO" : "")], [500000, "500 mil" + (PL.pro.simulacaoGrande ? " · PRO" : "")], [1000000, "1 milhão" + (PL.pro.simulacaoGrande ? " · PRO" : "")]], PL.liberado("simulacaoGrande") ? 100000 : 10000) + '</select></div><div class="campo"><button class="bt lot" id="m-ok" type="button">' + I("dado") + 'Simular</button></div></div><div class="progresso" id="m-prog"><i></i></div></div><div id="m-res"></div>';
+  h += '<p class="dica">Teste sua estratégia contra os concursos anteriores e contra milhares de sorteios simulados: o MegaCover mede o melhor acerto do seu conjunto de ' + g.jogos.length + " jogo(s) em cada um.</p>";
+  if (SRV && !podeSrv("monteCarlo").ok) {
+    h += "</div>" + cardBloqueado(podeSrv("monteCarlo"), "Teste sua estratégia contra os concursos anteriores e contra milhares de sorteios simulados antes de apostar.");
+    el.innerHTML = h; return;
+  }
+  h += '<div class="form"><div class="campo"><label for="m-n">Simulações</label><select id="m-n">' + opcoes(SRV ? [[10000, "10 mil"], [100000, "100 mil"], [500000, "500 mil"], [1000000, "1 milhão"]] : [[10000, "10 mil"], [100000, "100 mil" + (PL.pro.simulacaoGrande ? " · PRO" : "")], [500000, "500 mil" + (PL.pro.simulacaoGrande ? " · PRO" : "")], [1000000, "1 milhão" + (PL.pro.simulacaoGrande ? " · PRO" : "")]], SRV || PL.liberado("simulacaoGrande") ? 100000 : 10000) + '</select></div><div class="campo"><button class="bt lot" id="m-ok" type="button">' + I("dado") + 'Simular</button></div></div><div class="progresso" id="m-prog"><i></i></div></div><div id="m-res"></div>';
   if (!cfg.colunar) {
     var n = g.jogos[0].length;
     h += '<div class="card"><h3>Probabilidade exata de uma aposta de ' + n + " dezenas</h3>" + tabela(["Acertos", "Probabilidade", "1 em"], cfg.premios.slice().reverse().map(function (k) {
@@ -774,9 +911,14 @@ TELAS.simulador = function (el, cfg) {
   }
   el.innerHTML = h;
   $("#m-ok").onclick = function () {
-    if (+$("#m-n").value > 10000 && !pro("simulacaoGrande")) return;
+    if (SRV ? !pro("monteCarlo") : (+$("#m-n").value > 10000 && !pro("simulacaoGrande"))) return;
     var bt = this, pr = $("#m-prog"), ns = +$("#m-n").value; bt.disabled = true;
-    MC.monteCarlo(g.jogos, cfg, ns, function (p) { progresso(pr, p); }).then(function (r) {
+    var ant = null;
+    var prom = SRV
+      ? MC_API.post("montecarlo", {loteria: cfg.chave, jogos: g.jogos.slice(0, 100), simulacoes: ns}).then(function (d) {
+          ant = d.anteriores; status("Simulação concluída · " + d.uso.usado + " de " + d.uso.limite + " execuções hoje"); return d.resultado; })
+      : MC.monteCarlo(g.jogos, cfg, ns, function (p) { progresso(pr, p); }).then(function (r) { ant = MC.historicoConjunto(g.jogos, cs(), cfg); return r; });
+    prom.catch(function (e) { bt.disabled = false; pr.classList.remove("on"); if (["plano", "limite_diario"].indexOf(e.codigo) < 0) status(e.message); throw e; }).then(function (r) {
       bt.disabled = false; pr.classList.remove("on");
       var ks = Object.keys(r.dist).map(Number).sort(function (a, b) { return a - b; });
       var hh = '<div class="kpis">' + kpi("Média do melhor acerto", r.media.toFixed(3).replace(".", ","), fmtN(r.simulacoes) + " simulações");
@@ -785,8 +927,16 @@ TELAS.simulador = function (el, cfg) {
       });
       hh += '</div><div class="card"><h3>Distribuição do melhor acerto</h3>' + grafico(ks.map(function (k) { return k + " ac."; }), ks.map(function (k) { return r.dist[k]; }), {altura: 240}) +
         '<p class="dica" style="margin-top:8px">Estimativas empíricas por amostragem — não constituem previsão nem garantia de prêmio.</p></div>';
+      if (ant && ant.concursos) {
+        var kk = Object.keys(ant.dist).map(Number).sort(function (a, b) { return a - b; });
+        hh = '<div class="card"><h3>Nos concursos anteriores</h3><p class="dica">Como o seu conjunto teria ido nos ' + fmtN(ant.concursos) + " concursos reais (nº " + fmtN(ant.de) + " a " + fmtN(ant.ate) + ").</p>" +
+          '<div class="kpis">' + kpi("Média do melhor acerto", ant.media.toFixed(3).replace(".", ","), "nos concursos reais") +
+          cfg.premios.slice().reverse().map(function (fx) { return kpi(fx + "+ acertos", fmtN(ant.faixas[fx] || 0) + "×", "concursos com essa faixa"); }).join("") + "</div>" +
+          grafico(kk.map(function (k) { return k + " ac."; }), kk.map(function (k) { return ant.dist[k]; }), {altura: 200}) + "</div>" +
+          '<h3 style="margin:18px 0 10px">Em sorteios simulados</h3>' + hh;
+      }
       $("#m-res").innerHTML = hh;
-    });
+    }).catch(function () {});
   };
 };
 
@@ -810,7 +960,9 @@ TELAS.conferir = function (el, cfg) {
   h += '<textarea id="c-txt" spellcheck="false">' + esc(txt) + "</textarea>";
   h += '<div class="form" style="margin-top:10px"><div class="campo"><label for="c-num">Concurso</label><input id="c-num" type="number" min="' + (c[0] ? c[0].concurso : 1) + '" max="' + (u ? u.concurso : 1) + '" value="' + (u ? u.concurso : "") + '"></div><div class="campo"><button class="bt lot" id="c-ok" type="button">' + I("check") + 'Conferir no concurso</button></div><div class="campo"><button class="bt" id="c-hist" type="button">' + I("historico") + 'Todo o histórico' + tagPro("historico") + '</button></div>' +
     (g && g.jogos.length ? '<div class="campo"><button class="bt" id="c-atuais" type="button">Usar jogos atuais</button></div>' : "") + "</div></div><div class=\"card\" id=\"c-res\"></div>";
+  if (SRV) h += '<div class="card" id="c-salvos"></div>';
   el.innerHTML = h;
+  if (SRV) montarSalvos(cfg);
   $("#c-res").innerHTML = '<h3>Resultado</h3>' + vazio("check", "Cole seus jogos (um por linha) e confira.");
   $("#c-txt").oninput = function () { ls("conf:" + S.lot, this.value); };
   if ($("#c-atuais")) $("#c-atuais").onclick = function () { $("#c-txt").value = g.jogos.map(function (j) { return textoJogo(cfg, j); }).join("\n"); ls("conf:" + S.lot, null); };
@@ -847,8 +999,37 @@ TELAS.conferir = function (el, cfg) {
   };
 };
 
+/* jogos salvos no servidor (limite por plano) */
+function montarSalvos(cfg) {
+  var box = $("#c-salvos"); if (!box) return;
+  MC_API.get("jogos?loteria=" + cfg.chave, {silencioso: true}).then(function (d) {
+    var lim = d.limite, J = d.jogos;
+    box.innerHTML = '<div class="cab"><h3>Meus jogos salvos</h3><span class="dica" style="margin:0">' + J.length + (lim ? " de " + lim + " (todas as loterias contam)" : "") + "</span></div>" +
+      (J.length ? tabela(["#", "Jogo", ""], J.map(function (j, i) {
+        return [i + 1, {h: cfg.colunar ? colunasSS(j.dezenas) : bolas(cfg, j.dezenas, null, true), s: i}, {h: '<button class="bt icone" type="button" data-apagar="' + j.id + '" aria-label="Apagar">' + I("lixo") + "</button>", s: 0}];
+      }), "t-salvos") + '<div class="linha-bts"><button class="bt lot" id="c-usar-salvos" type="button">' + I("check") + "Conferir os salvos</button>" +
+        (ME && ME.limites.avisoEmail ? '<span class="dica" style="margin:0">Você recebe o resultado destes jogos por e-mail depois de cada sorteio.</span>' : '<span class="dica" style="margin:0">Aviso de resultado por e-mail' + tagPro("avisoEmail") + "</span>") + "</div>"
+        : vazio("salvar", "Gere jogos e use <b>Salvar jogos</b> no Gerador para guardá-los aqui."));
+    $$("[data-apagar]", box).forEach(function (b) {
+      b.onclick = function () { MC_API.del("jogos?id=" + b.dataset.apagar).then(function () { montarSalvos(cfg); }); };
+    });
+    if ($("#c-usar-salvos")) $("#c-usar-salvos").onclick = function () {
+      $("#c-txt").value = J.map(function (j) { return textoJogo(cfg, j.dezenas); }).join("\n"); $("#c-ok").click();
+    };
+  }).catch(function () { box.innerHTML = ""; });
+}
+
 /* ---------- Dados ---------- */
 TELAS.dados = function (el, cfg) {
+  if (SRV) {
+    var m = S.meta[S.lot] || {}, cc = cs();
+    el.innerHTML = '<div class="card"><h3>Resultados</h3><p class="dica">Os resultados são atualizados automaticamente pelo servidor do MegaCover depois de cada sorteio. Confira sempre o resultado oficial em loterias.caixa.gov.br.</p>' +
+      '<div class="resumo">Concursos liberados no seu plano: <b>' + fmtN(cc.length) + "</b>" + (m.limitado ? " de " + fmtN(m.total) + " · histórico completo nos planos pagos" : " (histórico completo)") +
+      (cc.length ? "<br>Último concurso: <b>" + fmtN(cc[cc.length - 1].concurso) + "</b> · " + esc(cc[cc.length - 1].data) : "") + "</div>" +
+      (m.limitado ? '<div class="linha-bts"><button class="bt primario" type="button" id="x-hist">' + I("coroa") + "Liberar o histórico completo</button></div>" : "") + "</div>";
+    if ($("#x-hist")) $("#x-hist").onclick = function () { pro("historicoCompleto"); };
+    return;
+  }
   var c = cs(), add = ls("add:" + S.lot) || [], sy = ls("sync:" + S.lot);
   var nCols = cfg.colunar ? 7 : cfg.sorteadas * cfg.sorteios;
   var h = '<div class="grade g2"><div class="card"><h3>Atualizar resultados</h3><p class="dica">O painel sincroniza sozinho ao abrir e a cada 15 minutos: primeiro pela API pública que lê a CAIXA em tempo real, depois pela base do GitHub (eitchtee/loterias.json) como reserva. Os concursos novos ficam salvos neste navegador. Use o botão para forçar agora.</p>' +
@@ -967,6 +1148,56 @@ function tema() {
     var novo = escuro ? "light" : "dark"; document.documentElement.setAttribute("data-theme", novo); ls("tema", novo);
   };
 }
+/* ======================= Planos no modo servidor ======================= */
+/* o que o plano mínimo acrescenta ao plano atual (lido de regras.json) */
+function ganhos(min) {
+  if (!min || !REGRAS) return [];
+  return PERM.perdas(REGRAS, min.id, ME ? ME.plano : "gratis").filter(function (x) { return x.antes !== "—"; });
+}
+function linkAssinar(min) { return "planos.html?plano=" + (min ? min.id : "pro"); }
+function cardBloqueado(r, texto) {
+  var min = r && r.planoMinimo, g = ganhos(min).slice(0, 6);
+  return '<div class="card bloqueado"><div class="cab"><h3>' + I("cadeado") + esc(r && r.nome || "Recurso dos planos pagos") + "</h3>" +
+    (min ? '<span class="pro">Plano ' + esc(min.nome) + "</span>" : "") + "</div>" + (texto ? '<p class="dica">' + texto + "</p>" : "") +
+    (g.length ? '<p style="margin:10px 0 6px;font-weight:700">O plano ' + esc(min.nome) + ' inclui:</p><ul class="ganhos">' +
+      g.map(function (x) { return "<li>" + I("check") + "<span>" + esc(x.rotulo) + ": <b>" + esc(x.antes) + "</b></span></li>"; }).join("") + "</ul>" : "") +
+    '<div class="linha-bts"><a class="bt primario" href="' + linkAssinar(min) + '">' + I("coroa") + "Assinar o " + esc(min ? min.nome : "Pro") + '</a><a class="bt" href="planos.html">Comparar planos</a></div></div>';
+}
+function cardErro(e) {
+  if (e && e.codigo === "plano") return cardBloqueado({nome: e.dados.nome, planoMinimo: e.dados.planoMinimo}, esc(e.message));
+  return '<div class="card">' + vazio("info", esc(e && e.message || "Não foi possível carregar agora. Tente de novo.")) + "</div>";
+}
+function ligarBloqueados() {}
+/* aviso ao tentar usar um recurso bloqueado: o que perderia/ganharia e botão direto para assinar */
+function upsell(r) {
+  var min = r && r.planoMinimo, g = ganhos(min);
+  abrirModal('<div class="sobre">Recurso do plano ' + esc(min ? min.nome : "pago") + '</div><h2 id="modal-titulo">' + esc(r && r.nome || "Recurso bloqueado") + "</h2>" +
+    (ME && ME.origem === "teste" ? "" : '<p>Seu plano atual é o <b>' + esc(ME ? ME.planoNome : "Grátis") + "</b>." + (min ? " Com o " + esc(min.nome) + " você passa a ter:" : "") + "</p>") +
+    (g.length ? "<ul>" + g.map(function (x) { return "<li>" + I("check") + "<span>" + esc(x.rotulo) + ": <b>" + esc(x.antes) + "</b></span></li>"; }).join("") + "</ul>" : "") +
+    '<div class="linha-bts"><a class="bt primario" href="' + linkAssinar(min) + '">' + I("coroa") + "Assinar o " + esc(min ? min.nome : "Pro") + '</a><button class="bt" type="button" data-fechar>Agora não</button></div>');
+}
+function avisoLimite(e) {
+  abrirModal('<div class="sobre">Limite diário</div><h2 id="modal-titulo">Você usou as execuções de hoje</h2><p>' + esc(e.message) + '</p><div class="linha-bts"><button class="bt primario" type="button" data-fechar>Entendi</button></div>');
+}
+/* contador do teste Elite e selo do plano no topo */
+function barraPlano() {
+  var box = $("#selo-plano"); if (!box || !ME) return;
+  if (ME.teste) {
+    var d = ME.teste.diasRestantes, urg = d <= 2;
+    box.innerHTML = '<button class="bt selo-teste' + (urg ? " urgente" : "") + '" type="button" id="bt-teste">' + I("coroa") + '<span>Elite grátis · <b>' + (d <= 0 ? "último dia" : "faltam " + d + " dia" + (d > 1 ? "s" : "")) + "</b></span></button>";
+    $("#bt-teste").onclick = modalTeste;
+  } else {
+    box.innerHTML = '<a class="bt selo-plano" href="conta.html">' + I("escudo") + "<span>Plano <b>" + esc(ME.planoNome) + "</b></span></a>";
+  }
+}
+function modalTeste() {
+  var t = ME.teste, d = t.diasRestantes;
+  abrirModal('<div class="sobre">Teste grátis do Elite</div><h2 id="modal-titulo">' + (d <= 0 ? "Seu teste termina hoje" : "Faltam " + d + " dia" + (d > 1 ? "s" : "") + " de Elite") + "</h2>" +
+    "<p>Quando o teste acabar, sua conta passa para o plano <b>Grátis</b>. Você deixa de ter:</p><ul>" +
+    t.perdas.map(function (x) { return "<li>" + I("x") + "<span>" + esc(x.rotulo) + ": <b>" + esc(x.antes) + "</b> → " + esc(x.depois) + "</span></li>"; }).join("") +
+    '</ul><div class="linha-bts"><a class="bt primario" href="planos.html?plano=elite">' + I("coroa") + 'Assinar o Elite</a><a class="bt" href="planos.html?plano=pro">Ver o Pro</a><button class="bt fantasma" type="button" data-fechar>Continuar testando</button></div>');
+}
+
 /* ======================= Plano / Beta ======================= */
 var AU = window.MC_AUTH, CONTA = {usuario: null};
 function planoCard() {
@@ -1031,16 +1262,50 @@ function boasVindas() {
 
 function montarUltimos() {
   MC.ORDEM.forEach(function (l) {
+    if (SRV && !podeSrv("loteria", l.chave).ok) { var el0 = $("#ult-" + l.chave); if (el0) el0.innerHTML = I("cadeado"); return; }
     carregar(l.chave).then(function (c) { var el = $("#ult-" + l.chave); if (el && c.length) el.textContent = "nº " + c[c.length - 1].concurso; });
   });
 }
 function iniciar() {
+  if (SRV) return iniciarServidor();
   tema(); montarNav(); boasVindas(); conta();
   $("#bt-atualizar-todas").onclick = atualizarTodas;
   var h = location.hash.replace("#", "").split("/"), u = ls("ultima") || [];
   window.addEventListener("hashchange", function () { var p = location.hash.replace("#", "").split("/"); if (p[0] !== S.lot || p[1] !== S.aba) ir(p[0], p[1]); });
   ir(h[0] || u[0] || "megasena", h[1] || u[1] || "dashboard");
   setTimeout(montarUltimos, 600);
+}
+/* modo servidor: exige login, carrega as regras e o plano da pessoa e liga os avisos da API */
+function iniciarServidor() {
+  tema();
+  var encerrada = false;   // depois do aviso de sessão derrubada, não redireciona por cima dele
+  MC_API.quando("login", function () { if (!encerrada) location.href = "conta.html?volta=" + encodeURIComponent("app.html" + location.hash); });
+  MC_API.quando("sessao_encerrada", function (e) {
+    if (encerrada) return; encerrada = true;
+    abrirModal('<div class="sobre">Sessão encerrada</div><h2 id="modal-titulo">Sua conta foi aberta em outro aparelho</h2><p>' + esc(e.message) +
+      '</p><div class="linha-bts"><a class="bt primario" href="conta.html?motivo=sessao&volta=app.html" data-obrigatorio>Entrar novamente</a></div>');
+    window.MC_AUTH.sair();
+  });
+  MC_API.quando("plano", function (e) { upsell({nome: e.dados.nome, planoMinimo: e.dados.planoMinimo}); });
+  MC_API.quando("limite", avisoLimite);
+  var bt = $("#bt-atualizar-todas"); if (bt) bt.hidden = true;
+  Promise.all([fetch("assets/regras.json", {cache: "no-cache"}).then(function (r) { return r.json(); }), window.MC_AUTH.sessao()]).then(function (x) {
+    REGRAS = x[0];
+    if (!x[1]) { location.href = "conta.html?volta=" + encodeURIComponent("app.html" + location.hash); return null; }
+    return MC_API.post("sessao", {}).then(function () { return MC_API.get("me"); });
+  }).then(function (me) {
+    if (!me) return;
+    ME = me;
+    montarNav(); conta(); barraPlano();
+    $("#bt-atualizar-todas").onclick = null;
+    var h = location.hash.replace("#", "").split("/"), u = ls("ultima") || [];
+    window.addEventListener("hashchange", function () { var p = location.hash.replace("#", "").split("/"); if (p[0] !== S.lot || p[1] !== S.aba) ir(p[0], p[1]); });
+    ir(h[0] || u[0] || "megasena", h[1] || u[1] || "dashboard");
+    setTimeout(montarUltimos, 600);
+  }).catch(function (e) {
+    if (e && (e.status === 401)) return;
+    $("#conteudo").innerHTML = '<div class="card">' + vazio("info", "Não foi possível conectar ao servidor do MegaCover. Verifique a internet e recarregue a página.") + "</div>";
+  });
 }
 iniciar();
 })();

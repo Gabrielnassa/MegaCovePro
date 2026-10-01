@@ -298,3 +298,27 @@ td.num{text-align:right;font-family:var(--f-num);font-size:13.5px}
 
 /* o atributo hidden vence qualquer display definido em classes */
 [hidden]{display:none!important}
+
+/* ===== modo servidor: planos, bloqueios e teste ===== */
+.pro .ic{width:11px;height:11px;margin-right:3px;vertical-align:-1px}
+.card.bloqueado{border-style:dashed;border-color:color-mix(in srgb,var(--ouro) 45%,var(--borda));background:radial-gradient(100% 80% at 0% 0%,var(--ouro-bg),transparent 60%),var(--painel)}
+.card.bloqueado h3{display:flex;align-items:center;gap:8px}
+.card.bloqueado h3 .ic{color:var(--ouro)}
+ul.ganhos,.modal ul{list-style:none;padding:0;margin:8px 0 14px;display:grid;gap:8px}
+ul.ganhos li,.modal ul li{display:flex;gap:9px;align-items:flex-start;font-size:14px;color:var(--txt2)}
+ul.ganhos .ic,.modal ul li .ic{color:var(--ok);flex:none;margin-top:2px}
+.modal ul li .ic[viewBox] path[d^="M6 6"]{stroke:var(--perigo,#e5484d)}
+.selo-teste,.selo-plano{font-size:13px;gap:7px}
+.selo-teste{border-color:color-mix(in srgb,var(--ouro) 60%,transparent);background:var(--ouro-bg);color:var(--txt)}
+.selo-teste .ic,.selo-plano .ic{color:var(--ouro)}
+.selo-teste.urgente{border-color:var(--perigo,#e5484d);animation:pulso 2.4s infinite}
+@media (max-width:700px){.selo-teste span,.selo-plano span{display:none}}
+.checks.travado{opacity:.6}
+.prontos{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.pronto{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--borda);border-radius:12px;padding:10px 12px;cursor:pointer;background:var(--painel2)}
+.pronto:has(input:checked){border-color:var(--ouro);box-shadow:0 0 0 3px var(--ouro-bg)}
+.pronto input{margin-top:3px;accent-color:var(--ouro)}
+.pronto b{display:block;font-size:14px}
+.pronto small{color:var(--txt3);font-size:12.5px}
+.pronto.travado{opacity:.75}
+.pronto .pro{margin-left:auto;flex:none}

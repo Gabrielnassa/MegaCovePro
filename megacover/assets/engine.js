@@ -644,8 +644,59 @@ function fechamentoSS(cs, cfg, total, perfil, maxExp) {
 }
 
 /* ======================= Conferência ======================= */
+/* Desempenho do conjunto nos concursos reais anteriores: melhor acerto do conjunto em cada concurso. */
+function historicoConjunto(jogos, cs, cfg) {
+  var faixas = {}, dist = {}, soma = 0;
+  cfg.premios.forEach(function (p) { faixas[p] = 0; });
+  cs.forEach(function (con) {
+    var melhor = 0;
+    jogos.forEach(function (j) { var h = Math.max.apply(null, conferir(j, con, cfg)); if (h > melhor) melhor = h; });
+    dist[melhor] = (dist[melhor] || 0) + 1; soma += melhor;
+    cfg.premios.forEach(function (p) { if (melhor >= p) faixas[p]++; });
+  });
+  return {concursos: cs.length, de: cs.length ? cs[0].concurso : null, ate: cs.length ? cs[cs.length - 1].concurso : null,
+          media: cs.length ? soma / cs.length : 0, dist: dist, faixas: faixas};
+}
+/* ---------- dados prontos para as telas (mesma função no servidor e no site) ---------- */
+function dadosEstatisticas(c, cfg, completas, janela) {
+  var out = {nivel: completas ? "completas" : "basicas", concursos: c.length};
+  if (cfg.colunar) {
+    out.porColuna = porColuna(c, cfg);
+    out.atrasoPorColuna = [];
+    for (var col = 0; col < cfg.colunas; col++) {
+      var ult = {}, at = {};
+      c.forEach(function (x, i) { ult[x.dezenas[col]] = i; });
+      cfg.dezenas.forEach(function (d) { at[d] = ult[d] == null ? c.length : c.length - 1 - ult[d]; });
+      out.atrasoPorColuna.push(at);
+    }
+    return out;
+  }
+  out.frequencias = frequencias(c, cfg);
+  out.atrasos = atrasos(c, cfg);
+  if (completas) {
+    out.janela = janela || 20;
+    out.tendencia = tendencia(c, cfg, out.janela);
+    if (cfg.extra_nome) { out.extras = frequenciaExtras(c, cfg); out.atrasoExtras = atrasoExtras(c, cfg); }
+  }
+  return out;
+}
+function dadosPadroes(c, cfg) {
+  if (cfg.colunar) {
+    var rep = 0;
+    for (var i = 1; i < c.length; i++) for (var k = 0; k < cfg.colunas; k++) if (c[i].dezenas[k] === c[i - 1].dezenas[k]) rep++;
+    return {colunar: true, somas: c.map(function (x) { return soma(x.dezenas); }), repeticaoMedia: rep / Math.max(1, c.length - 1)};
+  }
+  var rp = mediaRepeticao(c, cfg), pr = 0, ns = 0;
+  c.forEach(function (x) { sorteiosDe(x, cfg).forEach(function (st) { pr += primos(st); ns++; }); });
+  var out = {paresImpares: distParesImpares(c, cfg).mostCommon(), somas: distSomas(c, cfg), sequencias: distSequencias(c, cfg).mostCommon(),
+    repeticao: {media: rp.media, dist: rp.dist.mostCommon()}, faixas: distFaixasHistorica(c, cfg),
+    limitesSoma: limitesSoma(cfg.sorteadas, cfg), primosMedia: ns ? pr / ns : 0};
+  if (cfg.chave === "lotofacil") { var mm = 0; c.forEach(function (x) { mm += molduraMiolo(x.dezenas)[1]; }); out.mioloMedia = c.length ? mm / c.length : 0; }
+  return out;
+}
+
 /* ---------- formato dos dados: [concurso, "dd/mm/aaaa", dezenas, extra] → objeto ---------- */
-function normTime(s) { return String(s || "").replace(/\s+/g, " ").replace(/\s*\/\s*/g, "/").trim().toUpperCase(); }
+function normTime(s) { return String(s || "").replace(/\u0000/g, "").replace(/\s+/g, " ").replace(/\s*\/\s*/g, "/").trim().toUpperCase(); }
 function rowParaConcurso(cfg, r) {
   var dz = (r[2] || []).map(Number), extra = "";
   if (cfg.sorteios > 1) dz = dz.concat((r[3] || []).map(Number));
@@ -680,7 +731,8 @@ var MC = {
   otimizar: otimizar, monteCarlo: monteCarlo, probExata: probExata,
   garantias: garantias, gerarFechamento: gerarFechamento, sugerirBase: sugerirBase,
   custoSS: custoSS, validarSS: validarSS, distribuirColunas: distribuirColunas, fechamentoSS: fechamentoSS,
-  conferir: conferir, rowParaConcurso: rowParaConcurso, normTime: normTime
+  conferir: conferir, rowParaConcurso: rowParaConcurso, normTime: normTime,
+  dadosEstatisticas: dadosEstatisticas, dadosPadroes: dadosPadroes, historicoConjunto: historicoConjunto
 };
 if (typeof module !== "undefined" && module.exports) module.exports = MC;
 else root.MC = MC;

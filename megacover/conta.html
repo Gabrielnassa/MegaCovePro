@@ -249,6 +249,7 @@
   if (P.loginGoogle) $("#google-box").hidden = false;
   modoAcesso(modo);
   if (q.get("confirmado") === "1") msg("E-mail confirmado. Agora é só entrar.", true);
+  if (q.get("motivo") === "sessao") msg("Sua conta foi aberta em outro aparelho e a sessão anterior foi encerrada. Entre novamente.");
   if (q.get("modo") === "nova-senha") ver("v-nova");
 
   var veioDoGoogle = /access_token|code=/.test(location.hash + location.search);
