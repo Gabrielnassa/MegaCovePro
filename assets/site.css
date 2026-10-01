@@ -150,3 +150,35 @@
 .garantias .ic{color:var(--ouro);flex:none;width:22px;height:22px}
 @media (max-width:900px){.garantias{grid-template-columns:1fr}.comparar{font-size:13px}.comparar th,.comparar td{padding:10px 8px}}
 .tabela-rola{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ---------- planos: economia do anual, plano em foco e checkout ---------- */
+.plano .obs b{color:var(--txt2)}
+.plano .eco{display:inline-block;margin-top:8px;font-size:12px;font-weight:700;color:var(--ok);background:var(--ok-bg);border-radius:999px;padding:3px 10px;align-self:flex-start}
+.plano.foco{outline:2px solid var(--ouro);outline-offset:4px}
+.modal .caixa.checkout{width:min(480px,100%)}
+.checkout .ciclo.mini{margin:6px 0 14px}
+.checkout .ciclo.mini button{padding:7px 16px;font-size:13px}
+.checkout .formas{display:grid;gap:8px;margin-bottom:14px}
+.checkout .forma{display:flex;align-items:center;gap:12px;border:1px solid var(--borda2);border-radius:12px;padding:11px 14px;cursor:pointer;background:var(--bg2)}
+.checkout .forma.sel{border-color:var(--ouro);background:var(--ouro-bg)}
+.checkout .forma input{accent-color:var(--ouro);margin:0}
+.checkout .forma span:first-of-type{display:flex;flex-direction:column;flex:1;min-width:0}
+.checkout .forma small{color:var(--txt3);font-size:12px}
+.checkout .forma .vl{font-family:var(--f-num);font-weight:600;font-size:16px}
+.checkout form{display:grid;gap:12px}
+.checkout .campo>span{font-size:12px;font-weight:700;color:var(--txt2)}
+.checkout .campo>span small{font-weight:500;color:var(--txt3)}
+.checkout .campo input{width:100%;font:15px var(--f-texto);padding:11px 13px;border-radius:10px;border:1px solid var(--borda2);background:var(--bg2);color:var(--txt)}
+.checkout .campo small.ok{color:var(--ok)}
+.checkout .campo small.erro,.checkout p.erro{color:var(--perigo)}
+.checkout .cupom{display:flex;gap:8px}
+.checkout .cupom input{text-transform:uppercase}
+.checkout .total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--borda);padding-top:12px}
+.checkout .total b{font-family:var(--f-num);font-size:22px}
+.checkout .total s{color:var(--txt3);font-size:15px;font-weight:500}
+.checkout .letra{font-size:12.5px;color:var(--txt3);margin:0}
+.checkout .linha-bts{margin-top:4px}
+.checkout .linha-bts .bt.primario{flex:1}
+.comparar td{font-size:13.5px}
+[data-beta][hidden],[data-lancado][hidden]{display:none!important}
+@media (max-width:480px){.topo-site .bt{padding:8px 12px;font-size:13px;white-space:nowrap}}

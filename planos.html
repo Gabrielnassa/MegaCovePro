@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=JetBrains+Mono:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=20261001a">
-<link rel="stylesheet" href="assets/site.css?v=20261001a">
+<link rel="stylesheet" href="assets/style.css?v=20261001d">
+<link rel="stylesheet" href="assets/site.css?v=20261001d">
 <script>try{var t=localStorage.getItem("mc:tema");if(t)document.documentElement.setAttribute("data-theme",JSON.parse(t))}catch(e){}</script>
 </head>
 <body class="site">
@@ -56,12 +56,15 @@
     <div class="envolve">
       <div class="cab-secao"><div class="sobre">Dúvidas sobre os planos</div><h2>Antes de assinar.</h2></div>
       <div class="faq">
-        <details><summary>Posso usar de graça?</summary><p>Sim. O plano Grátis não tem prazo: histórico completo, estatísticas, gerador com MegaScore™ e o volante virtual para imprimir. Durante o Beta, todos os recursos dos planos pagos também estão liberados sem custo.</p></details>
-        <details><summary>Qual a diferença entre mensal e anual?</summary><p>O conteúdo é o mesmo. No anual você paga uma vez por ano e economiza em relação a doze meses do plano mensal.</p></details>
-        <details><summary>Como cancelo?</summary><p>Pela plataforma de pagamento ou falando com o suporte. No mensal não há multa: o plano fica ativo até o fim do mês já pago e não renova.</p></details>
+        <details><summary>Posso usar de graça?</summary><p>Sim. O plano Grátis não tem prazo: Mega-Sena e Lotofácil, gerador de até 10 jogos, estatísticas básicas, conferência e o volante virtual para imprimir. E toda conta nova começa com 7 dias do Elite completo, sem cartão de crédito.</p></details>
+        <details><summary>O que acontece quando o teste de 7 dias acaba?</summary><p>Sua conta passa sozinha para o plano Grátis, sem cobrança nenhuma. Seus jogos salvos continuam lá. Se quiser manter os recursos, é só assinar o Pro ou o Elite.</p></details>
+        <details><summary>Qual a diferença entre mensal e anual?</summary><p>O conteúdo é o mesmo. No anual você paga uma vez por ano e economiza em relação a doze meses do mensal, ainda mais no Pix.</p></details>
+        <details><summary>Quais formas de pagamento são aceitas?</summary><p>Pix e cartão de crédito, no mensal e no anual. O pagamento é feito na página segura do Asaas: o MegaCover não recebe nem guarda dados do seu cartão. O CPF é pedido só na hora de assinar, porque o Asaas exige para emitir a cobrança.</p></details>
+        <details><summary>Tenho um cupom. Onde uso?</summary><p>Na tela de pagamento, no campo "Cupom de desconto". Se você recebeu um link com o cupom, ele já vem preenchido.</p></details>
+        <details><summary>Como cancelo?</summary><p>Em Minha conta, com um clique. Não há multa: o plano fica ativo até o fim do período já pago e não renova.</p></details>
+        <details><summary>E se o pagamento atrasar?</summary><p>Você tem 3 dias de tolerância com o plano funcionando normalmente. Depois disso a conta volta para o Grátis até o pagamento ser confirmado.</p></details>
         <details><summary>Posso trocar de plano depois?</summary><p>Sim. Você pode passar do Pro para o Elite a qualquer momento, e o novo plano vale assim que o pagamento é confirmado.</p></details>
-        <details><summary>Quais formas de pagamento são aceitas?</summary><p>Pix e cartão de crédito, pela plataforma de pagamento. O MegaCover não recebe nem guarda dados do seu cartão.</p></details>
-        <details><summary>A assinatura aumenta minhas chances de ganhar?</summary><p>Não existe método capaz de prever um sorteio. Os planos dão mais ferramentas estatísticas e combinatórias para organizar seus jogos, não garantia de prêmio. Jogue com responsabilidade.</p></details>
+        <details><summary>A assinatura aumenta minhas chances de ganhar?</summary><p>Não. Nenhum método prevê um sorteio. Os planos dão ferramentas para organizar seus jogos, reduzir o custo das apostas com fechamentos e testar sua estratégia contra os concursos anteriores, sem promessa de prêmio. Jogue com responsabilidade.</p></details>
       </div>
     </div>
   </section>
@@ -81,25 +84,16 @@
   </div>
 </footer>
 
-<script src="assets/plano.js?v=20261001a"></script>
+<script src="assets/plano.js?v=20261001d"></script>
+<script src="assets/permissoes.js?v=20261001d"></script>
 <script src="assets/vendor/supabase.min.js"></script>
-<script src="assets/auth.js?v=20261001a"></script>
-<script src="assets/planos.js?v=20261001a"></script>
+<script src="assets/auth.js?v=20261001d"></script>
+<script src="assets/api.js?v=20261001d"></script>
+<script src="assets/planos.js?v=20261001d"></script>
 <script>
-(function () {
-  var P = window.MC_PLANO;
-  MC_PLANOS.iniciar(document.getElementById("planos-grade"));
-  MC_PLANOS.continuarAssinatura();
-  if (P.loginAtivo()) document.getElementById("lk-conta").hidden = false;
-  /* tabela de comparação: cada linha diz em qual plano o recurso começa */
-  var ok = '<svg class="ic" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>';
-  var linhas = [["Histórico completo das 9 loterias", 0], ["Estatísticas, atrasos e padrões", 0], ["Gerador com MegaScore™", 0], ["Volante virtual para imprimir", 0], ["Conferência no último concurso", 0]];
-  Object.keys(P.recursos).forEach(function (k) { linhas.push([P.recursos[k].nome, P.recursos[k].nivel]); });
-  linhas.push(["Gerador sem limite de jogos", 2], ["Suporte prioritário pelo WhatsApp", 2]);
-  var esc = function (s) { return String(s).replace(/[&<>]/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;"}[c]; }); };
-  document.getElementById("comparar").innerHTML = "<thead><tr><th>Recurso</th>" + P.planos.map(function (p) { return '<th class="' + (p.destaque ? "destaque" : "") + '">' + esc(p.nome) + "</th>"; }).join("") + "</tr></thead><tbody>" +
-    linhas.map(function (l) { return "<tr><td>" + esc(l[0]) + "</td>" + P.planos.map(function (p) { return p.nivel >= l[1] ? "<td>" + ok + "</td>" : '<td class="nao">—</td>'; }).join("") + "</tr>"; }).join("") + "</tbody>";
-})();
+MC_PLANOS.iniciar(document.getElementById("planos-grade"));
+MC_PLANOS.comparar(document.getElementById("comparar"));
+if (MC_PLANO.loginAtivo()) document.getElementById("lk-conta").hidden = false;
 </script>
 </body>
 </html>

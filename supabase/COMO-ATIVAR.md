@@ -1,64 +1,168 @@
-# Login e assinatura com Supabase
+# Como ativar os planos do MegaCover
 
-O site já vem com a tela de conta (`conta.html`), o cliente oficial do Supabase e a leitura da assinatura.
-Falta só criar o projeto e colar duas chaves. Leva uns 10 minutos.
+Tudo já está pronto no código. Falta criar as contas nos serviços, guardar as chaves nos **segredos do GitHub**
+e virar uma chave no site. Nenhuma senha ou chave secreta vai dentro do código.
 
-## 1. Criar o projeto
-1. Entre em https://supabase.com e crie uma conta (o plano gratuito basta para começar).
-2. **New project** → nome `megacover`, região **South America (São Paulo)**, defina a senha do banco e guarde.
-3. Aguarde o projeto ficar pronto (1 a 2 minutos).
+| Serviço | Para quê | Custo para começar |
+|---|---|---|
+| **Supabase** | contas, banco de dados e o servidor (API) que decide o que cada plano pode usar | grátis |
+| **Asaas** | cobrança por Pix e cartão, mensal e anual | só taxa por cobrança paga |
+| **Resend** | e-mails de resultado e de suporte | grátis até 3.000 e-mails/mês |
+| **Cloudflare Pages** | hospedar o site (com o repositório privado) | grátis |
 
-## 2. Criar as tabelas
-1. Menu **SQL Editor** → **New query**.
-2. Cole todo o conteúdo de `supabase/schema.sql` e clique em **Run**.
+## Onde fica cada coisa
 
-## 3. Configurar o login por e-mail
-1. **Authentication → Providers → Email**: deixe ativo. Mantenha **Confirm email** ligado (evita contas com e-mail falso).
-2. **Authentication → URL Configuration**:
-   - Site URL: `https://gabrielnassa.github.io/MegaCovePro/`
-   - Redirect URLs: adicione `https://gabrielnassa.github.io/MegaCovePro/conta.html` e `https://gabrielnassa.github.io/MegaCovePro/conta.html?modo=nova-senha`
-3. (Opcional) **Authentication → Email Templates**: traduza os e-mails de confirmação e de nova senha para português.
+- `assets/regras.json`: **fonte única** de planos, preços, limites e textos da comparação. Mudou um preço ou limite?
+  Edite só aqui e rode `node tools/sincronizar.mjs` (copia para o servidor). O GitHub publica sozinho.
+- `assets/plano.js`: fase do site (`beta` / `assinatura`), chaves públicas do Supabase e contato.
+- `supabase/migrations/`: tabelas e regras do banco. `supabase/functions/`: o servidor (API e webhook do Asaas).
+- Cupons: tabela `cupons` no Supabase (ver item 8).
 
-## 4. Colar as chaves no site
-1. **Settings → API**: copie a **Project URL** e a chave **anon public**.
-2. Em `assets/plano.js`, preencha:
-   ```js
-   supabase: {url: "https://xxxx.supabase.co", chave: "eyJ..."},
-   ```
-   A chave *anon* pode ficar pública: ela só permite o que as políticas de segurança (RLS) liberam.
-   **Nunca** coloque a chave `service_role` no site.
-3. Suba o `plano.js` para o GitHub. Pronto: o botão **Entrar** aparece no site e no painel.
+---
 
-## 4b. Login com Google (opcional, recomendado)
-1. No Google Cloud Console (console.cloud.google.com) crie um projeto → **APIs e serviços → Credenciais → Criar credenciais → ID do cliente OAuth** (tipo "Aplicativo da Web").
-2. Em "URIs de redirecionamento autorizados" cole a **Callback URL** que o Supabase mostra em **Authentication → Providers → Google**.
-3. Copie o Client ID e o Client Secret para essa tela do Supabase e ative o Google.
-4. Em `assets/plano.js`, troque `loginGoogle: false` por `loginGoogle: true`. O botão "Continuar com Google" aparece na tela de login.
+## 1. Supabase (contas e servidor)
+1. Crie a conta em https://supabase.com → **New project**: nome `megacover`, região **South America (São Paulo)**.
+   Defina a **senha do banco** e guarde (vai virar o segredo `SUPABASE_DB_PASSWORD`).
+2. **Authentication → Providers → Email**: ativo, com **Confirm email** ligado.
+3. **Authentication → URL Configuration**:
+   - Site URL: `https://SEU-DOMINIO/`
+   - Redirect URLs: `https://SEU-DOMINIO/conta.html` e `https://SEU-DOMINIO/conta.html?modo=nova-senha`
+4. (Opcional) Login com Google: crie o ID do cliente OAuth no Google Cloud, cole a Callback URL do Supabase
+   (**Authentication → Providers → Google**) e depois troque `loginGoogle: true` em `assets/plano.js`.
+5. Anote: **Reference ID** (Settings → General), **Project URL** e chave **anon public** (Settings → API).
+   Crie um **Access Token** em https://supabase.com/dashboard/account/tokens.
 
-## 5. Planos, preços e pagamento
-Os planos (Grátis, Pro e Elite), os preços mensal e anual e os links de pagamento ficam em `assets/plano.js`, na lista `planos`.
-Para cada plano pago preencha `checkout: {mensal: "link", anual: "link"}` com o link de pagamento (Mercado Pago, Stripe…).
-O site envia o e-mail e o id da conta junto no link (`prefilled_email` e `client_reference_id`), o que o Stripe usa para identificar quem pagou.
+> Não precisa rodar SQL à mão: o GitHub cria as tabelas sozinho (item 5). Se você já tinha rodado o antigo
+> `schema.sql`, tudo bem: a migração aproveita as tabelas existentes.
 
-## 5b. Liberar um plano para alguém
-Enquanto não houver pagamento automático, libere pelo **SQL Editor**:
-```sql
-insert into public.assinaturas (user_id, plano, ciclo, valido_ate)
-select id, 'pro', 'mensal', now() + interval '30 days' from auth.users where email = 'pessoa@exemplo.com'
-on conflict (user_id) do update set status = 'ativa', plano = excluded.plano, ciclo = excluded.ciclo, valido_ate = excluded.valido_ate, atualizado_em = now();
+## 2. Asaas (pagamentos)
+1. Crie a conta em https://www.asaas.com (CPF ou CNPJ). Para testar antes, use também o **sandbox**:
+   https://sandbox.asaas.com (conta separada, dinheiro de mentira).
+2. **Integrações → Chave de API**: gere a chave (vai virar `ASAAS_API_KEY`).
+3. Invente um token longo e aleatório para o webhook (ex.: gere em https://www.uuidgenerator.net) → `ASAAS_WEBHOOK_TOKEN`.
+4. **Integrações → Webhooks → Adicionar**:
+   - URL: `https://REFERENCE-ID.supabase.co/functions/v1/asaas-webhook`
+   - Token de autenticação: o mesmo `ASAAS_WEBHOOK_TOKEN`
+   - Versão da API: v3 · Tipo de envio: **sequencial** · Fila ativa
+   - Eventos: **Cobranças** (todos) e **Assinaturas** (todos)
+5. Enquanto testa use `ASAAS_AMBIENTE = sandbox` com a chave do sandbox. Para cobrar de verdade troque para
+   `producao` e a chave da conta real (e cadastre o webhook também na conta real).
+
+## 3. Resend (e-mails)
+1. Crie a conta em https://resend.com → **Domains → Add domain** com o seu domínio e copie os registros DNS que ele
+   mostrar para o painel do Registro.br (ou da Cloudflare, se o DNS estiver lá). Espere ficar **Verified**.
+2. **API Keys → Create** → `RESEND_API_KEY`.
+3. Remetente (`EMAIL_REMETENTE`): `MegaCover <avisos@SEU-DOMINIO>`. E-mail que recebe o suporte (`SUPORTE_EMAIL`): o seu.
+
+## 4. Segredos no GitHub
+No repositório: **Settings → Secrets and variables → Actions → New repository secret**. Crie um por um:
+
+| Segredo | Valor |
+|---|---|
+| `SUPABASE_ACCESS_TOKEN` | token do item 1.5 |
+| `SUPABASE_PROJECT_REF` | Reference ID do projeto |
+| `SUPABASE_DB_PASSWORD` | senha do banco |
+| `ASAAS_API_KEY` | chave do Asaas |
+| `ASAAS_AMBIENTE` | `sandbox` (testes) ou `producao` |
+| `ASAAS_WEBHOOK_TOKEN` | token inventado no item 2.3 |
+| `RESEND_API_KEY` | chave do Resend |
+| `EMAIL_PROVEDOR` | `resend` |
+| `EMAIL_REMETENTE` | `MegaCover <avisos@SEU-DOMINIO>` |
+| `SUPORTE_EMAIL` | seu e-mail de suporte |
+| `TAREFA_TOKEN` | outro token longo inventado (protege a carga de resultados) |
+| `MEGACOVER_API_URL` | `https://REFERENCE-ID.supabase.co/functions/v1/api` |
+
+## 5. Publicar o servidor
+**Actions → Publicar servidor → Run workflow.** Ele cria as tabelas, envia os segredos, publica as funções
+`api` e `asaas-webhook` e termina testando `GET /config` (tem que dar HTTP 200).
+Depois roda sozinho a cada mudança em `supabase/` ou em `assets/regras.json`.
+
+## 6. Primeira carga dos resultados
+**Actions → Atualizar resultados → Run workflow**, com o campo *Enviar o histórico inteiro* = `sim`.
+Daí em diante ele roda duas vezes por dia: baixa os concursos, grava no servidor e manda os e-mails de resultado
+para quem é Pro/Elite e tem jogos salvos daquela loteria.
+
+## 7. Site no Cloudflare Pages (repositório privado)
+1. Deixe o repositório **privado** no GitHub (Settings → General → Danger Zone → Change visibility).
+2. https://dash.cloudflare.com → **Workers & Pages → Create → Pages → Connect to Git** → escolha o repositório.
+3. Build: **Framework** None · **Build command** `bash tools/montar_site.sh` · **Build output directory** `site`.
+   (Só as páginas, `assets/` e `data/` vão ao ar; `supabase/` e `tools/` ficam de fora.)
+4. **Custom domains**: adicione o seu domínio e siga as instruções de DNS.
+5. Volte ao Supabase (item 1.3) e confira se as URLs usam o domínio final.
+
+## 8. Lançar os planos
+Em `assets/plano.js`:
+```js
+fase: "assinatura",
+supabase: {url: "https://REFERENCE-ID.supabase.co", chave: "CHAVE-ANON-PUBLIC"},
 ```
-Para cancelar: `update public.assinaturas set status = 'cancelada' where user_id = (select id from auth.users where email = '...');`
+A chave *anon* é pública por natureza (só faz o que as regras do banco permitem). **Nunca** coloque a chave
+`service_role` no site. A partir daí: o painel pede login, toda conta nova ganha 7 dias de Elite, e cada
+recurso é liberado ou bloqueado **pelo servidor** conforme `regras.json`.
 
-## 6. Quando sair do Beta
-Em `assets/plano.js` troque `fase: "beta"` por `fase: "assinatura"`. Cada recurso passa a pedir o plano mínimo definido em `recursos` (Pro ou Elite) e, se quiser exigir conta para abrir o painel,
-`loginObrigatorio: true`. Os recursos PRO passam a pedir assinatura ativa.
+**Cupons** (SQL Editor do Supabase):
+```sql
+-- preço fixo
+insert into public.cupons (codigo, plano, ciclo, preco, descricao) values ('BLACK', 'elite', 'anual', 129.00, 'Black Friday');
+-- ou percentual, com validade e limite de usos
+insert into public.cupons (codigo, plano, ciclo, desconto_pct, valido_ate, max_usos) values ('AMIGO10', 'pro', 'mensal', 10, '2026-12-31', 100);
+-- desativar
+update public.cupons set ativo = false where codigo = 'LOTERICA';
+```
+O cupom `LOTERICA` já vem criado (Pro anual R$ 79, Elite anual R$ 149). Link para divulgar nas lotéricas:
+`https://SEU-DOMINIO/planos.html?cupom=LOTERICA` (o cupom já vem preenchido no pagamento).
 
-## 7. Pagamento automático (próximo passo)
-Mercado Pago (Pix e cartão, sem CNPJ obrigatório) ou Stripe. O fluxo é: link de pagamento com o e-mail da pessoa →
-webhook (uma Edge Function do Supabase) recebe o aviso de pagamento aprovado → insere/renova a linha em `assinaturas`.
-Isso pode ser feito depois, sem mudar nada do que já está no site.
+**Dar um plano de cortesia** (parceiros, imprensa):
+```sql
+insert into public.assinaturas (user_id, plano, ciclo, status, valido_ate)
+select id, 'cortesia', 'anual', 'ativa', now() + interval '1 year' from auth.users where email = 'pessoa@exemplo.com'
+on conflict (user_id) do update set plano = 'cortesia', status = 'ativa', valido_ate = excluded.valido_ate, atualizado_em = now();
+```
+**Estender o teste de alguém:** `update public.perfis set teste_ate = now() + interval '7 days' where user_id = (select id from auth.users where email = '...');`
+
+---
+
+## 9. Como testar cada plano (no ar, com o Asaas em sandbox)
+Crie quatro contas com e-mails seus (ex.: `voce+gratis@gmail.com`, `voce+pro@...`).
+
+**Teste Elite (conta nova):** no topo do painel aparece "Elite grátis · faltam 7 dias". Clique nele: lista o que você perde ao fim
+do teste. Tudo liberado: 9 loterias, otimizadores (20/dia), Monte Carlo (10/dia), PDF completo, 2 aparelhos.
+
+**Grátis:** no SQL Editor, encerre o teste: `update public.perfis set teste_ate = now() where user_id = (select id from auth.users where email = 'voce+gratis@gmail.com');`
+Confira: só Mega-Sena e Lotofácil (as outras mostram cadeado); gerador até 10 jogos (pedir 11 abre a oferta do Pro);
+estratégias ponderadas e filtros com cadeado; estatísticas básicas e últimos 50 concursos; gráficos, simulador e PDF bloqueados;
+2 fechamentos de exemplo; até 20 jogos salvos; abrir a conta em outro navegador derruba o primeiro ("conta aberta em outro aparelho").
+
+**Pro:** encerre o teste da conta e assine o Pro em **Planos**. No sandbox, pague com um dos cartões de teste da documentação
+do Asaas (docs.asaas.com, "Testando pagamentos") ou escolha Pix e, no painel do sandbox, abra a cobrança e confirme o recebimento.
+Em segundos (quando o webhook chega) a conta vira Pro.
+Confira: 9 loterias, histórico completo, gerador sem limite com filtros, todos os fechamentos, CSV e PDF simples,
+aviso de resultado por e-mail (Minha conta), suporte por e-mail com prazo de 48h. Otimizadores e Monte Carlo pedem o Elite.
+
+**Elite:** assine o Elite (ou passe do Pro para o Elite: a assinatura antiga é cancelada no Asaas sozinha).
+Confira: otimizadores até 20/dia e Monte Carlo até 10/dia (o 21º/11º mostra o limite, que volta à meia-noite de Brasília),
+PDF completo, 2 aparelhos ao mesmo tempo (o 3º derruba o mais antigo), suporte com etiqueta `[ELITE · PRIORITÁRIO]`.
+
+**Cancelamento e atraso:** em Minha conta, *Cancelar assinatura*: o plano continua até o fim do período pago e não renova.
+Pagamento atrasado: 3 dias de tolerância, depois a conta volta ao Grátis até pagar. Estorno ou chargeback: volta ao Grátis na hora.
+
+**Prova de que o bloqueio é do servidor:** com a conta Grátis logada, no console do navegador:
+```js
+MC_API.post("otimizar", {loteria: "megasena", jogos: [[1,2,3,4,5,6]]}).catch(e => console.log(e.status, e.message))
+```
+Resposta: `403 Algoritmo genético e simulated annealing faz parte do plano Elite.`
+
+## 10. Testes automáticos (para quem mexer no código)
+Precisam de Postgres e Deno locais:
+```
+PGHOST=/tmp PGPORT=54329 bash supabase/tests/preparar.sh && deno test -A supabase/tests/api_test.js     # bloqueios por plano
+PGHOST=/tmp PGPORT=54329 bash supabase/tests/preparar.sh && deno test -A supabase/tests/asaas_test.js   # pagamentos e webhooks
+PGHOST=/tmp PGPORT=54329 bash supabase/tests/preparar.sh && deno test -A supabase/tests/avisos_test.js  # e-mails
+```
+`supabase/tests/servidor_local.js` sobe um Supabase e um Asaas de mentira na porta 54400 para testar o site inteiro no navegador.
 
 ## Segurança
-- Senhas nunca chegam ao site nem ao GitHub: o Supabase guarda apenas o hash (bcrypt) e cuida de confirmação e recuperação por e-mail.
-- Cada pessoa só lê a própria linha de perfil e assinatura (RLS). Ninguém consegue se dar PRO pelo navegador.
-- O site continua funcionando se o Supabase estiver fora do ar: a última assinatura lida fica em cache no navegador.
+- Senhas ficam só no Supabase (hash bcrypt). Dados de cartão ficam só no Asaas. O MegaCover guarda nome, e-mail e CPF.
+- Toda verificação de plano e de limite acontece no servidor; o site só mostra os avisos.
+- Cada pessoa só lê os próprios dados (RLS). As funções que mudam plano e contadores não podem ser chamadas pelo navegador.
+- Chaves secretas só nos segredos do GitHub/Supabase. Se alguma vazar, gere outra no serviço e atualize o segredo.

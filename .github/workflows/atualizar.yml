@@ -6,7 +6,11 @@ on:
   schedule:
     - cron: "15 4 * * *"    # 01:15 (Brasília), depois dos sorteios da noite
     - cron: "15 13 * * *"   # 10:15 (Brasília), repescagem
-  workflow_dispatch: {}     # botão "Run workflow" na aba Actions
+  workflow_dispatch:        # botão "Run workflow" na aba Actions
+    inputs:
+      tudo:
+        description: "Enviar o histórico inteiro ao servidor (primeira carga): sim/não"
+        default: "não"
 
 permissions:
   contents: write
@@ -32,3 +36,13 @@ jobs:
             git commit -m "Resultados atualizados em $(date -u +%Y-%m-%d)"
             git push
           fi
+      # Servidor (planos): grava os concursos no Supabase e envia os avisos de resultado por e-mail.
+      # Precisa dos segredos MEGACOVER_API_URL e TAREFA_TOKEN; sem eles o passo só avisa e segue.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Enviar ao servidor e avisar por e-mail
+        env:
+          MEGACOVER_API_URL: ${{ secrets.MEGACOVER_API_URL }}
+          TAREFA_TOKEN: ${{ secrets.TAREFA_TOKEN }}
+        run: node tools/enviar_concursos.mjs ${{ github.event.inputs.tudo == 'sim' && '--tudo' || '' }}

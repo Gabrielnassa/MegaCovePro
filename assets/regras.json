@@ -1,0 +1,97 @@
+{
+  "_leia": "FONTE ÚNICA das regras comerciais do MegaCover. Planos, preços, limites e textos da comparação ficam só aqui. O servidor (supabase/functions/_shared/regras.json é uma cópia gerada por tools/sincronizar.mjs) e o site leem este arquivo. Depois de editar, rode: node tools/sincronizar.mjs",
+  "versao": 1,
+  "fuso": "America/Sao_Paulo",
+  "teste": {"plano": "elite", "dias": 7},
+  "toleranciaAtrasoDias": 3,
+  "tetoTecnico": {"jogosPorGeracao": 500, "jogosPorRequisicao": 500, "dezenasConferencia": 1000},
+
+  "planos": [
+    {"id": "gratis", "nome": "Grátis", "nivel": 0,
+     "frase": "Para conhecer o MegaCover e organizar seus jogos.",
+     "precos": null,
+     "destaques": ["Mega-Sena e Lotofácil", "Gerador aleatório de até 10 jogos", "Estatísticas básicas dos últimos 50 concursos",
+                   "2 fechamentos prontos de exemplo", "Conferência e até 20 jogos salvos", "Volante virtual para imprimir"]},
+    {"id": "pro", "nome": "Pro", "nivel": 1, "destaque": true, "selo": "Mais popular",
+     "frase": "Todas as loterias e as ferramentas para organizar e reduzir o custo das suas apostas.",
+     "precos": {"mensal": {"cartao": 9.90, "pix": 9.90}, "anual": {"cartao": 99.00, "pix": 89.90}},
+     "destaques": ["Tudo do Grátis", "Todas as 9 loterias com histórico completo", "Gerador ponderado sem limite, com filtros e gráficos",
+                   "Fechamentos prontos e personalizados para reduzir o custo das apostas", "Jogos salvos ilimitados e aviso de resultado por e-mail",
+                   "Relatório PDF e exportação Excel/CSV", "Suporte por e-mail"]},
+    {"id": "elite", "nome": "Elite", "nivel": 2,
+     "frase": "Otimizadores, simulação contra os concursos anteriores e relatório completo.",
+     "precos": {"mensal": {"cartao": 19.90, "pix": 19.90}, "anual": {"cartao": 199.00, "pix": 179.90}},
+     "destaques": ["Tudo do Pro", "Algoritmo genético e simulated annealing (20 por dia)",
+                   "Monte Carlo: teste sua estratégia contra os concursos anteriores (10 por dia)",
+                   "Relatório PDF completo, com análise e custo das apostas", "2 aparelhos conectados ao mesmo tempo", "Suporte prioritário por e-mail"]}
+  ],
+
+  "limites": {
+    "gratis": {
+      "loterias": ["megasena", "lotofacil"],
+      "geradorMaxJogos": 10, "geradorPonderado": false, "conferencia": true,
+      "historicoConcursos": 50, "estatisticas": "basicas", "graficos": false, "filtros": false,
+      "fechamentosProntos": "exemplos", "fechamentoPersonalizado": false, "jogosSalvos": 20,
+      "otimizadoresPorDia": 0, "monteCarloPorDia": 0, "relatorioPdf": "nao", "exportar": false,
+      "avisoEmail": false, "sessoes": 1, "suporte": "faq", "volante": true
+    },
+    "pro": {
+      "loterias": "todas",
+      "geradorMaxJogos": null, "geradorPonderado": true, "conferencia": true,
+      "historicoConcursos": null, "estatisticas": "completas", "graficos": true, "filtros": true,
+      "fechamentosProntos": "todos", "fechamentoPersonalizado": true, "jogosSalvos": null,
+      "otimizadoresPorDia": 0, "monteCarloPorDia": 0, "relatorioPdf": "simples", "exportar": true,
+      "avisoEmail": true, "sessoes": 1, "suporte": "email", "volante": true
+    },
+    "elite": {
+      "loterias": "todas",
+      "geradorMaxJogos": null, "geradorPonderado": true, "conferencia": true,
+      "historicoConcursos": null, "estatisticas": "completas", "graficos": true, "filtros": true,
+      "fechamentosProntos": "todos", "fechamentoPersonalizado": true, "jogosSalvos": null,
+      "otimizadoresPorDia": 20, "monteCarloPorDia": 10, "relatorioPdf": "completo", "exportar": true,
+      "avisoEmail": true, "sessoes": 2, "suporte": "email_prioritario", "volante": true
+    }
+  },
+
+  "suporte": {
+    "faq": {"rotulo": "Central de ajuda (FAQ)"},
+    "email": {"rotulo": "E-mail, resposta em até 48h úteis", "prazoHoras": 48},
+    "email_prioritario": {"rotulo": "E-mail prioritário, resposta em até 24h úteis", "prazoHoras": 24, "etiqueta": "[ELITE · PRIORITÁRIO]"}
+  },
+
+  "precoApostaCaixa": {
+    "_obs": "Preço da aposta mínima de cada loteria, usado no custo do relatório PDF. São valores de referência: confira e atualize sempre que a CAIXA reajustar.",
+    "megasena": 6.00, "lotofacil": 3.50, "quina": 3.00, "lotomania": 3.00, "duplasena": 3.00,
+    "timemania": 3.50, "diadesorte": 3.00, "supersete": 3.00, "maismilionaria": 6.00
+  },
+
+  "fechamentosExemplo": ["megasena-9-quadra", "lotofacil-16-13"],
+
+  "comparacao": [
+    {"chave": "loterias", "rotulo": "Loterias"},
+    {"chave": "geradorMaxJogos", "rotulo": "Gerador aleatório"},
+    {"chave": "geradorPonderado", "rotulo": "Gerador ponderado pelo histórico"},
+    {"chave": "conferencia", "rotulo": "Conferência de jogos"},
+    {"chave": "historicoConcursos", "rotulo": "Histórico de resultados"},
+    {"chave": "estatisticas", "rotulo": "Estatísticas"},
+    {"chave": "graficos", "rotulo": "Gráficos"},
+    {"chave": "filtros", "rotulo": "Filtros (soma, pares, repetidas, sequências)"},
+    {"chave": "fechamentosProntos", "rotulo": "Fechamentos prontos"},
+    {"chave": "fechamentoPersonalizado", "rotulo": "Fechamento personalizado"},
+    {"chave": "jogosSalvos", "rotulo": "Jogos salvos"},
+    {"chave": "otimizadoresPorDia", "rotulo": "Algoritmo genético e simulated annealing"},
+    {"chave": "monteCarloPorDia", "rotulo": "Simulação Monte Carlo (teste sua estratégia contra os concursos anteriores)"},
+    {"chave": "relatorioPdf", "rotulo": "Relatórios em PDF"},
+    {"chave": "exportar", "rotulo": "Exportar Excel/CSV"},
+    {"chave": "avisoEmail", "rotulo": "Aviso de resultado por e-mail"},
+    {"chave": "sessoes", "rotulo": "Sessões simultâneas"},
+    {"chave": "suporte", "rotulo": "Suporte"},
+    {"chave": "volante", "rotulo": "Volante virtual para imprimir"}
+  ],
+
+  "textos": {
+    "estatisticas": {"basicas": "Básicas (frequência e atraso)", "completas": "Completas"},
+    "relatorioPdf": {"nao": "—", "simples": "Simples (lista de jogos)", "completo": "Completo (análise, gráficos e custo)"},
+    "fechamentosProntos": {"exemplos": "2 exemplos", "todos": "Todos"}
+  }
+}
