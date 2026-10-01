@@ -51,6 +51,9 @@ Deno.test({name: "ferramentas de configuração", sanitizeOps: false, sanitizeRe
       eq([o.includes("cadastrado"), o.includes("resend._domainkey"), resend.dominios[0].region, resend.verificar], [true, true, "sa-east-1", 1], o);
       o = await rodar("configurar_resend.mjs", env);
       eq([resend.dominios.length, o.includes("cadastrado")], [1, false], "não duplica");
+      o = await rodar("configurar_resend.mjs", {...env, DOMINIO: "megacover.com.br", EMAIL_DOMINIO: "nassatech.com.br"});
+      eq([resend.dominios.length, resend.dominios[1] && resend.dominios[1].name], [2, "nassatech.com.br"], "EMAIL_DOMINIO tem prioridade");
+      resend.dominios.pop();
       resend.dominios[0].status = "verified";
       o = await rodar("configurar_resend.mjs", env);
       eq([o.includes("verificado"), o.includes("| Tipo |")], [true, false], "verificado");

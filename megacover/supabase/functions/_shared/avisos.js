@@ -1,6 +1,6 @@
 // Aviso de resultado: depois de cada sorteio, confere os jogos salvos de quem tem o recurso avisoEmail
 // (Pro e Elite, conforme regras.json) e envia um e-mail com os acertos. Nunca repete o mesmo aviso.
-import { MC, PERM, R, db, cfgDe, concursosDe, limparCache } from "./base.js";
+import { MC, PERM, R, db, env, cfgDe, concursosDe, limparCache } from "./base.js";
 import { enviarEmail, moldura, esc } from "./email.js";
 
 const planosComAviso = () => R.planos.filter((p) => PERM.pode(R, p.id, "avisoEmail").ok).map((p) => p.id);
@@ -38,7 +38,7 @@ export async function avisarResultados(opcoes = {}) {
 ${linhas.map((l) => `<tr><td style="padding:6px 4px;border-bottom:1px solid #f0f0f0">${esc(l.nome)}</td><td style="padding:6px 4px;border-bottom:1px solid #f0f0f0;font-family:monospace">${esc(l.dezenas)}</td><td align="center" style="padding:6px 4px;border-bottom:1px solid #f0f0f0"><b>${l.acertos.join(" / ")}</b></td></tr>`).join("")}</table>
 <p style="font-size:13px;color:#666">Confira sempre o resultado oficial em loterias.caixa.gov.br. Prêmios são pagos pela CAIXA mediante o bilhete.</p>`;
       const r = await enviarEmail({
-        para: pessoa.email, userId: pessoa.id, tipo: "resultado", chave: `resultado:${lot}:${ult.concurso}:${pessoa.id}`,
+        para: pessoa.email, userId: pessoa.id, tipo: "resultado", responderPara: env("SUPORTE_EMAIL") || undefined, chave: `resultado:${lot}:${ult.concurso}:${pessoa.id}`,
         assunto: `${cfg.nome} ${ult.concurso}: seu melhor jogo fez ${melhor} acerto(s)`,
         html: moldura(`Resultado da ${cfg.nome} · concurso ${ult.concurso}`, corpo),
         texto: `${cfg.nome} concurso ${ult.concurso}: ${sorteio}\n` + linhas.map((l) => `${l.nome}: ${l.dezenas} → ${l.acertos.join("/")} acerto(s)`).join("\n"),

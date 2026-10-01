@@ -6,6 +6,7 @@
 # Segredos (Settings → Secrets and variables → Actions):
 #   obrigatórios: SUPABASE_ACCESS_TOKEN, SUPABASE_PROJECT_REF, SUPABASE_DB_PASSWORD
 #   recomendados: DOMINIO (ex.: megacover.com.br), ASAAS_API_KEY, RESEND_API_KEY
+#   e-mail:       EMAIL_DOMINIO (domínio de onde saem os e-mails, ex.: nassatech.com.br; padrão = DOMINIO), SUPORTE_EMAIL
 #   opcionais:    ASAAS_AMBIENTE (padrão sandbox; "producao" para cobrar de verdade), EMAIL_REMETENTE, SUPORTE_EMAIL,
 #                 TAREFA_TOKEN e ASAAS_WEBHOOK_TOKEN (se não existirem, são calculados a partir da senha do banco)
 name: Publicar servidor
@@ -43,6 +44,7 @@ jobs:
         if: steps.cfg.outputs.ok == '1'
         env:
           DOMINIO: ${{ secrets.DOMINIO }}
+          EMAIL_DOMINIO: ${{ secrets.EMAIL_DOMINIO }}
           ASAAS_API_KEY: ${{ secrets.ASAAS_API_KEY }}
           ASAAS_AMBIENTE: ${{ secrets.ASAAS_AMBIENTE }}
           ASAAS_WEBHOOK_TOKEN: ${{ secrets.ASAAS_WEBHOOK_TOKEN }}

@@ -64,18 +64,25 @@ No repositório: **Settings → Secrets and variables → Actions → New reposi
 | `SUPABASE_ACCESS_TOKEN` | token do item 1.3 |
 | `SUPABASE_PROJECT_REF` | Reference ID |
 | `SUPABASE_DB_PASSWORD` | senha do banco |
-| `DOMINIO` | `megacover.com.br` (só o domínio, sem https) |
+| `DOMINIO` | `megacover.com.br` (domínio do site, sem https) |
 | `ASAAS_API_KEY` | chave do Asaas (sandbox primeiro) |
 | `RESEND_API_KEY` | chave do Resend |
 
-Opcionais: `ASAAS_AMBIENTE` (`producao` ao lançar), `SUPORTE_EMAIL` (padrão `suporte@DOMINIO`),
-`EMAIL_REMETENTE` (padrão `MegaCover <avisos@DOMINIO>`).
+E-mail pelo domínio da NassaTech (já existe, com caixa na Hostinger), crie também:
+
+| Segredo | Valor |
+|---|---|
+| `EMAIL_DOMINIO` | `nassatech.com.br` (os e-mails automáticos saem de `avisos@nassatech.com.br`) |
+| `SUPORTE_EMAIL` | `contato@nassatech.com.br` (recebe o suporte do site e as respostas dos clientes) |
+
+Opcionais: `ASAAS_AMBIENTE` (`producao` ao lançar), `EMAIL_REMETENTE` (padrão `MegaCover <avisos@EMAIL_DOMINIO>`).
 
 ## 5. Rodar o "Publicar servidor"
 **Actions → Publicar servidor → Run workflow.** No fim, abra a execução e veja o **resumo**:
-- **E-mail (Resend):** se aparecer "aguardando DNS", crie os registros da tabela no DNS do domínio
-  (Cloudflare → DNS → Records → Add record, com o *proxy* desligado/nuvem cinza) e rode o workflow de novo até ficar ✅.
-- **Caixa de suporte:** no Cloudflare, **Email → Email Routing** → crie `suporte@DOMINIO` encaminhando para o seu Gmail.
+- **E-mail (Resend):** se aparecer "aguardando DNS", crie os registros da tabela no DNS de `nassatech.com.br`
+  (Hostinger → hPanel → **Domínios → DNS / Nameservers** → Adicionar registro; se o DNS estiver no Cloudflare, lá com a nuvem cinza)
+  e rode o workflow de novo até ficar ✅. Esses registros (`send` e `resend._domainkey`) **não mexem** no e-mail da Hostinger.
+- **Respostas:** quem responder um e-mail do MegaCover cai em `contato@nassatech.com.br`. Não precisa criar caixa nova.
 - O último passo testa o servidor (`GET config → HTTP 200`).
 - Avisos amarelos (⚠) dizem exatamente o que faltou, caso algum serviço recuse a configuração automática.
 

@@ -94,6 +94,7 @@ Deno.test({name: "E-mails: aviso de resultado e suporte", sanitizeOps: false, sa
       eq([l.enviados, l.falhas], [2, 0], "reenvio");
       const aviso = caixa.find((m) => m.to[0] === "pro@t.com" && m.subject.startsWith("Mega-Sena " + novo[0]));
       eq(!!aviso && aviso.html.includes("Minha conta"), true, "e-mail explica como desligar");
+      eq(aviso.reply_to, "suporte@teste.local", "resposta ao aviso vai para o suporte");
       eq(aviso.subject, `Mega-Sena ${novo[0]}: seu melhor jogo fez 6 acerto(s)`, "Pro tinha 1 2 3 4 5 6");
     });
   } finally {
