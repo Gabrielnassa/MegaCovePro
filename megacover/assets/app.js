@@ -13,7 +13,8 @@ var ABAS = [["dashboard", "Visão geral", "painel"], ["estatisticas", "Estatíst
 var PL = window.MC_PLANO || {beta: function () { return true; }, liberado: function () { return true; }, pro: {}, contatoUrl: function () { return ""; }};
 /* Modo servidor: com o login configurado, regras, dados e recursos pagos vêm da API (assets/api.js).
    O servidor decide tudo; o painel só antecipa os avisos para a pessoa não clicar à toa. */
-var SRV = !!(window.MC_API && window.MC_API.ativo());
+/* modo servidor: login configurado e fase "assinatura" (no Beta tudo segue liberado, como antes) */
+var SRV = !!(window.MC_API && window.MC_API.ativo() && !(window.MC_PLANO && window.MC_PLANO.beta()));
 var REGRAS = null, PERM = window.MC_PERM, ME = null;
 var MAPA_REC = {ia: "otimizador", fechamentos: "fechamentoPersonalizado", historico: "historicoCompleto", exportar: "exportar", simulacaoGrande: "monteCarlo"};
 function podeSrv(rec, valor) { return PERM.pode(REGRAS, ME ? ME.plano : "gratis", MAPA_REC[rec] || rec, valor); }

@@ -1,0 +1,11 @@
+# Configuração do Supabase CLI (usada pelo GitHub Actions em .github/workflows/servidor.yml).
+project_id = "megacover"
+
+# As duas funções conferem o acesso por conta própria:
+#  - api: valida o login no Supabase Auth a cada chamada (e as rotas de tarefa usam TAREFA_TOKEN);
+#  - asaas-webhook: confere o token que o Asaas envia no cabeçalho asaas-access-token.
+[functions.api]
+verify_jwt = false
+
+[functions.asaas-webhook]
+verify_jwt = false

@@ -18,7 +18,7 @@ export async function enviarEmail({para, assunto, html, texto, responderPara, pr
   try {
     if (provedor !== "resend") throw new Error("EMAIL_PROVEDOR desconhecido: " + provedor);
     const cab = prioritario ? {"X-Priority": "1 (Highest)", "Importance": "high", "X-MegaCover-Prioridade": "elite"} : {};
-    const r = await fetch("https://api.resend.com/emails", {
+    const r = await fetch(env("RESEND_URL", "https://api.resend.com/emails"), {
       method: "POST",
       headers: {Authorization: "Bearer " + env("RESEND_API_KEY"), "content-type": "application/json"},
       body: JSON.stringify({from: env("EMAIL_REMETENTE", "MegaCover <avisos@megacover.com.br>"), to: [para], subject: assunto,

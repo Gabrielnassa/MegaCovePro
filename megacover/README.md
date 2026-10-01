@@ -24,25 +24,15 @@ O site tem duas partes:
 - **`index.html`** — página de apresentação (produto, recursos, planos, dúvidas).
 - **`app.html`** — o painel com as 8 ferramentas.
 
-## Beta hoje, assinatura amanhã
+## Planos (Grátis, Pro e Elite)
 
-Tudo o que é comercial fica em **`assets/plano.js`**:
+- **`assets/regras.json`** é a fonte única de planos, preços (mensal/anual, cartão/Pix), limites e textos da comparação.
+  Depois de editar, rode `node tools/sincronizar.mjs` para copiar as regras para o servidor.
+- **`assets/plano.js`** guarda a fase (`"beta"` libera tudo; `"assinatura"` liga os planos), as chaves públicas do Supabase e o contato.
+- Toda verificação de plano e de limite é feita **no servidor** (Supabase: `supabase/functions/api`); o site só mostra os avisos.
+- Pagamentos pelo Asaas (Pix e cartão), com webhook em `supabase/functions/asaas-webhook`. E-mails pelo Resend.
 
-| Campo | Para que serve |
-|---|---|
-| `fase` | `"beta"` libera tudo grátis (hoje). `"assinatura"` faz os recursos PRO pedirem assinatura |
-| `precoMensal`, `precoAnual`, `economiaAnual` | valores mostrados na seção Planos (deixe `null` para "Em breve") |
-| `linkAssinatura` | link de pagamento (Mercado Pago, Stripe, Hotmart…) |
-| `whatsapp` / `email` | ativa o botão "Entrar na lista de espera" |
-| `pro` | lista dos recursos PRO (aparecem com o selo **PRO** no painel) |
-| `gratis` | limites do plano gratuito quando a fase for `"assinatura"` |
-
-> **Importante para cobrar de verdade:** o GitHub Pages só hospeda arquivos
-> estáticos, então um bloqueio feito apenas no navegador pode ser burlado.
-> Na hora de lançar a assinatura será preciso **login + verificação no servidor**
-> (por exemplo Supabase ou Firebase para as contas e Mercado Pago/Stripe para o
-> pagamento). A interface já está pronta para isso: basta trocar a função
-> `assinante()` em `assets/plano.js` por essa verificação.
+Passo a passo para ativar tudo, com os testes de cada plano: **[`supabase/COMO-ATIVAR.md`](supabase/COMO-ATIVAR.md)**.
 
 ## Como publicar no GitHub (5 minutos)
 
@@ -108,7 +98,13 @@ python3 -m http.server 8000
 index.html              página de apresentação (landing)
 app.html                painel (as 8 ferramentas)
 volante.html            impressão das marcas no volante oficial (com calibração)
-assets/plano.js         fase Beta/assinatura, preços e links  ← edite aqui
+assets/regras.json      planos, preços e limites (fonte única)  ← edite aqui
+assets/plano.js         fase Beta/assinatura e chaves públicas do Supabase
+assets/permissoes.js    leitura das regras (o mesmo arquivo roda no servidor)
+assets/api.js           cliente da API do servidor
+planos.html, conta.html planos com checkout; login e Minha conta
+supabase/               banco (migrations), servidor (functions) e testes
+tools/                  sincronizar regras, montar o site, enviar concursos
 assets/site.css         estilos da página de apresentação
 assets/volante.js       moldes e desenho do volante em milímetros
 assets/engine.js        motor: estatísticas, gerador, MegaScore, IA, fechamentos, Monte Carlo
@@ -117,7 +113,7 @@ assets/style.css        design system do painel (tema claro/escuro, celular)
 assets/icon.png         ícone
 data/*.json             histórico das 9 loterias  [concurso, data, [dezenas], extra]
 atualizar_dados.py      atualizador (usado pelo GitHub Actions)
-.github/workflows/      rotina diária de atualização
+.github/workflows/      atualização diária dos resultados e publicação do servidor
 ```
 
 ## Aviso legal

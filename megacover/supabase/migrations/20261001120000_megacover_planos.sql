@@ -240,7 +240,11 @@ begin
     order by criado_em desc offset greatest(limite, 1)) x;
   if velhas is not null then
     update public.sessoes set revogada = true, revogada_em = now() where session_id = any (velhas);
-    delete from auth.sessions where id = any (velhas);
+    -- também derruba no Auth; se o projeto não permitir, a tabela sessoes já bloqueia a sessão na API
+    begin
+      delete from auth.sessions where id = any (velhas);
+    exception when insufficient_privilege then null;
+    end;
     return query select unnest(velhas);
   end if;
 end $$;
