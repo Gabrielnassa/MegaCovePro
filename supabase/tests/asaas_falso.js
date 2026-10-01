@@ -1,7 +1,7 @@
 // Asaas FALSO, só para testes: imita os endereços da API usados por _shared/asaas.js
 // (clientes, assinaturas, cobranças) e uma "fatura" com botão que dispara o webhook de pagamento,
 // como o Asaas faria. Nada aqui fala com o Asaas de verdade.
-export const estado = {clientes: new Map(), assinaturas: new Map(), cobrancas: new Map(), chamadas: []};
+export const estado = {clientes: new Map(), assinaturas: new Map(), cobrancas: new Map(), webhooks: new Map(), chamadas: []};
 let seq = 0;
 const novoId = (p) => p + "_" + (++seq).toString().padStart(6, "0");
 const hoje = () => new Date().toISOString().slice(0, 10);
@@ -13,7 +13,7 @@ export async function tratarAsaas(req, url, base, webhook) {
   const p = url.pathname.replace(/^\/asaas/, "");
   if (p.startsWith("/fatura/")) return fatura(req, p.split("/")[2], base, webhook);
   if (!req.headers.get("access_token")) return resp(401, {errors: [{description: "access_token ausente"}]});
-  const corpo = req.method === "POST" ? await req.json() : null;
+  const corpo = req.method === "POST" || req.method === "PUT" ? await req.json() : null;
   estado.chamadas.push({metodo: req.method, caminho: p, corpo});
   if (req.method === "POST" && p === "/v3/customers") {
     const c = {id: novoId("cus"), ...corpo}; estado.clientes.set(c.id, c); return resp(200, c);
@@ -26,7 +26,17 @@ export async function tratarAsaas(req, url, base, webhook) {
     c.invoiceUrl += c.id; estado.cobrancas.set(c.id, c);
     return resp(200, s);
   }
-  let m = p.match(/^\/v3\/subscriptions\/([^/]+)\/payments$/);
+  if (p === "/v3/webhooks" && req.method === "GET") return resp(200, {data: [...estado.webhooks.values()]});
+  if (p === "/v3/webhooks" && req.method === "POST") {
+    if (!corpo.url || !corpo.authToken || !Array.isArray(corpo.events) || !corpo.events.length) return resp(400, {errors: [{description: "webhook incompleto"}]});
+    const w = {id: novoId("wh"), ...corpo}; estado.webhooks.set(w.id, w); return resp(200, w);
+  }
+  let m = p.match(/^\/v3\/webhooks\/([^/]+)$/);
+  if (m && req.method === "PUT") {
+    const w = estado.webhooks.get(m[1]); if (!w) return resp(404, {errors: [{description: "webhook não encontrado"}]});
+    Object.assign(w, corpo); return resp(200, w);
+  }
+  m = p.match(/^\/v3\/subscriptions\/([^/]+)\/payments$/);
   if (m && req.method === "GET") return resp(200, {data: [...estado.cobrancas.values()].filter((c) => c.subscription === m[1])});
   m = p.match(/^\/v3\/subscriptions\/([^/]+)$/);
   if (m && req.method === "DELETE") {

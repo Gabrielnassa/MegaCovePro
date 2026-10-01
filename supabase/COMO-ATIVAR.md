@@ -20,67 +20,68 @@ e virar uma chave no site. Nenhuma senha ou chave secreta vai dentro do código.
 
 ---
 
-## 1. Supabase (contas e servidor)
-1. Crie a conta em https://supabase.com → **New project**: nome `megacover`, região **South America (São Paulo)**.
-   Defina a **senha do banco** e guarde (vai virar o segredo `SUPABASE_DB_PASSWORD`).
-2. **Authentication → Providers → Email**: ativo, com **Confirm email** ligado.
-3. **Authentication → URL Configuration**:
-   - Site URL: `https://SEU-DOMINIO/`
-   - Redirect URLs: `https://SEU-DOMINIO/conta.html` e `https://SEU-DOMINIO/conta.html?modo=nova-senha`
-4. (Opcional) Login com Google: crie o ID do cliente OAuth no Google Cloud, cole a Callback URL do Supabase
-   (**Authentication → Providers → Google**) e depois troque `loginGoogle: true` em `assets/plano.js`.
-5. Anote: **Reference ID** (Settings → General), **Project URL** e chave **anon public** (Settings → API).
-   Crie um **Access Token** em https://supabase.com/dashboard/account/tokens.
+## O que você faz × o que é automático
 
-> Não precisa rodar SQL à mão: o GitHub cria as tabelas sozinho (item 5). Se você já tinha rodado o antigo
-> `schema.sql`, tudo bem: a migração aproveita as tabelas existentes.
+Você só **cria as contas** (exigem seu nome, documentos e aceite de termos) e **cola 6 segredos no GitHub**.
+O workflow **Publicar servidor** faz o resto sozinho, e pode ser rodado quantas vezes quiser:
+
+| Automático (workflow) | Antes era à mão |
+|---|---|
+| cria as tabelas e regras do banco | rodar SQL no Supabase |
+| publica as funções `api` e `asaas-webhook` e envia os segredos a elas | |
+| configura o login: URLs do site, confirmação de e-mail, senha mínima de 8, e-mails de cadastro/nova senha **em português** e envio pelo Resend (SMTP) | Authentication → URL Configuration / Templates / SMTP |
+| cadastra o domínio no Resend e **lista os registros de DNS** a criar (no resumo da execução) | |
+| cadastra o **webhook** no Asaas com token, eventos e envio sequencial | Integrações → Webhooks |
+| calcula os tokens internos (`TAREFA_TOKEN`, `ASAAS_WEBHOOK_TOKEN`) a partir da senha do banco | inventar tokens |
+| preenche a URL e a chave pública do Supabase em `assets/plano.js` | copiar e colar chaves |
+
+## 1. Supabase (5 minutos)
+1. Crie a conta em https://supabase.com → **New project**: nome `megacover`, região **South America (São Paulo)**.
+   Clique em *Generate a password* e **guarde a senha** (vira o segredo `SUPABASE_DB_PASSWORD`).
+2. Copie o **Reference ID**: é o código no endereço do painel, `supabase.com/dashboard/project/ESTE-CODIGO`.
+3. Gere um **Access Token** em https://supabase.com/dashboard/account/tokens.
 
 ## 2. Asaas (pagamentos)
-1. Crie a conta em https://www.asaas.com (CPF ou CNPJ). Para testar antes, use também o **sandbox**:
-   https://sandbox.asaas.com (conta separada, dinheiro de mentira).
-2. **Integrações → Chave de API**: gere a chave (vai virar `ASAAS_API_KEY`).
-3. Invente um token longo e aleatório para o webhook (ex.: gere em https://www.uuidgenerator.net) → `ASAAS_WEBHOOK_TOKEN`.
-4. **Integrações → Webhooks → Adicionar**:
-   - URL: `https://REFERENCE-ID.supabase.co/functions/v1/asaas-webhook`
-   - Token de autenticação: o mesmo `ASAAS_WEBHOOK_TOKEN`
-   - Versão da API: v3 · Tipo de envio: **sequencial** · Fila ativa
-   - Eventos: **Cobranças** (todos) e **Assinaturas** (todos)
-5. Enquanto testa use `ASAAS_AMBIENTE = sandbox` com a chave do sandbox. Para cobrar de verdade troque para
-   `producao` e a chave da conta real (e cadastre o webhook também na conta real).
+1. Comece pelo **sandbox** (aprovação na hora, dinheiro de mentira): https://sandbox.asaas.com → crie a conta →
+   **Integrações → Chave de API** → gerar. Essa é a `ASAAS_API_KEY` dos testes.
+2. Em paralelo, abra a conta real em https://www.asaas.com (a análise dos documentos leva alguns dias). Se pedirem a
+   descrição do negócio, use:
+   > *Software online (SaaS) de estatística e organização de jogos das Loterias CAIXA, vendido por assinatura mensal ou anual.
+   > Não recebemos, intermediamos nem registramos apostas: o cliente aposta por conta própria nas lotéricas ou nos canais oficiais da CAIXA.*
+   > Atividade (CNPJ): CNAE **6203-1/00**, desenvolvimento e licenciamento de programas de computador não customizáveis.
+3. Quando a conta real for aprovada: troque o segredo `ASAAS_API_KEY` pela chave real, crie `ASAAS_AMBIENTE` = `producao`
+   e rode o workflow de novo (o webhook da conta real é cadastrado sozinho).
 
 ## 3. Resend (e-mails)
-1. Crie a conta em https://resend.com → **Domains → Add domain** com o seu domínio e copie os registros DNS que ele
-   mostrar para o painel do Registro.br (ou da Cloudflare, se o DNS estiver lá). Espere ficar **Verified**.
-2. **API Keys → Create** → `RESEND_API_KEY`.
-3. Remetente (`EMAIL_REMETENTE`): `MegaCover <avisos@SEU-DOMINIO>`. E-mail que recebe o suporte (`SUPORTE_EMAIL`): o seu.
+1. Crie a conta em https://resend.com → **API Keys → Create API Key** com permissão **Full access** → `RESEND_API_KEY`.
+   (O domínio é cadastrado pelo workflow, não precisa fazer nada em *Domains*.)
 
-## 4. Segredos no GitHub
-No repositório: **Settings → Secrets and variables → Actions → New repository secret**. Crie um por um:
+## 4. Segredos no GitHub (6)
+No repositório: **Settings → Secrets and variables → Actions → New repository secret**.
 
 | Segredo | Valor |
 |---|---|
-| `SUPABASE_ACCESS_TOKEN` | token do item 1.5 |
-| `SUPABASE_PROJECT_REF` | Reference ID do projeto |
+| `SUPABASE_ACCESS_TOKEN` | token do item 1.3 |
+| `SUPABASE_PROJECT_REF` | Reference ID |
 | `SUPABASE_DB_PASSWORD` | senha do banco |
-| `ASAAS_API_KEY` | chave do Asaas |
-| `ASAAS_AMBIENTE` | `sandbox` (testes) ou `producao` |
-| `ASAAS_WEBHOOK_TOKEN` | token inventado no item 2.3 |
+| `DOMINIO` | `megacover.com.br` (só o domínio, sem https) |
+| `ASAAS_API_KEY` | chave do Asaas (sandbox primeiro) |
 | `RESEND_API_KEY` | chave do Resend |
-| `EMAIL_PROVEDOR` | `resend` |
-| `EMAIL_REMETENTE` | `MegaCover <avisos@SEU-DOMINIO>` |
-| `SUPORTE_EMAIL` | seu e-mail de suporte |
-| `TAREFA_TOKEN` | outro token longo inventado (protege a carga de resultados) |
-| `MEGACOVER_API_URL` | `https://REFERENCE-ID.supabase.co/functions/v1/api` |
 
-## 5. Publicar o servidor
-**Actions → Publicar servidor → Run workflow.** Ele cria as tabelas, envia os segredos, publica as funções
-`api` e `asaas-webhook` e termina testando `GET /config` (tem que dar HTTP 200).
-Depois roda sozinho a cada mudança em `supabase/` ou em `assets/regras.json`.
+Opcionais: `ASAAS_AMBIENTE` (`producao` ao lançar), `SUPORTE_EMAIL` (padrão `suporte@DOMINIO`),
+`EMAIL_REMETENTE` (padrão `MegaCover <avisos@DOMINIO>`).
+
+## 5. Rodar o "Publicar servidor"
+**Actions → Publicar servidor → Run workflow.** No fim, abra a execução e veja o **resumo**:
+- **E-mail (Resend):** se aparecer "aguardando DNS", crie os registros da tabela no DNS do domínio
+  (Cloudflare → DNS → Records → Add record, com o *proxy* desligado/nuvem cinza) e rode o workflow de novo até ficar ✅.
+- **Caixa de suporte:** no Cloudflare, **Email → Email Routing** → crie `suporte@DOMINIO` encaminhando para o seu Gmail.
+- O último passo testa o servidor (`GET config → HTTP 200`).
+- Avisos amarelos (⚠) dizem exatamente o que faltou, caso algum serviço recuse a configuração automática.
 
 ## 6. Primeira carga dos resultados
-**Actions → Atualizar resultados → Run workflow**, com o campo *Enviar o histórico inteiro* = `sim`.
-Daí em diante ele roda duas vezes por dia: baixa os concursos, grava no servidor e manda os e-mails de resultado
-para quem é Pro/Elite e tem jogos salvos daquela loteria.
+**Actions → Atualizar resultados → Run workflow**, com *Enviar o histórico inteiro* = `sim`.
+Depois ele roda sozinho duas vezes por dia: grava os concursos no servidor e envia os e-mails de resultado.
 
 ## 7. Site no Cloudflare Pages (repositório privado)
 1. Deixe o repositório **privado** no GitHub (Settings → General → Danger Zone → Change visibility).
@@ -88,15 +89,10 @@ para quem é Pro/Elite e tem jogos salvos daquela loteria.
 3. Build: **Framework** None · **Build command** `bash tools/montar_site.sh` · **Build output directory** `site`.
    (Só as páginas, `assets/` e `data/` vão ao ar; `supabase/` e `tools/` ficam de fora.)
 4. **Custom domains**: adicione o seu domínio e siga as instruções de DNS.
-5. Volte ao Supabase (item 1.3) e confira se as URLs usam o domínio final.
 
 ## 8. Lançar os planos
-Em `assets/plano.js`:
-```js
-fase: "assinatura",
-supabase: {url: "https://REFERENCE-ID.supabase.co", chave: "CHAVE-ANON-PUBLIC"},
-```
-A chave *anon* é pública por natureza (só faz o que as regras do banco permitem). **Nunca** coloque a chave
+Em `assets/plano.js` troque `fase: "beta"` por `fase: "assinatura"` (a URL e a chave pública do Supabase já foram
+preenchidas pelo workflow). A chave *anon* é pública por natureza (só faz o que as regras do banco permitem). **Nunca** coloque a chave
 `service_role` no site. A partir daí: o painel pede login, toda conta nova ganha 7 dias de Elite, e cada
 recurso é liberado ou bloqueado **pelo servidor** conforme `regras.json`.
 
@@ -158,6 +154,7 @@ Precisam de Postgres e Deno locais:
 PGHOST=/tmp PGPORT=54329 bash supabase/tests/preparar.sh && deno test -A supabase/tests/api_test.js     # bloqueios por plano
 PGHOST=/tmp PGPORT=54329 bash supabase/tests/preparar.sh && deno test -A supabase/tests/asaas_test.js   # pagamentos e webhooks
 PGHOST=/tmp PGPORT=54329 bash supabase/tests/preparar.sh && deno test -A supabase/tests/avisos_test.js  # e-mails
+deno test -A supabase/tests/ferramentas_test.js   # configuração automática (Asaas, Resend, chaves do site)
 ```
 `supabase/tests/servidor_local.js` sobe um Supabase e um Asaas de mentira na porta 54400 para testar o site inteiro no navegador.
 
