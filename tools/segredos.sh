@@ -2,7 +2,7 @@
 # Calcula os valores que você NÃO precisa inventar (usado pelos workflows do GitHub).
 #  - TAREFA_TOKEN e ASAAS_WEBHOOK_TOKEN: derivados da senha do banco (SUPABASE_DB_PASSWORD), sempre iguais nos dois workflows
 #  - MEGACOVER_API_URL: a partir de SUPABASE_PROJECT_REF
-#  - e-mails e site: a partir de DOMINIO (ex.: megacover.com.br)
+#  - site: a partir de DOMINIO (ex.: megacover.com.br); e-mails: EMAIL_DOMINIO (ex.: nassatech.com.br) ou DOMINIO
 # Qualquer um deles pode ser trocado criando o segredo com o mesmo nome no GitHub.
 set -euo pipefail
 saida="${GITHUB_ENV:-/dev/stdout}"
@@ -25,7 +25,12 @@ if [ -n "${DOMINIO:-}" ]; then
   put SITE_URL "https://$d"
   put URL_REDIRECT "https://$d/**"
   put URL_REDIRECT_WWW "https://www.$d/**"
-  put EMAIL_AVISOS "avisos@$d"
-  put EMAIL_REMETENTE "${EMAIL_REMETENTE:-MegaCover <avisos@$d>}"
-  put SUPORTE_EMAIL "${SUPORTE_EMAIL:-suporte@$d}"
+fi
+# domínio dos e-mails automáticos: EMAIL_DOMINIO (ex.: nassatech.com.br) ou, se não houver, o do site
+e="${EMAIL_DOMINIO:-${DOMINIO:-}}"; e="${e#https://}"; e="${e#http://}"; e="${e#www.}"; e="${e%/}"
+if [ -n "$e" ]; then
+  put EMAIL_DOMINIO "$e"
+  put EMAIL_AVISOS "avisos@$e"
+  put EMAIL_REMETENTE "${EMAIL_REMETENTE:-MegaCover <avisos@$e>}"
+  put SUPORTE_EMAIL "${SUPORTE_EMAIL:-suporte@$e}"
 fi

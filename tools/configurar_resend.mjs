@@ -1,8 +1,8 @@
 // Cadastra o domínio no Resend e mostra os registros de DNS a criar (no resumo do GitHub Actions).
-// Precisa de: RESEND_API_KEY (com permissão total), DOMINIO. Opcional: RESEND_API (testes).
+// Precisa de: RESEND_API_KEY (com permissão total) e EMAIL_DOMINIO (ou DOMINIO). Opcional: RESEND_API (testes).
 import { appendFileSync } from "node:fs";
-const K = process.env.RESEND_API_KEY, DOM = process.env.DOMINIO, BASE = process.env.RESEND_API || "https://api.resend.com";
-if (!K || !DOM) { console.log("Resend: faltam RESEND_API_KEY ou DOMINIO. Nada feito."); process.exit(0); }
+const K = process.env.RESEND_API_KEY, DOM = process.env.EMAIL_DOMINIO || process.env.DOMINIO, BASE = process.env.RESEND_API || "https://api.resend.com";
+if (!K || !DOM) { console.log("Resend: faltam RESEND_API_KEY ou EMAIL_DOMINIO/DOMINIO. Nada feito."); process.exit(0); }
 const resumo = (t) => { console.log(t); if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, t + "\n"); };
 async function chamar(metodo, caminho, corpo) {
   const r = await fetch(BASE + caminho, {method: metodo, headers: {Authorization: "Bearer " + K, "content-type": "application/json"}, body: corpo ? JSON.stringify(corpo) : undefined});
