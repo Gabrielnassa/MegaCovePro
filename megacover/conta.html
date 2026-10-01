@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=JetBrains+Mono:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=20261001a">
+<link rel="stylesheet" href="assets/style.css?v=20261001c">
 <script>try{var t=localStorage.getItem("mc:tema");if(t)document.documentElement.setAttribute("data-theme",JSON.parse(t))}catch(e){}</script>
 <style>
   body{min-height:100vh}
@@ -73,6 +73,19 @@
   .cartao-plano .rot{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--txt3)}
   .cartao-plano h3{font-family:var(--f-titulo);font-weight:600;font-size:24px;margin:4px 0}
   .cartao-plano p{margin:0;color:var(--txt2);font-size:14px}
+  .cartao-plano .acoes-plano{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .cartao-plano .acoes-plano .bt{padding:8px 12px;font-size:13.5px}
+  .bloco-conta{border:1px solid var(--borda);border-radius:14px;padding:14px 16px;margin-bottom:12px;background:var(--painel)}
+  .bloco-conta h4{margin:0 0 4px;font-size:15px}
+  .bloco-conta p{margin:0 0 10px;color:var(--txt2);font-size:13.5px}
+  .bloco-conta .interruptor{display:flex;gap:10px;align-items:center;font-size:14px;cursor:pointer}
+  .bloco-conta .interruptor input{accent-color:var(--ouro);width:18px;height:18px}
+  .bloco-conta form{display:grid;gap:10px}
+  .bloco-conta input[type=text],.bloco-conta textarea{width:100%;font:14.5px var(--f-texto);padding:10px 12px;border-radius:10px;border:1px solid var(--borda2);background:var(--bg2);color:var(--txt)}
+  .bloco-conta textarea{min-height:110px;resize:vertical}
+  .bloco-conta .trava{font-size:13px;color:var(--txt3)}
+  .bloco-conta .trava a{color:var(--ouro);font-weight:600}
+  .selo.prio{background:var(--ouro-bg);color:var(--ouro)}
   .selo{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--ok-bg);color:var(--ok)}
   .selo.aviso{background:var(--ouro-bg);color:var(--ouro)}
   .acoes-conta{display:grid;gap:10px}
@@ -155,6 +168,7 @@
         <p class="sub">Gerencie seu plano e seus dados de acesso.</p>
         <div class="perfil"><div class="avatar" id="avatar">M</div><div><b id="p-nome"></b><span id="p-email"></span></div></div>
         <div class="cartao-plano" id="p-plano"></div>
+        <div id="p-extras"></div>
         <div class="acoes-conta">
           <a class="bt primario" href="app.html">Abrir o painel</a>
           <a class="bt" href="planos.html" id="bt-mudar">Ver planos</a>
@@ -174,9 +188,11 @@
   </main>
 </div>
 
-<script src="assets/plano.js?v=20261001a"></script>
+<script src="assets/plano.js?v=20261001c"></script>
+<script src="assets/permissoes.js?v=20261001c"></script>
 <script src="assets/vendor/supabase.min.js"></script>
-<script src="assets/auth.js?v=20261001a"></script>
+<script src="assets/auth.js?v=20261001c"></script>
+<script src="assets/api.js?v=20261001c"></script>
 <script>
 (function () {
   var $ = function (s) { return document.querySelector(s); }, A = window.MC_AUTH, P = window.MC_PLANO, q = new URLSearchParams(location.search);
@@ -189,13 +205,18 @@
   function ocupado(b, sim, txt) { if (!b.dataset.rot) b.dataset.rot = b.textContent; b.disabled = sim; b.textContent = sim ? "Aguarde…" : (txt || b.dataset.rot); }
 
   /* plano escolhido na página de planos (ex.: ?plano=pro-anual) */
-  var esc0 = (q.get("plano") || "").split("-"), pl = P.plano(esc0[0]), ciclo = esc0[1] === "mensal" ? "mensal" : "anual";
+  var esc0 = (q.get("plano") || "").split("-"), pl = P.plano(esc0[0]), ciclo = esc0[1] === "mensal" ? "mensal" : "anual", PERM = window.MC_PERM, R = null;
+  /* regras.json: preços e limites (fonte única) */
+  var regras = fetch("assets/regras.json", {cache: "no-cache"}).then(function (r) { return r.json(); }).then(function (x) { R = x; return x; });
   if (pl && pl.nivel) {
-    var v = ciclo === "anual" ? pl.anualMes : pl.mensal;
-    $("#escolha").hidden = false;
-    $("#escolha").innerHTML = '<div class="escolha"><div class="rot">Você escolheu</div><h2>' + esc(pl.nome) + " · " + (ciclo === "anual" ? "Anual" : "Mensal") + "</h2><p>" + esc(pl.frase) + "</p>" +
-      (v ? '<div class="preco">' + P.reais(v) + "<small>/mês" + (ciclo === "anual" ? " · cobrado anualmente" : "") + "</small></div>" : "") + "</div>";
     $("#lado-titulo").innerHTML = "Falta pouco para liberar o <em>" + esc(pl.nome) + "</em>.";
+    regras.then(function () {
+      var p = PERM.plano(R, pl.id); if (!p || !p.precos) return;
+      var v = p.precos[ciclo].cartao;
+      $("#escolha").hidden = false;
+      $("#escolha").innerHTML = '<div class="escolha"><div class="rot">Você escolheu</div><h2>' + esc(p.nome) + " · " + (ciclo === "anual" ? "Anual" : "Mensal") + "</h2><p>" + esc(p.frase) + "</p>" +
+        '<div class="preco">' + PERM.reais(PERM.porMes(v, ciclo)) + "<small>/mês" + (ciclo === "anual" ? " · " + PERM.reais(v) + " por ano, ou " + PERM.reais(p.precos.anual.pix) + " no Pix" : "") + "</small></div></div>";
+    });
   }
 
   function modoAcesso(m) {
@@ -238,9 +259,88 @@
         (P.beta() ? '<p style="margin-top:8px">Beta: todos os recursos estão liberados enquanto durarem os testes.</p>' : "");
       $("#bt-mudar").textContent = a && a.status === "ativa" ? "Mudar de plano" : "Assinar um plano";
     }
-    desenhar(null);
-    A.minhaAssinatura().then(desenhar).catch(function () {});
-    A.assinatura().catch(function () {});
+    if (P.beta() || !window.MC_API) {
+      desenhar(null);
+      A.minhaAssinatura().then(desenhar).catch(function () {});
+      A.assinatura().catch(function () {});
+      return;
+    }
+    $("#p-plano").innerHTML = '<p>Carregando seu plano…</p>';
+    Promise.all([regras, MC_API.get("me", {silencioso: true})]).then(function (x) { contaServidor(x[1]); })
+      .catch(function (e) { $("#p-plano").innerHTML = "<p>" + esc(e.message || "Não foi possível carregar seu plano.") + "</p>"; });
+  }
+  /* ---------- Minha conta no modo servidor: plano efetivo, cancelamento, aviso por e-mail e suporte ---------- */
+  var ME = null;
+  function dataBR(d) { return d ? new Date(d).toLocaleDateString("pt-BR", {timeZone: "America/Sao_Paulo"}) : ""; }
+  function contaServidor(me) {
+    ME = me;
+    var a = me.assinatura, h = "", acoes = "", selo = "";
+    if (me.origem === "teste") {
+      var d = me.teste.diasRestantes;
+      selo = '<span class="selo prio">Teste grátis</span>';
+      h = "<p>" + (d <= 0 ? "Último dia" : "Faltam <b>" + d + " dia" + (d > 1 ? "s" : "") + "</b>") + " do teste (até " + dataBR(me.teste.ate) + "). Depois sua conta passa para o Grátis, sem cobrança.</p>";
+      acoes = '<a class="bt primario" href="planos.html?plano=' + esc(me.plano) + '">Assinar o ' + esc(me.planoNome) + '</a>';
+    } else if (me.origem === "assinatura" && a) {
+      var st = {ativa: ["Ativo", ""], atrasada: ["Pagamento atrasado", " aviso"], cancelada: ["Cancelado", " aviso"]}[a.status] || [a.status, " aviso"];
+      selo = '<span class="selo' + st[1] + '">' + esc(st[0]) + "</span>";
+      h = "<p>" + (a.ciclo ? (a.ciclo === "anual" ? "Anual" : "Mensal") + (a.forma ? " · " + (a.forma === "pix" ? "Pix" : "cartão") : "") + (a.valor ? " · " + PERM.reais(a.valor) : "") + "<br>" : "") +
+        (a.status === "cancelada" ? "Não renova. Você usa o plano até " + dataBR(a.valido_ate) + "."
+          : a.status === "atrasada" ? "Pague a cobrança em aberto para não perder o plano. Há " + R.toleranciaAtrasoDias + " dias de tolerância após o vencimento."
+          : a.valido_ate ? "Próxima renovação em " + dataBR(a.valido_ate) + "." : "") + "</p>";
+      acoes = (a.status === "cancelada" ? '<a class="bt primario" href="planos.html">Assinar de novo</a>' : (me.plano !== "elite" ? '<a class="bt primario" href="planos.html?plano=elite">Mudar para o Elite</a>' : "")) +
+        (a.status === "ativa" || a.status === "atrasada" ? '<button class="bt fantasma" type="button" id="bt-cancelar">Cancelar assinatura</button>' : "");
+    } else {
+      h = "<p>Mega-Sena e Lotofácil, gerador de até " + me.limites.geradorMaxJogos + " jogos e conferência, sem prazo.</p>";
+      acoes = '<a class="bt primario" href="planos.html">Ver os planos</a>';
+    }
+    $("#p-plano").innerHTML = '<div class="topo"><div><div class="rot">Seu plano</div><h3>' + esc(me.planoNome) + "</h3></div>" + selo + "</div>" + h +
+      (acoes ? '<div class="acoes-plano">' + acoes + "</div>" : "");
+    $("#bt-mudar").textContent = me.origem === "assinatura" ? "Comparar planos" : "Assinar um plano";
+    var c = $("#bt-cancelar"); if (c) c.onclick = cancelar;
+    extras(me);
+  }
+  function cancelar() {
+    var a = ME.assinatura;
+    if (!confirm("Cancelar a assinatura? Você continua com o " + ME.planoNome + " até " + dataBR(a.valido_ate) + " e não haverá novas cobranças.")) return;
+    var b = $("#bt-cancelar"); ocupado(b, true);
+    MC_API.post("cancelar", {}, {silencioso: true}).then(function () {
+      msg("Assinatura cancelada. O plano continua ativo até " + dataBR(a.valido_ate) + ".", true);
+      return MC_API.get("me", {silencioso: true}).then(contaServidor);
+    }).catch(function (e) { msg(e.message); ocupado(b, false); });
+  }
+  function trava(recurso, txt) {
+    var r = PERM.pode(R, ME.plano, recurso);
+    return r.ok ? "" : '<p class="trava">' + txt + ' <a href="planos.html?plano=' + esc(r.planoMinimo ? r.planoMinimo.id : "pro") + '">Assinar o ' + esc(r.planoMinimo ? r.planoMinimo.nome : "Pro") + "</a></p>";
+  }
+  function extras(me) {
+    var t1 = trava("avisoEmail", "O aviso de resultado por e-mail faz parte dos planos pagos.");
+    var t2 = trava("suporteEmail", "No plano Grátis, use a central de ajuda.");
+    var sup = R.suporte[me.limites.suporte] || {};
+    $("#p-extras").innerHTML =
+      '<div class="bloco-conta"><h4>Aviso de resultado por e-mail</h4><p>Quando sair o resultado de uma loteria com jogos salvos, você recebe a conferência por e-mail.</p>' +
+      (t1 || '<label class="interruptor"><input type="checkbox" id="ck-aviso"' + (me.avisoEmail ? " checked" : "") + "> Receber os resultados dos meus jogos salvos</label>") + "</div>" +
+      '<div class="bloco-conta"><h4>Suporte' + (me.limites.suporte === "email_prioritario" ? ' <span class="selo prio">Prioritário</span>' : "") + "</h4>" +
+      (t2 ? '<p><a href="index.html#faq">Central de ajuda (perguntas frequentes)</a></p>' + t2
+        : "<p>" + esc(sup.rotulo || "") + ". A resposta chega no seu e-mail.</p>" +
+          '<form id="f-suporte"><input type="text" name="assunto" maxlength="120" placeholder="Assunto" required><textarea name="mensagem" maxlength="5000" placeholder="Conte o que aconteceu" required></textarea>' +
+          '<button class="bt" type="submit">Enviar mensagem</button></form>') + "</div>";
+    var ck = $("#ck-aviso");
+    if (ck) ck.onchange = function () {
+      ck.disabled = true;
+      MC_API.patch("perfil", {aviso_email: ck.checked}, {silencioso: true})
+        .then(function () { msg(ck.checked ? "Você vai receber os resultados por e-mail." : "Avisos por e-mail desligados.", true); })
+        .catch(function (e) { ck.checked = !ck.checked; msg(e.message); }).then(function () { ck.disabled = false; });
+    };
+    var fs = $("#f-suporte");
+    if (fs) fs.onsubmit = function (e) {
+      e.preventDefault(); var b = fs.querySelector("button");
+      var assunto = fs.assunto.value.trim(), m = fs.mensagem.value.trim();
+      if (!assunto || !m) { msg("Preencha o assunto e a mensagem."); return; }
+      ocupado(b, true);
+      MC_API.post("suporte", {assunto: assunto, mensagem: m}, {silencioso: true}).then(function (r) {
+        fs.reset(); msg("Mensagem enviada." + (r.prazoHoras ? " Respondemos em até " + r.prazoHoras + "h úteis." : ""), true);
+      }).catch(function (x) { msg(x.message); }).then(function () { ocupado(b, false); });
+    };
   }
   /* depois do login: segue para o destino (painel ou pagamento do plano escolhido) */
   function seguir() { location.href = destino; }

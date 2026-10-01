@@ -1,5 +1,6 @@
 // "Supabase local" SÓ PARA TESTES: imita o Auth (login por senha), o REST mínimo usado pelo site
 // e publica as funções api e asaas-webhook na mesma porta. Senha de todos os usuários: senha123!
+// Também simula o Asaas em /asaas/v3 (a fatura tem um botão "Pagar" que dispara o webhook).
 // Rodar: deno run -A supabase/tests/servidor_local.js   (porta 54400)
 import postgres from "npm:postgres@3.4.5";
 const PORTA = +(Deno.env.get("PORTA") || 54400);
@@ -10,9 +11,15 @@ Deno.env.set("SUPABASE_ANON_KEY", "anon-teste");
 Deno.env.set("TAREFA_TOKEN", Deno.env.get("TAREFA_TOKEN") || "tarefa-teste");
 Deno.env.set("EMAIL_PROVEDOR", "teste");
 Deno.env.set("ASAAS_WEBHOOK_TOKEN", Deno.env.get("ASAAS_WEBHOOK_TOKEN") || "webhook-teste");
+// Asaas falso na mesma porta (supabase/tests/asaas_falso.js)
+Deno.env.set("ASAAS_API_KEY", "asaas-teste");
+Deno.env.set("ASAAS_URL", "http://127.0.0.1:" + PORTA + "/asaas/v3");
 const { tratar: api } = await import("../functions/api/index.js");
 const { tratar: webhook } = await import("../functions/asaas-webhook/index.js");
+const { tratarAsaas } = await import("./asaas_falso.js");
 const sql = postgres(DB_URL, {prepare: false, max: 2});
+const enviarWebhook = (ev) => webhook(new Request("http://local/functions/v1/asaas-webhook",
+  {method: "POST", headers: {"asaas-access-token": Deno.env.get("ASAAS_WEBHOOK_TOKEN"), "content-type": "application/json"}, body: JSON.stringify(ev)}));
 
 const CORS = {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS, HEAD"};
 const b64 = (o) => btoa(JSON.stringify(o)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -32,6 +39,7 @@ async function tratar(req) {
   if (req.method === "OPTIONS") return new Response("ok", {headers: CORS});
   if (p.startsWith("/functions/v1/api")) { const r = await api(req); const h = new Headers(r.headers); for (const [k, v] of Object.entries(CORS)) h.set(k, v); return new Response(r.body, {status: r.status, headers: h}); }
   if (p.startsWith("/functions/v1/asaas-webhook")) return webhook(req);
+  if (p.startsWith("/asaas/")) return tratarAsaas(req, url, "http://127.0.0.1:" + PORTA + "/asaas", enviarWebhook);
   if (p === "/auth/v1/token") {
     const b = await req.json();
     if (url.searchParams.get("grant_type") === "password") {

@@ -1,5 +1,5 @@
 /* MegaCover Pro Elite — configuração comercial.
-   Edite só este arquivo para mudar fase, planos, preços e links de pagamento.
+   Aqui ficam a fase, o login e o contato. Planos, preços e limites: assets/regras.json.
 
    ▸ fase: "beta"        → tudo liberado de graça (período de testes); a página de planos mostra os preços
                             futuros e o botão vira "Começar grátis no Beta".
@@ -17,27 +17,12 @@ window.MC_PLANO = {
   loginGoogle: false,          /* true depois de ativar o provedor Google no Supabase */
   loginObrigatorio: false,     /* true = só abre o painel quem estiver logado */
 
-  /* Desconto do plano anual, mostrado no seletor Mensal/Anual. */
-  descontoAnual: "30%",
-
-  /* Planos, do mais barato ao mais caro. Preços em reais (número) ou null para "Em breve".
-     anualMes = preço por mês no plano anual (cobrado uma vez por ano). checkout = link de pagamento
-     (Mercado Pago, Stripe, Hotmart…) de cada ciclo; vazio = botão de lista de espera. */
+  /* Preços, limites e textos dos planos ficam em assets/regras.json (fonte única, lida também pelo servidor).
+     Aqui só o nome e o nível de cada plano, usados pelos avisos do modo Beta/local. */
   planos: [
-    {id: "gratis", nome: "Grátis", nivel: 0, frase: "Para conhecer o MegaCover e jogar com método.",
-     mensal: 0, anualMes: 0,
-     inclui: ["Histórico completo das 9 loterias", "Estatísticas, atrasos e padrões", "Gerador com MegaScore™ (até 10 jogos)",
-              "Volante virtual para imprimir", "Conferência no último concurso"]},
-    {id: "pro", nome: "Pro", nivel: 1, frase: "A inteligência completa para quem joga toda semana.",
-     mensal: 19.90, anualMes: 13.90, destaque: true, selo: "Mais popular",
-     inclui: ["Tudo do Grátis", "MegaCover AI: DNA das Combinações™ e Otimização Elite™", "Fechamentos inteligentes",
-              "Conferência em todo o histórico", "Exportação Excel, PDF e projetos"],
-     checkout: {mensal: "", anual: ""}},
-    {id: "elite", nome: "Elite", nivel: 2, frase: "Poder máximo de simulação e atendimento direto.",
-     mensal: 39.90, anualMes: 27.90,
-     inclui: ["Tudo do Pro", "Simulações de até 1 milhão de sorteios", "Gerador sem limite de jogos",
-              "Suporte prioritário pelo WhatsApp", "Novos recursos antes de todo mundo"],
-     checkout: {mensal: "", anual: ""}}
+    {id: "gratis", nome: "Grátis", nivel: 0},
+    {id: "pro", nome: "Pro", nivel: 1},
+    {id: "elite", nome: "Elite", nivel: 2}
   ],
 
   /* Plano mínimo de cada recurso (nível do plano) e o nome que aparece nos avisos. */
@@ -79,6 +64,4 @@ window.MC_PLANO = {
     if (P.email) return "mailto:" + P.email + "?subject=" + encodeURIComponent(texto || P.produto);
     return "";
   };
-  /* compatibilidade com versões anteriores */
-  var pp = P.plano("pro"); P.precoMensal = pp && pp.mensal ? P.reais(pp.mensal) : null; P.linkAssinatura = pp && pp.checkout ? pp.checkout.mensal : "";
 })(window.MC_PLANO);

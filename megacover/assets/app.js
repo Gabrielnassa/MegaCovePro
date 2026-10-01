@@ -1239,7 +1239,7 @@ function modalPlano(recurso) {
   var min = recurso && PL.planoMinimo ? PL.planoMinimo(recurso) : null, nome = min ? min.nome : "Pro";
   var acao = PL.beta()
     ? '<a class="bt primario" href="planos.html">Ver os planos</a><button class="bt" type="button" data-fechar>Continuar no Beta</button>'
-    : '<a class="bt primario" href="planos.html">Assinar o ' + esc(nome) + (min && min.mensal ? " · a partir de " + esc(PL.reais(min.anualMes || min.mensal)) + "/mês" : "") + '</a><button class="bt" type="button" data-fechar>Agora não</button>';
+    : '<a class="bt primario" href="planos.html">Assinar o ' + esc(nome) + '</a><button class="bt" type="button" data-fechar>Agora não</button>';
   abrirModal('<div class="sobre">' + (PL.beta() ? "Período de testes" : "Recurso do plano " + esc(nome)) + '</div><h2 id="modal-titulo">' +
     (recurso && !PL.beta() ? esc(PL.pro[recurso]) + " faz parte do plano " + esc(nome) : PL.beta() ? "Você está no Beta: tudo liberado" : "Conheça os planos do MegaCover") + "</h2>" +
     "<p>" + (PL.beta() ? "Durante o período de testes você usa de graça todos os recursos dos planos pagos:" : "Os planos pagos incluem:") + "</p><ul>" + listaPro() + "</ul>" +

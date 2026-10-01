@@ -9,13 +9,21 @@
   "planos": [
     {"id": "gratis", "nome": "Grátis", "nivel": 0,
      "frase": "Para conhecer o MegaCover e organizar seus jogos.",
-     "precos": null},
+     "precos": null,
+     "destaques": ["Mega-Sena e Lotofácil", "Gerador aleatório de até 10 jogos", "Estatísticas básicas dos últimos 50 concursos",
+                   "2 fechamentos prontos de exemplo", "Conferência e até 20 jogos salvos", "Volante virtual para imprimir"]},
     {"id": "pro", "nome": "Pro", "nivel": 1, "destaque": true, "selo": "Mais popular",
      "frase": "Todas as loterias e as ferramentas para organizar e reduzir o custo das suas apostas.",
-     "precos": {"mensal": {"cartao": 9.90, "pix": 9.90}, "anual": {"cartao": 99.00, "pix": 89.90}}},
+     "precos": {"mensal": {"cartao": 9.90, "pix": 9.90}, "anual": {"cartao": 99.00, "pix": 89.90}},
+     "destaques": ["Tudo do Grátis", "Todas as 9 loterias com histórico completo", "Gerador ponderado sem limite, com filtros e gráficos",
+                   "Fechamentos prontos e personalizados para reduzir o custo das apostas", "Jogos salvos ilimitados e aviso de resultado por e-mail",
+                   "Relatório PDF e exportação Excel/CSV", "Suporte por e-mail"]},
     {"id": "elite", "nome": "Elite", "nivel": 2,
      "frase": "Otimizadores, simulação contra os concursos anteriores e relatório completo.",
-     "precos": {"mensal": {"cartao": 19.90, "pix": 19.90}, "anual": {"cartao": 199.00, "pix": 179.90}}}
+     "precos": {"mensal": {"cartao": 19.90, "pix": 19.90}, "anual": {"cartao": 199.00, "pix": 179.90}},
+     "destaques": ["Tudo do Pro", "Algoritmo genético e simulated annealing (20 por dia)",
+                   "Monte Carlo: teste sua estratégia contra os concursos anteriores (10 por dia)",
+                   "Relatório PDF completo, com análise e custo das apostas", "2 aparelhos conectados ao mesmo tempo", "Suporte prioritário por e-mail"]}
   ],
 
   "limites": {
